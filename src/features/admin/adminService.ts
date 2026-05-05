@@ -1,6 +1,31 @@
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import type { Barbero, Barberia, Cita, Disponibilidad, Servicio } from '@/types/supabase.types';
 
+export interface BarberoInput {
+  nombre: string;
+  fotoUrl?: string;
+}
+
+export interface ServicioInput {
+  nombre: string;
+  descripcion?: string;
+  precio: number;
+  duracionMin: number;
+}
+
+export interface DisponibilidadInput {
+  barberoId: string;
+  diaSemana: number;
+  horaInicio: string;
+  horaFin: string;
+}
+
+export interface BarberiaInput {
+  nombre: string;
+  direccion?: string;
+  telefono?: string;
+}
+
 export const adminService = {
   async getMyBarberia(adminId: string) {
     if (!isSupabaseConfigured) return null;
@@ -9,35 +34,80 @@ export const adminService = {
     return data as Barberia | null;
   },
 
+  async createMyBarberia(adminId: string, input: BarberiaInput) {
+    const { data, error } = await supabase
+      .from('barberias')
+      .insert({
+        admin_id: adminId,
+        nombre: input.nombre,
+        direccion: input.direccion || null,
+        telefono: input.telefono || null,
+      } as never)
+      .select()
+      .single();
+    if (error) throw error;
+    return data as Barberia;
+  },
+
+  async updateBarberia(id: string, input: BarberiaInput) {
+    const { data, error } = await supabase
+      .from('barberias')
+      .update({
+        nombre: input.nombre,
+        direccion: input.direccion || null,
+        telefono: input.telefono || null,
+      } as never)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data as Barberia;
+  },
+
   async getBarbers(barberiaId: string) {
     const { data, error } = await supabase.from('barberos').select('*').eq('barberia_id', barberiaId).order('nombre');
     if (error) throw error;
     return data as Barbero[];
   },
 
-  async createBarber(input: { barberiaId: string; nombre: string; fotoUrl?: string }) {
-    const { error } = await supabase.from('barberos').insert({
-      barberia_id: input.barberiaId,
-      nombre: input.nombre,
-      foto_url: input.fotoUrl || null,
-    } as never);
+  async createBarber(barberiaId: string, input: BarberoInput) {
+    const { data, error } = await supabase
+      .from('barberos')
+      .insert({
+        barberia_id: barberiaId,
+        nombre: input.nombre,
+        foto_url: input.fotoUrl || null,
+        activo: true,
+      } as never)
+      .select()
+      .single();
     if (error) throw error;
+    return data as Barbero;
   },
 
-  async updateBarber(input: { id: string; nombre: string; fotoUrl?: string }) {
-    const { error } = await supabase
+  async updateBarber(id: string, input: BarberoInput) {
+    const { data, error } = await supabase
       .from('barberos')
       .update({
         nombre: input.nombre,
         foto_url: input.fotoUrl || null,
       } as never)
-      .eq('id', input.id);
+      .eq('id', id)
+      .select()
+      .single();
     if (error) throw error;
+    return data as Barbero;
   },
 
-  async deleteBarber(id: string) {
-    const { error } = await supabase.from('barberos').delete().eq('id', id);
+  async setBarberActive(id: string, activo: boolean) {
+    const { data, error } = await supabase
+      .from('barberos')
+      .update({ activo } as never)
+      .eq('id', id)
+      .select()
+      .single();
     if (error) throw error;
+    return data as Barbero;
   },
 
   async getServices(barberiaId: string) {
@@ -46,31 +116,48 @@ export const adminService = {
     return data as Servicio[];
   },
 
-  async createService(input: { barberiaId: string; nombre: string; precio: number; duracionMin: number }) {
-    const { error } = await supabase.from('servicios').insert({
-      barberia_id: input.barberiaId,
-      nombre: input.nombre,
-      precio: input.precio,
-      duracion_min: input.duracionMin,
-    } as never);
+  async createService(barberiaId: string, input: ServicioInput) {
+    const { data, error } = await supabase
+      .from('servicios')
+      .insert({
+        barberia_id: barberiaId,
+        nombre: input.nombre,
+        descripcion: input.descripcion || null,
+        precio: input.precio,
+        duracion_min: input.duracionMin,
+        activo: true,
+      } as never)
+      .select()
+      .single();
     if (error) throw error;
+    return data as Servicio;
   },
 
-  async updateService(input: { id: string; nombre: string; precio: number; duracionMin: number }) {
-    const { error } = await supabase
+  async updateService(id: string, input: ServicioInput) {
+    const { data, error } = await supabase
       .from('servicios')
       .update({
         nombre: input.nombre,
+        descripcion: input.descripcion || null,
         precio: input.precio,
         duracion_min: input.duracionMin,
       } as never)
-      .eq('id', input.id);
+      .eq('id', id)
+      .select()
+      .single();
     if (error) throw error;
+    return data as Servicio;
   },
 
-  async deleteService(id: string) {
-    const { error } = await supabase.from('servicios').delete().eq('id', id);
+  async setServiceActive(id: string, activo: boolean) {
+    const { data, error } = await supabase
+      .from('servicios')
+      .update({ activo } as never)
+      .eq('id', id)
+      .select()
+      .single();
     if (error) throw error;
+    return data as Servicio;
   },
 
   async getAvailability(barberiaId: string) {
@@ -84,26 +171,34 @@ export const adminService = {
     return data as unknown as Disponibilidad[];
   },
 
-  async createAvailability(input: { barberoId: string; diaSemana: number; horaInicio: string; horaFin: string }) {
-    const { error } = await supabase.from('disponibilidad').insert({
-      barbero_id: input.barberoId,
-      dia_semana: input.diaSemana,
-      hora_inicio: input.horaInicio,
-      hora_fin: input.horaFin,
-    } as never);
+  async createAvailability(input: DisponibilidadInput) {
+    const { data, error } = await supabase
+      .from('disponibilidad')
+      .insert({
+        barbero_id: input.barberoId,
+        dia_semana: input.diaSemana,
+        hora_inicio: input.horaInicio,
+        hora_fin: input.horaFin,
+      } as never)
+      .select()
+      .single();
     if (error) throw error;
+    return data as Disponibilidad;
   },
 
-  async updateAvailability(input: { id: string; diaSemana: number; horaInicio: string; horaFin: string }) {
-    const { error } = await supabase
+  async updateAvailability(id: string, input: DisponibilidadInput) {
+    const { data, error } = await supabase
       .from('disponibilidad')
       .update({
         dia_semana: input.diaSemana,
         hora_inicio: input.horaInicio,
         hora_fin: input.horaFin,
       } as never)
-      .eq('id', input.id);
+      .eq('id', id)
+      .select()
+      .single();
     if (error) throw error;
+    return data as Disponibilidad;
   },
 
   async deleteAvailability(id: string) {

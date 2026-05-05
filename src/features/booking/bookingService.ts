@@ -13,20 +13,21 @@ const demoBarberia: Barberia = {
   id: 'demo-barberia',
   nombre: 'Barberia Central',
   direccion: 'Calle principal #123',
+  telefono: null,
   admin_id: 'demo-admin',
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
 };
 
 const demoServices: Servicio[] = [
-  { id: 'corte', nombre: 'Corte clasico', precio: 35000, duracion_min: 40, barberia_id: demoBarberia.id, created_at: '', updated_at: '' },
-  { id: 'barba', nombre: 'Barba premium', precio: 25000, duracion_min: 30, barberia_id: demoBarberia.id, created_at: '', updated_at: '' },
-  { id: 'combo', nombre: 'Corte + barba', precio: 55000, duracion_min: 60, barberia_id: demoBarberia.id, created_at: '', updated_at: '' },
+  { id: 'corte', nombre: 'Corte clasico', descripcion: null, precio: 35000, duracion_min: 40, barberia_id: demoBarberia.id, activo: true, created_at: '', updated_at: '' },
+  { id: 'barba', nombre: 'Barba premium', descripcion: null, precio: 25000, duracion_min: 30, barberia_id: demoBarberia.id, activo: true, created_at: '', updated_at: '' },
+  { id: 'combo', nombre: 'Corte + barba', descripcion: null, precio: 55000, duracion_min: 60, barberia_id: demoBarberia.id, activo: true, created_at: '', updated_at: '' },
 ];
 
 const demoBarbers: Barbero[] = [
-  { id: 'andres', nombre: 'Andres Rivera', barberia_id: demoBarberia.id, foto_url: null, created_at: '', updated_at: '' },
-  { id: 'mateo', nombre: 'Mateo Cruz', barberia_id: demoBarberia.id, foto_url: null, created_at: '', updated_at: '' },
+  { id: 'andres', nombre: 'Andres Rivera', barberia_id: demoBarberia.id, foto_url: null, activo: true, created_at: '', updated_at: '' },
+  { id: 'mateo', nombre: 'Mateo Cruz', barberia_id: demoBarberia.id, foto_url: null, activo: true, created_at: '', updated_at: '' },
 ];
 
 export const bookingService = {
@@ -43,7 +44,7 @@ export const bookingService = {
     if (barberiaId) query = query.eq('barberia_id', barberiaId);
     const { data, error } = await query;
     if (error) throw error;
-    return data as Servicio[];
+    return (data as Servicio[]).filter((service) => service.activo);
   },
 
   async getBarbers(barberiaId?: string) {
@@ -52,7 +53,7 @@ export const bookingService = {
     if (barberiaId) query = query.eq('barberia_id', barberiaId);
     const { data, error } = await query;
     if (error) throw error;
-    return data as Barbero[];
+    return (data as Barbero[]).filter((barber) => barber.activo);
   },
 
   async getSlots(barberoId: string, servicio: Servicio, date: Date) {

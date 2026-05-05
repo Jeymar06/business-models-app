@@ -14,7 +14,8 @@ export interface Profile {
 export interface Barberia {
   id: string;
   nombre: string;
-  direccion: string;
+  direccion: string | null;
+  telefono: string | null;
   admin_id: string;
   created_at: string;
   updated_at: string;
@@ -25,6 +26,7 @@ export interface Barbero {
   nombre: string;
   barberia_id: string;
   foto_url: string | null;
+  activo: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -32,9 +34,11 @@ export interface Barbero {
 export interface Servicio {
   id: string;
   nombre: string;
+  descripcion: string | null;
   precio: number;
   duracion_min: number;
   barberia_id: string;
+  activo: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -80,12 +84,14 @@ export type Database = {
         Row: Barberia;
         Insert: {
           nombre: string;
-          direccion: string;
+          direccion?: string | null;
+          telefono?: string | null;
           admin_id: string;
         };
         Update: {
           nombre?: string;
-          direccion?: string;
+          direccion?: string | null;
+          telefono?: string | null;
         };
       };
       barberos: {
@@ -94,24 +100,30 @@ export type Database = {
           nombre: string;
           barberia_id: string;
           foto_url?: string | null;
+          activo?: boolean;
         };
         Update: {
           nombre?: string;
           foto_url?: string | null;
+          activo?: boolean;
         };
       };
       servicios: {
         Row: Servicio;
         Insert: {
           nombre: string;
+          descripcion?: string | null;
           precio: number;
           duracion_min?: number;
           barberia_id: string;
+          activo?: boolean;
         };
         Update: {
           nombre?: string;
+          descripcion?: string | null;
           precio?: number;
           duracion_min?: number;
+          activo?: boolean;
         };
       };
       disponibilidad: {
