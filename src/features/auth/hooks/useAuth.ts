@@ -1,4 +1,4 @@
-import type { Session } from '@supabase/supabase-js';
+import type { Session, User } from '@supabase/supabase-js';
 import { useEffect, useMemo, useState } from 'react';
 
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
@@ -32,7 +32,7 @@ export function useAuth() {
       if (mounted) {
         setSession(data.session);
         if (data.session?.user) {
-          fetchUserProfile(data.session.user.id);
+          fetchUserProfile(data.session.user);
         } else {
           setIsLoading(false);
         }
@@ -46,7 +46,7 @@ export function useAuth() {
       if (mounted) {
         setSession(nextSession);
         if (nextSession?.user) {
-          fetchUserProfile(nextSession.user.id);
+          fetchUserProfile(nextSession.user);
         } else {
           setUserProfile(null);
           setIsLoading(false);
@@ -60,10 +60,15 @@ export function useAuth() {
     };
   }, []);
 
-  async function fetchUserProfile(userId: string) {
+  async function fetchUserProfile(profileUser: User) {
     try {
-      const profile = await authService.getUserProfile(userId);
-      setUserProfile(profile);
+      const profile = await authService.getUserProfile(profileUser.id);
+      if (profile) {
+        setUserProfile(profile);
+        return;
+      }
+
+      setUserProfile(await authService.ensureUserProfile(profileUser));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error fetching profile');
     } finally {

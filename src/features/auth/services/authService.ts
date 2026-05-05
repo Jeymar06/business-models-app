@@ -1,5 +1,6 @@
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import type { Profile } from '@/types/supabase.types';
+import type { User } from '@supabase/supabase-js';
 
 export interface AuthCredentials {
   email: string;
@@ -108,6 +109,35 @@ export const authService = {
 
     if (error) {
       console.error('Error fetching profile:', error);
+      return null;
+    }
+
+    return data as Profile;
+  },
+
+  async ensureUserProfile(user: User): Promise<Profile | null> {
+    ensureSupabase();
+
+    const fullName =
+      typeof user.user_metadata.full_name === 'string'
+        ? user.user_metadata.full_name
+        : typeof user.user_metadata.name === 'string'
+          ? user.user_metadata.name
+          : null;
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .upsert({
+        id: user.id,
+        email: user.email ?? `${user.id}@oauth.local`,
+        full_name: fullName,
+        role: 'client',
+      } as never)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error ensuring profile:', error);
       return null;
     }
 

@@ -8,6 +8,7 @@ import { LoginPage } from '@/pages/LoginPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { RegisterPage } from '@/pages/RegisterPage';
 import { AdminDashboard } from '@/pages/AdminDashboard';
+import { AuthCallbackPage } from '@/pages/AuthCallbackPage';
 import { BookingPage } from '@/pages/BookingPage';
 import { ClientDashboard } from '@/pages/ClientDashboard';
 import { SuperAdminDashboard } from '@/pages/SuperAdminDashboard';
@@ -33,6 +34,7 @@ export function AppRouter() {
         <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
           <Routes>
             <Route element={<LandingPage />} path="/" />
+            <Route element={<AuthCallbackPage />} path="/auth/callback" />
             <Route element={<LoginPage />} path="/login" />
             <Route element={<RegisterPage />} path="/register" />
 
