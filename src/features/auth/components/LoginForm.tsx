@@ -23,7 +23,7 @@ export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
     setIsSubmitting(true);
 
     try {
-      await authService.signIn(email, password);
+      await authService.signIn({ email, password });
       onSuccess?.();
     } catch (signInError) {
       setError(signInError instanceof Error ? signInError.message : 'No fue posible iniciar sesion.');

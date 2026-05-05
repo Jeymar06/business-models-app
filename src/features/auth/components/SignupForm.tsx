@@ -7,6 +7,7 @@ import { authService } from '../authService';
 
 export function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
   const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,7 +24,7 @@ export function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
     setIsSubmitting(true);
 
     try {
-      await authService.signUp(email, password);
+      await authService.signUp({ email, fullName: fullName || email, password });
       onSuccess?.();
     } catch (signUpError) {
       setError(signUpError instanceof Error ? signUpError.message : 'No fue posible crear la cuenta.');
@@ -34,6 +35,7 @@ export function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
 
   return (
     <form className="grid gap-4" onSubmit={handleSubmit}>
+      <Input label="Nombre completo" name="signup-name" onChange={(event) => setFullName(event.target.value)} value={fullName} />
       <Input label="Email" name="signup-email" onChange={(event) => setEmail(event.target.value)} type="email" value={email} />
       <Input
         label="Password"

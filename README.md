@@ -1,57 +1,39 @@
-# Barber App - Sistema de Agendamiento de Citas
+# Barber App
 
-Aplicación web completa para gestionar barberías con agendamiento de citas inteligente.
+Sistema de agendamiento para barberias con React, TypeScript, Vite y Supabase.
 
-## 🏗️ Arquitectura
+## Stack
 
-- **Frontend**: React 18 + TypeScript + Vite + Tailwind CSS
-- **Backend**: Supabase (PostgreSQL + Auth)
-- **Deployments**: Vercel (Frontend)
+- React 18 + TypeScript + Vite
+- Supabase Auth + PostgreSQL + RLS
+- React Router
+- React Hook Form + Zod
+- date-fns para horarios y slots
+- Chart.js para metricas
 
-## 📋 Roles
+## Roles
 
-- **Super Admin**: Gestión global de barberías
-- **Admin**: Gestión de su barbería (barberos, servicios, horarios)
-- **Cliente**: Agendamiento de citas
+- `client`: agenda y consulta sus citas.
+- `admin`: gestiona su barberia, barberos, servicios y agenda.
+- `superadmin`: consulta la operacion global.
 
-## 🚀 Stack Técnico
+## Estructura
 
+```txt
+src/features/auth
+src/features/booking
+src/features/admin
+src/pages
+src/routes
+supabase/migrations
 ```
-React 18 + TypeScript + Vite
-├── date-fns (manejo de fechas)
-├── react-hook-form (formularios)
-├── zod (validación)
-├── lucide-react (iconos)
-└── @supabase/supabase-js (backend)
 
-Tailwind CSS + PostCSS
-React Router v6 (navegación)
-```
-
-## 📦 Base de Datos
-
-7 tablas principales con Row Level Security:
-- `profiles` - Usuarios con roles
-- `barberias` - Barbería
-- `barberos` - Barberos
-- `servicios` - Servicios ofrecidos
-- `disponibilidad` - Horarios disponibles
-- `citas` - Agendamiento de citas
-- `notificaciones` - Email notifications
-
-## 🔧 Instalación
+## Desarrollo
 
 ```bash
 npm install
 cp .env.example .env.local
-# Configura VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY
 npm run dev
 ```
 
-## 📝 Licencia
-
-MIT
-
-## 👤 Autor
-
-Jeymar Dev
+Configura `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` en `.env.local`.

@@ -1,4 +1,5 @@
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
+import type { Profile } from '@/types/supabase.types';
 
 export interface AuthCredentials {
   email: string;
@@ -46,18 +47,15 @@ export const authService = {
       throw error;
     }
 
-    // Create profile entry
     if (data.user) {
       const { error: profileError } = await supabase
         .from('profiles')
-        .insert([
-          {
-            id: data.user.id,
-            email: credentials.email,
-            full_name: credentials.fullName,
-            role: 'client', // Default role for new users
-          },
-        ] as any);
+        .upsert({
+          id: data.user.id,
+          email: credentials.email,
+          full_name: credentials.fullName,
+          role: 'client',
+        } as never);
 
       if (profileError) {
         console.error('Error creating profile:', profileError);
@@ -100,7 +98,7 @@ export const authService = {
     return user;
   },
 
-  async getUserProfile(userId: string) {
+  async getUserProfile(userId: string): Promise<Profile | null> {
     ensureSupabase();
     const { data, error } = await supabase
       .from('profiles')
@@ -113,6 +111,6 @@ export const authService = {
       return null;
     }
 
-    return data;
+    return data as Profile;
   },
 };

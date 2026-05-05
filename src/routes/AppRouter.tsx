@@ -7,6 +7,10 @@ import { LandingPage } from '@/pages/LandingPage';
 import { LoginPage } from '@/pages/LoginPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { RegisterPage } from '@/pages/RegisterPage';
+import { AdminDashboard } from '@/pages/AdminDashboard';
+import { BookingPage } from '@/pages/BookingPage';
+import { ClientDashboard } from '@/pages/ClientDashboard';
+import { SuperAdminDashboard } from '@/pages/SuperAdminDashboard';
 import { ProtectedRoute } from './ProtectedRoute';
 
 export function AppRouter() {
@@ -28,27 +32,26 @@ export function AppRouter() {
         <Navbar />
         <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
           <Routes>
-            {/* Public routes */}
             <Route element={<LandingPage />} path="/" />
             <Route element={<LoginPage />} path="/login" />
             <Route element={<RegisterPage />} path="/register" />
 
-            {/* Client routes */}
+            <Route element={<ProtectedRoute requiredRole={['client', 'admin', 'superadmin']} />}>
+              <Route element={<BookingPage />} path="/booking" />
+            </Route>
+
             <Route element={<ProtectedRoute requiredRole="client" />}>
-              {/* Booking pages will go here - Fase 3 */}
+              <Route element={<ClientDashboard />} path="/client-dashboard" />
             </Route>
 
-            {/* Admin routes */}
             <Route element={<ProtectedRoute requiredRole="admin" />}>
-              {/* Admin dashboard pages will go here - Fase 2 */}
+              <Route element={<AdminDashboard />} path="/admin-dashboard" />
             </Route>
 
-            {/* Super Admin routes */}
             <Route element={<ProtectedRoute requiredRole="superadmin" />}>
-              {/* Super admin pages will go here - Fase 5 */}
+              <Route element={<SuperAdminDashboard />} path="/superadmin-dashboard" />
             </Route>
 
-            {/* 404 */}
             <Route element={<NotFoundPage />} path="*" />
           </Routes>
         </main>
