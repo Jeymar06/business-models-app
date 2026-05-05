@@ -45,6 +45,7 @@ export interface Disponibilidad {
   dia_semana: number;
   hora_inicio: string;
   hora_fin: string;
+  created_at: string;
 }
 
 export interface Cita {
@@ -114,19 +115,17 @@ export type Database = {
         };
       };
       disponibilidad: {
-        Row: {
-          id: string;
-          barbero_id: string;
-          dia_semana: number;
-          hora_inicio: string;
-          hora_fin: string;
-          created_at: string;
-        };
+        Row: Disponibilidad;
         Insert: {
           barbero_id: string;
           dia_semana: number;
           hora_inicio: string;
           hora_fin: string;
+        };
+        Update: {
+          dia_semana?: number;
+          hora_inicio?: string;
+          hora_fin?: string;
         };
       };
       citas: {
