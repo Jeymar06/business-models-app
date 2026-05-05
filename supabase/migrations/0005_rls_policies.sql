@@ -1,3 +1,19 @@
+alter table public.profiles add column if not exists email text;
+alter table public.profiles add column if not exists role text not null default 'client';
+alter table public.profiles add column if not exists updated_at timestamptz not null default now();
+
+update public.profiles
+set email = auth.users.email
+from auth.users
+where profiles.id = auth.users.id
+  and profiles.email is null;
+
+update public.profiles
+set email = 'pending-email-' || id::text || '@example.local'
+where email is null;
+
+alter table public.profiles alter column email set not null;
+
 alter table public.profiles enable row level security;
 alter table public.barberias enable row level security;
 alter table public.barberos enable row level security;
