@@ -1,14 +1,38 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import type { UserRole } from '@/types/supabase.types';
 
-export function ProtectedRoute() {
+interface ProtectedRouteProps {
+  requiredRole?: UserRole | UserRole[];
+}
+
+export function ProtectedRoute({ requiredRole }: ProtectedRouteProps) {
   const location = useLocation();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, role } = useAuth();
 
   if (isLoading) {
-    return <div className="p-6 text-sm text-slate-500">Cargando sesion...</div>;
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-sm text-slate-500">Cargando sesión...</div>
+      </div>
+    );
   }
 
-  return isAuthenticated ? <Outlet /> : <Navigate replace state={{ from: location }} to="/" />;
+  if (!isAuthenticated) {
+    return <Navigate replace state={{ from: location }} to="/login" />;
+  }
+
+  // Check role if required
+  if (requiredRole) {
+    const hasRequiredRole = Array.isArray(requiredRole)
+      ? requiredRole.includes(role as UserRole)
+      : role === requiredRole;
+
+    if (!hasRequiredRole) {
+      return <Navigate replace to="/" />;
+    }
+  }
+
+  return <Outlet />;
 }

@@ -2,12 +2,22 @@ import type { Session } from '@supabase/supabase-js';
 import { useEffect, useMemo, useState } from 'react';
 
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
+import type { UserRole } from '@/types/supabase.types';
 
-import { authService } from '../authService';
+import { authService } from '../services/authService';
+
+interface UserProfile {
+  id: string;
+  email: string;
+  full_name: string | null;
+  role: UserRole;
+}
 
 export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
@@ -17,17 +27,31 @@ export function useAuth() {
 
     let mounted = true;
 
+    // Get initial session
     supabase.auth.getSession().then(({ data }) => {
       if (mounted) {
         setSession(data.session);
-        setIsLoading(false);
+        if (data.session?.user) {
+          fetchUserProfile(data.session.user.id);
+        } else {
+          setIsLoading(false);
+        }
       }
     });
 
+    // Listen for auth state changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      setSession(nextSession);
+      if (mounted) {
+        setSession(nextSession);
+        if (nextSession?.user) {
+          fetchUserProfile(nextSession.user.id);
+        } else {
+          setUserProfile(null);
+          setIsLoading(false);
+        }
+      }
     });
 
     return () => {
@@ -36,16 +60,31 @@ export function useAuth() {
     };
   }, []);
 
+  async function fetchUserProfile(userId: string) {
+    try {
+      const profile = await authService.getUserProfile(userId);
+      setUserProfile(profile);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error fetching profile');
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return useMemo(
     () => ({
       isAuthenticated: Boolean(session?.user),
       isLoading,
+      error,
       session,
-      signIn: authService.signIn,
-      signOut: authService.signOut,
-      signUp: authService.signUp,
       user: session?.user ?? null,
+      profile: userProfile,
+      role: userProfile?.role ?? null,
+      signIn: authService.signIn,
+      signUp: authService.signUp,
+      signOut: authService.signOut,
+      signInWithGoogle: authService.signInWithGoogle,
     }),
-    [isLoading, session],
+    [isLoading, error, session, userProfile],
   );
 }
