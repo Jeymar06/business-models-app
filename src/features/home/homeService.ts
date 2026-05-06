@@ -228,6 +228,7 @@ export const homeService = {
         .lte('fecha', to),
     ]);
 
+    if (barberiasCount.error) throw barberiasCount.error;
     if (barberiasRows.error) throw barberiasRows.error;
     if (profilesRows.error) throw profilesRows.error;
     if (appointmentsRows.error) throw appointmentsRows.error;
