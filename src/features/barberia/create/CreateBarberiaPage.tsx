@@ -8,15 +8,13 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 
 import { barberiaService } from './barberiaService';
 import { uploadBarberiaImage } from './imageUpload';
-import { createBarberiaSchema, defaultCreateBarberiaValues, step1Schema, step2Schema, step4Schema, stepFields, type CreateBarberiaFormValues } from './schema';
+import { createBarberiaSchema, defaultCreateBarberiaValues, type CreateBarberiaFormValues } from './schema';
 import { Step1Info } from './Step1Info';
 import { Step2Ubicacion } from './Step2Ubicacion';
 import { Step3Branding } from './Step3Branding';
 import { Step4Config } from './Step4Config';
 
 const steps = ['Informacion', 'Ubicacion', 'Branding', 'Configuracion'];
-
-const stepSchemas = [step1Schema, step2Schema, null, step4Schema];
 
 export function CreateBarberiaPage() {
   const { user } = useAuth();
@@ -36,31 +34,16 @@ export function CreateBarberiaPage() {
   const previewSlug = useMemo(() => barberiaService.generateSlug(watchedName || 'nombre-barberia'), [watchedName]);
   const progress = ((currentStep + 1) / steps.length) * 100;
 
-  async function goNext() {
-    const stepSchema = stepSchemas[currentStep];
-    if (!stepSchema) {
-      setCurrentStep((step) => Math.min(step + 1, steps.length - 1));
-      return;
-    }
-    
-    try {
-      const fields = stepFields[currentStep];
-      const dataToValidate = fields.reduce((acc, field) => {
-        acc[field as keyof CreateBarberiaFormValues] = form.getValues(field as keyof CreateBarberiaFormValues);
-        return acc;
-      }, {} as any);
-      
-      await stepSchema.parseAsync(dataToValidate);
-      setCurrentStep((step) => Math.min(step + 1, steps.length - 1));
-    } catch (err) {
-      if (err instanceof Error) {
-        console.error('Validation error:', err.message);
-      }
+  function goNext() {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
     }
   }
 
   function goBack() {
-    setCurrentStep((step) => Math.max(step - 1, 0));
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
   }
 
   async function handleSubmit(values: CreateBarberiaFormValues) {
@@ -135,7 +118,7 @@ export function CreateBarberiaPage() {
             </Button>
 
             {currentStep < steps.length - 1 ? (
-              <Button disabled={isSaving} onClick={() => void goNext()} type="button">
+              <Button disabled={isSaving} onClick={goNext} type="button">
                 Siguiente
                 <ArrowRight size={18} />
               </Button>
