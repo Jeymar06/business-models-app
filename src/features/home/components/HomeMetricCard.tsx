@@ -12,13 +12,17 @@ export function HomeMetricCard({
   hint?: string;
 }) {
   return (
-    <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-panel">
-      <div className="mb-3 flex items-center gap-2 text-sm font-medium text-slate-500">
-        <span className="text-steel">{icon}</span>
-        {label}
+    <article className="surface-panel group rounded-[24px] p-5 transition duration-200 hover:-translate-y-0.5 hover:shadow-panel">
+      <div className="mb-5 flex items-center justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-steel">{label}</p>
+          <p className="mt-3 text-3xl font-bold text-ink">{value}</p>
+        </div>
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#111111] text-white shadow-soft transition group-hover:bg-mint">
+          {icon}
+        </div>
       </div>
-      <p className="text-3xl font-bold text-ink">{value}</p>
-      {hint ? <p className="mt-2 text-sm text-slate-500">{hint}</p> : null}
+      {hint ? <p className="text-sm leading-6 text-slate-500">{hint}</p> : <div className="h-[24px]" />}
     </article>
   );
 }
