@@ -1,4 +1,5 @@
 import { CalendarDays, CircleHelp, Clock3, PlusSquare, UserCircle2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 import { EmptyState } from '@/features/home/components/EmptyState';
 import { BarberiaMiniCard } from '@/features/home/components/BarberiaMiniCard';
@@ -63,9 +64,9 @@ export function ClientHome({ data, profile }: { data: ClientHomeData; profile: P
           <h2 className="mt-2 text-2xl font-semibold text-ink">Eres dueno de una barberia?</h2>
           <p className="mt-3 text-sm leading-6 text-slate-500">Crea tu barberia y empieza a gestionar reservas desde tu misma cuenta.</p>
           <div className="mt-5">
-            <a className="inline-flex" href="/crear-barberia">
+            <Link to="/crear-barberia">
               <span className="inline-flex h-10 items-center justify-center rounded-md bg-ink px-4 text-sm font-medium text-white transition hover:bg-slate-800">Crear mi barberia</span>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
