@@ -10,13 +10,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const inputId = id ?? props.name;
 
     return (
-      <label className="grid gap-1.5 text-sm font-medium text-slate-700" htmlFor={inputId}>
+      <label className="grid gap-2 text-sm font-medium text-slate-700" htmlFor={inputId}>
         {label ? <span>{label}</span> : null}
         <input
           ref={ref}
           className={[
-            'h-10 rounded-md border border-slate-200 bg-white px-3 text-sm text-ink shadow-sm',
-            'placeholder:text-slate-400 focus:border-steel focus:outline-none focus:ring-2 focus:ring-steel/20',
+            'h-11 rounded-xl border border-black/8 bg-white/96 px-3.5 text-sm text-ink shadow-soft outline-none transition-all',
+            'placeholder:text-slate-400 focus:border-mint/40 focus:ring-4 focus:ring-mint/10',
+            'disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400',
             className,
           ].join(' ')}
           id={inputId}
@@ -24,7 +25,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         />
       </label>
     );
-  }
+  },
 );
 
 Input.displayName = 'Input';
