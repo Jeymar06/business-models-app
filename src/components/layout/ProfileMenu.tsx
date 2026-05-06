@@ -1,4 +1,5 @@
 import { CircleHelp, KeyRound, Loader2, LogOut, UserCircle2 } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -112,7 +113,7 @@ export function ProfileMenu() {
               type="button"
             >
               {isSigningOut ? <Loader2 className="animate-spin" size={16} /> : <LogOut size={16} />}
-              {isSigningOut ? 'Cerrando sesión...' : 'Cerrar sesión'}
+              {isSigningOut ? 'Cerrando sesion...' : 'Cerrar sesion'}
             </button>
           </div>
         </div>
@@ -127,7 +128,7 @@ function MenuLink({
   onSelect,
   to,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
   onSelect: () => void;
   to: string;
