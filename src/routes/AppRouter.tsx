@@ -25,8 +25,8 @@ export function AppRouter() {
   if (isLoading) {
     return (
       <BrowserRouter>
-        <div className="flex min-h-screen items-center justify-center bg-slate-50">
-          <div className="text-sm text-slate-500">Cargando sesion...</div>
+        <div className="flex min-h-screen items-center justify-center bg-[#111111] px-4 text-center text-sm text-white/72">
+          Cargando sesion...
         </div>
       </BrowserRouter>
     );
@@ -34,9 +34,9 @@ export function AppRouter() {
 
   return (
     <BrowserRouter>
-      <div className="flex min-h-screen flex-col bg-slate-50">
+      <div className="app-shell flex min-h-screen flex-col">
         <Navbar />
-        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
+        <main className="mx-auto w-full max-w-[1200px] flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
           <Routes>
             <Route element={<HomePage />} path="/" />
             <Route element={<AuthCallbackPage />} path="/auth/callback" />
