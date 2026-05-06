@@ -64,6 +64,17 @@ export const authService = {
     }
   },
 
+  async updatePassword(password: string) {
+    ensureSupabase();
+    const { data, error } = await supabase.auth.updateUser({ password });
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  },
+
   async signInWithGoogle() {
     ensureSupabase();
     const { data, error } = await supabase.auth.signInWithOAuth({
