@@ -2,7 +2,7 @@ import { Building2, CalendarDays, Users } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 
-import { Button } from '@/components/ui';
+import { Badge, Button } from '@/components/ui';
 import { useSuperadminCitas } from '@/features/superadmin/hooks/useSuperadminCitas';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import type { Barberia, Profile, UserRole } from '@/types/supabase.types';
@@ -67,13 +67,14 @@ export function SuperAdminDashboard() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <p className="text-sm font-medium text-steel">Superadmin</p>
-        <h1 className="text-3xl font-bold text-ink">Gestion global</h1>
-      </div>
+    <div className="space-y-6 animate-fade-up">
+      <section className="surface-panel-dark rounded-[32px] px-6 py-7 text-white sm:px-8">
+        <p className="text-sm font-semibold tracking-[0.18em] text-gold">SUPERADMIN</p>
+        <h1 className="mt-3 text-3xl font-bold sm:text-4xl">Gestión global</h1>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-white/68">Administra barberías, citas y usuarios desde una vista más sobria, operativa y legible.</p>
+      </section>
 
-      {error ? <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}
+      {error ? <div className="rounded-2xl border border-danger/20 bg-danger/10 p-3 text-sm text-danger">{error}</div> : null}
 
       <div className="grid gap-4 md:grid-cols-3">
         <Metric icon={<Building2 size={18} />} label="Barberias" value={counts.barberias} />
@@ -81,18 +82,26 @@ export function SuperAdminDashboard() {
         <Metric icon={<CalendarDays size={18} />} label="Citas" value={counts.citas} />
       </div>
 
-      <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-panel">
-        <h2 className="mb-4 text-lg font-semibold text-ink">Barberias</h2>
+      <section className="surface-panel rounded-[28px] p-5 sm:p-6">
+        <div className="mb-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-steel">Barberias</p>
+          <h2 className="mt-2 text-2xl font-semibold text-ink">Estado de barberías</h2>
+        </div>
         <div className="space-y-3">
           {barberias.map((barberia) => (
-            <article className="flex flex-col gap-3 rounded-md border border-slate-100 bg-slate-50 p-3 md:flex-row md:items-center md:justify-between" key={barberia.id}>
-              <div>
-                <p className="font-semibold text-ink">{barberia.nombre}</p>
-                <p className="text-xs text-slate-500">{barberia.direccion || 'Sin direccion'} · {barberia.estado}</p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Button onClick={() => void updateBarberiaEstado(barberia.id, 'activa')} size="sm" variant="secondary">Aprobar</Button>
-                <Button onClick={() => void updateBarberiaEstado(barberia.id, 'suspendida')} size="sm" variant="secondary">Suspender</Button>
+            <article className="rounded-[24px] border border-black/6 bg-black/3 p-4" key={barberia.id}>
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-semibold text-ink">{barberia.nombre}</p>
+                    <Badge variant={barberia.estado === 'activa' ? 'confirmed' : 'neutral'}>{barberia.estado}</Badge>
+                  </div>
+                  <p className="mt-2 text-xs text-slate-500">{barberia.direccion || 'Sin direccion'} · {barberia.ciudad}</p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button onClick={() => void updateBarberiaEstado(barberia.id, 'activa')} size="sm" variant="secondary">Aprobar</Button>
+                  <Button onClick={() => void updateBarberiaEstado(barberia.id, 'suspendida')} size="sm" variant="secondary">Suspender</Button>
+                </div>
               </div>
             </article>
           ))}
@@ -100,43 +109,56 @@ export function SuperAdminDashboard() {
         </div>
       </section>
 
-      <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-panel">
-        <h2 className="mb-4 text-lg font-semibold text-ink">Citas recientes</h2>
+      <section className="surface-panel rounded-[28px] p-5 sm:p-6">
+        <div className="mb-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-steel">Citas</p>
+          <h2 className="mt-2 text-2xl font-semibold text-ink">Actividad reciente</h2>
+        </div>
         <div className="space-y-3">
           {(citasQuery.data ?? []).slice(0, 20).map((cita) => (
-            <article className="grid gap-2 rounded-md border border-slate-100 bg-slate-50 p-3 md:grid-cols-[1fr_1fr_1fr_auto]" key={cita.cita_id}>
-              <div>
-                <p className="font-semibold text-ink">{cita.nombre_barberia}</p>
-                <p className="text-xs text-slate-500">{cita.nombre_cliente || cita.email_cliente}</p>
+            <article className="rounded-[24px] border border-black/6 bg-black/3 p-4" key={cita.cita_id}>
+              <div className="grid gap-3 md:grid-cols-[1fr_1fr_1fr_auto] md:items-center">
+                <div>
+                  <p className="font-semibold text-ink">{cita.nombre_barberia}</p>
+                  <p className="text-xs text-slate-500">{cita.nombre_cliente || cita.email_cliente}</p>
+                </div>
+                <p className="text-sm text-slate-600">{cita.nombre_servicio} · {cita.nombre_barbero}</p>
+                <p className="text-sm text-slate-600">{cita.fecha} {cita.hora_inicio.slice(0, 5)}</p>
+                <Badge variant={badgeVariantForStatus(cita.estado)}>{cita.estado}</Badge>
               </div>
-              <p className="text-sm text-slate-600">{cita.nombre_servicio} · {cita.nombre_barbero}</p>
-              <p className="text-sm text-slate-600">{cita.fecha} {cita.hora_inicio.slice(0, 5)}</p>
-              <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold capitalize text-slate-600">{cita.estado}</span>
             </article>
           ))}
           {!citasQuery.isLoading && !(citasQuery.data ?? []).length ? <p className="text-sm text-slate-500">No hay citas.</p> : null}
         </div>
       </section>
 
-      <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-panel">
-        <h2 className="mb-4 text-lg font-semibold text-ink">Usuarios</h2>
+      <section className="surface-panel rounded-[28px] p-5 sm:p-6">
+        <div className="mb-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-steel">Usuarios</p>
+          <h2 className="mt-2 text-2xl font-semibold text-ink">Roles y accesos</h2>
+        </div>
         <div className="space-y-3">
           {profiles.map((profile) => (
-            <article className="flex flex-col gap-3 rounded-md border border-slate-100 bg-slate-50 p-3 md:flex-row md:items-center md:justify-between" key={profile.id}>
-              <div>
-                <p className="font-semibold text-ink">{profile.full_name || profile.email}</p>
-                <p className="text-xs text-slate-500">{profile.email} · {profile.role}</p>
+            <article className="rounded-[24px] border border-black/6 bg-black/3 p-4" key={profile.id}>
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p className="font-semibold text-ink">{profile.full_name || profile.email}</p>
+                  <p className="mt-1 text-xs text-slate-500">{profile.email}</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Badge variant={profile.role === 'superadmin' ? 'info' : profile.role === 'admin' ? 'confirmed' : 'neutral'}>{profile.role}</Badge>
+                  <select
+                    className="h-11 rounded-xl border border-black/8 bg-white px-3 text-sm outline-none focus:border-mint/40 focus:ring-4 focus:ring-mint/10"
+                    disabled={profile.email === 'jeidertorres3@gmail.com'}
+                    onChange={(event) => void updateRole(profile.id, event.target.value as UserRole)}
+                    value={profile.role}
+                  >
+                    <option value="client">client</option>
+                    <option value="admin">admin</option>
+                    <option value="superadmin">superadmin</option>
+                  </select>
+                </div>
               </div>
-              <select
-                className="h-10 rounded-md border border-slate-200 bg-white px-3 text-sm"
-                disabled={profile.email === 'jeidertorres3@gmail.com'}
-                onChange={(event) => void updateRole(profile.id, event.target.value as UserRole)}
-                value={profile.role}
-              >
-                <option value="client">client</option>
-                <option value="admin">admin</option>
-                <option value="superadmin">superadmin</option>
-              </select>
             </article>
           ))}
           {!profiles.length ? <p className="text-sm text-slate-500">No hay usuarios.</p> : null}
@@ -148,9 +170,22 @@ export function SuperAdminDashboard() {
 
 function Metric({ icon, label, value }: { icon: ReactNode; label: string; value: number }) {
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-panel">
-      <div className="mb-3 flex items-center gap-2 text-slate-500">{icon}{label}</div>
-      <div className="text-3xl font-bold text-ink">{value}</div>
+    <div className="surface-panel rounded-[24px] p-5">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-steel">{label}</p>
+          <div className="mt-3 text-3xl font-bold text-ink">{value}</div>
+        </div>
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#111111] text-white">{icon}</div>
+      </div>
     </div>
   );
+}
+
+function badgeVariantForStatus(status: string) {
+  if (status === 'pendiente') return 'pending';
+  if (status === 'confirmada') return 'confirmed';
+  if (status === 'cancelada') return 'cancelled';
+  if (status === 'completada') return 'completed';
+  return 'neutral';
 }
