@@ -3,17 +3,20 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Footer } from '@/components/layout/Footer';
 import { Navbar } from '@/components/layout/Navbar';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { AdminCitasPage } from '@/pages/AdminCitasPage';
+import { AdminDashboard } from '@/pages/AdminDashboard';
+import { AuthCallbackPage } from '@/pages/AuthCallbackPage';
+import { BookingPage } from '@/pages/BookingPage';
+import { ChangePasswordPage } from '@/pages/ChangePasswordPage';
+import { ClientDashboard } from '@/pages/ClientDashboard';
+import { CreateBarberiaPage } from '@/pages/CreateBarberiaPage';
 import { LandingPage } from '@/pages/LandingPage';
 import { LoginPage } from '@/pages/LoginPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
+import { ProfilePage } from '@/pages/ProfilePage';
 import { RegisterPage } from '@/pages/RegisterPage';
-import { AdminDashboard } from '@/pages/AdminDashboard';
-import { AdminCitasPage } from '@/pages/AdminCitasPage';
-import { AuthCallbackPage } from '@/pages/AuthCallbackPage';
-import { BookingPage } from '@/pages/BookingPage';
-import { ClientDashboard } from '@/pages/ClientDashboard';
-import { CreateBarberiaPage } from '@/pages/CreateBarberiaPage';
 import { SuperAdminDashboard } from '@/pages/SuperAdminDashboard';
+import { SupportPage } from '@/pages/SupportPage';
 import { ProtectedRoute } from './ProtectedRoute';
 
 export function AppRouter() {
@@ -47,6 +50,9 @@ export function AppRouter() {
             <Route element={<ProtectedRoute requiredRole={['client', 'admin', 'superadmin']} />}>
               <Route element={<ClientDashboard />} path="/client-dashboard" />
               <Route element={<ClientDashboard />} path="/dashboard/client" />
+              <Route element={<ProfilePage />} path="/profile" />
+              <Route element={<ChangePasswordPage />} path="/change-password" />
+              <Route element={<SupportPage />} path="/support" />
             </Route>
 
             <Route element={<ProtectedRoute requiredRole="client" />}>
