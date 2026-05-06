@@ -117,4 +117,31 @@ export const authService = {
 
     return data as Profile;
   },
+
+  async deleteUserAccount() {
+    ensureSupabase();
+    const user = await this.getCurrentUser();
+    if (!user) {
+      throw new Error('No hay usuario autenticado');
+    }
+
+    // Eliminar perfil de usuario de profiles table
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .delete()
+      .eq('id', user.id);
+
+    if (profileError) {
+      throw profileError;
+    }
+
+    // Eliminar usuario de auth
+    const { error: authError } = await supabase.auth.admin.deleteUser(user.id);
+    if (authError) {
+      throw authError;
+    }
+
+    // Sign out
+    await this.signOut();
+  },
 };

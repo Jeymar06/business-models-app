@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import { CalendarDays, Clock, Scissors, Store, UserRound } from 'lucide-react';
+import { CalendarDays, Clock, Scissors, Settings, Store, Trash2, UserRound } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui';
 import { adminService, type BarberoInput, type BarberiaInput, type DisponibilidadInput, type ServicioInput } from '@/features/admin/adminService';
@@ -19,7 +20,7 @@ import { useServicios } from '@/features/admin/servicios/hooks/useServicios';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import type { Barbero, Disponibilidad, Servicio } from '@/types/supabase.types';
 
-type AdminSection = 'resumen' | 'barberos' | 'servicios' | 'horarios' | 'barberia';
+type AdminSection = 'resumen' | 'barberos' | 'servicios' | 'horarios' | 'barberia' | 'configuracion';
 
 const sections: Array<{ id: AdminSection; label: string; icon: ReactNode }> = [
   { id: 'resumen', label: 'Resumen', icon: <CalendarDays size={16} /> },
@@ -27,14 +28,17 @@ const sections: Array<{ id: AdminSection; label: string; icon: ReactNode }> = [
   { id: 'servicios', label: 'Servicios', icon: <Scissors size={16} /> },
   { id: 'horarios', label: 'Horarios', icon: <Clock size={16} /> },
   { id: 'barberia', label: 'Mi Barberia', icon: <Store size={16} /> },
+  { id: 'configuracion', label: 'Configuración', icon: <Settings size={16} /> },
 ];
 
 export function AdminDashboard() {
+  const navigate = useNavigate();
   const [section, setSection] = useState<AdminSection>('resumen');
   const [editingBarbero, setEditingBarbero] = useState<Barbero | null>(null);
   const [editingServicio, setEditingServicio] = useState<Servicio | null>(null);
   const [editingHorario, setEditingHorario] = useState<Disponibilidad | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { barberia, createBarberia, error: barberiaError, isLoading: isBarberiaLoading, updateBarberia } = useBarberia();
   const { barberos, createBarbero, setBarberoActivo, updateBarbero } = useBarberos(barberia?.id);
@@ -104,6 +108,43 @@ export function AdminDashboard() {
 
     await createDisponibilidad.mutateAsync(values);
     report('Horario creado.');
+  }
+
+  async function handleDeleteBarberia() {
+    if (!barberia) return;
+    if (!window.confirm('¿Estás seguro de que deseas eliminar tu barberia? Esta acción no se puede deshacer.')) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      await adminService.deleteBarberia(barberia.id);
+      report('Barberia eliminada exitosamente.');
+      setTimeout(() => navigate('/'), 2000);
+    } catch (error) {
+      report('Error al eliminar la barberia.');
+      console.error(error);
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
+  async function handleDeleteAccount() {
+    if (!window.confirm('¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer y perderás todos tus datos.')) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const { authService } = await import('@/features/auth/services/authService');
+      await authService.deleteUserAccount();
+      navigate('/');
+    } catch (error) {
+      setMessage('Error al eliminar la cuenta.');
+      console.error(error);
+    } finally {
+      setIsDeleting(false);
+    }
   }
 
   if (!isSupabaseConfigured) {
@@ -221,6 +262,32 @@ export function AdminDashboard() {
               isSaving={createBarberia.isPending || updateBarberia.isPending}
               onSubmit={saveBarberia}
             />
+          </Section>
+        ) : null}
+
+        {section === 'configuracion' ? (
+          <Section title="Configuración">
+            <div className="space-y-6">
+              {barberia ? (
+                <div className="rounded-md border border-red-200 bg-red-50 p-4">
+                  <h3 className="mb-2 font-semibold text-red-900">Eliminar barberia</h3>
+                  <p className="mb-4 text-sm text-red-800">Una vez eliminada, no podrás recuperar tu barberia ni los datos asociados.</p>
+                  <Button disabled={isDeleting} onClick={handleDeleteBarberia} variant="secondary">
+                    <Trash2 size={18} />
+                    {isDeleting ? 'Eliminando...' : 'Eliminar barberia'}
+                  </Button>
+                </div>
+              ) : null}
+
+              <div className="rounded-md border border-red-200 bg-red-50 p-4">
+                <h3 className="mb-2 font-semibold text-red-900">Eliminar cuenta</h3>
+                <p className="mb-4 text-sm text-red-800">Elimina tu cuenta y todos tus datos de la plataforma. Esta acción es irreversible.</p>
+                <Button disabled={isDeleting} onClick={handleDeleteAccount} variant="secondary">
+                  <Trash2 size={18} />
+                  {isDeleting ? 'Eliminando...' : 'Eliminar cuenta'}
+                </Button>
+              </div>
+            </div>
           </Section>
         ) : null}
       </main>

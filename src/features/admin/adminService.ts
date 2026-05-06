@@ -75,6 +75,11 @@ export const adminService = {
     return data as Barberia;
   },
 
+  async deleteBarberia(id: string) {
+    const { error } = await supabase.from('barberias').delete().eq('id', id);
+    if (error) throw error;
+  },
+
   async getBarbers(barberiaId: string) {
     const { data, error } = await supabase.from('barberos').select('*').eq('barberia_id', barberiaId).order('nombre');
     if (error) throw error;
