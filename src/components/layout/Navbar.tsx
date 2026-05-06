@@ -9,10 +9,9 @@ export function Navbar() {
   const { isAuthenticated, role } = useAuth();
   const navItems = [
     { to: '/', label: 'Inicio' },
-    ...(isAuthenticated ? [{ to: '/client-dashboard', label: 'Agendar' }] : []),
-    ...(role === 'client' ? [{ to: '/client-dashboard', label: 'Mis citas' }, { to: '/crear-barberia', label: 'Crear mi barberia' }] : []),
+    ...(role === 'client' ? [{ to: '/client-dashboard', label: 'Agendar' }, { to: '/client-dashboard', label: 'Mis citas' }, { to: '/crear-barberia', label: 'Crear mi barberia' }] : []),
     ...(role === 'admin' ? [{ to: '/admin-dashboard', label: 'Admin' }] : []),
-    ...(role === 'superadmin' ? [{ to: '/admin-dashboard', label: 'Admin' }, { to: '/superadmin-dashboard', label: 'Superadmin' }] : []),
+    ...(role === 'superadmin' ? [{ to: '/superadmin-dashboard', label: 'Superadmin' }] : []),
   ];
 
   return (
@@ -34,7 +33,7 @@ export function Navbar() {
                   isActive ? 'bg-slate-100 text-ink' : 'text-slate-600 hover:bg-slate-50 hover:text-ink',
                 ].join(' ')
               }
-              key={item.to}
+              key={`${item.to}-${item.label}`}
               to={item.to}
             >
               {item.label}
