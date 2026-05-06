@@ -1,4 +1,5 @@
 import { Mail, ShieldCheck, UserCircle2 } from 'lucide-react';
+import type { ReactNode } from 'react';
 
 import { useAuth } from '@/features/auth/hooks/useAuth';
 
@@ -48,7 +49,7 @@ export function ProfilePage() {
   );
 }
 
-function InfoCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+function InfoCard({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
     <article className="rounded-lg border border-slate-200 bg-slate-50 p-4">
       <div className="mb-3 flex items-center gap-2 text-sm font-medium text-steel">
