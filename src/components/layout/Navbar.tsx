@@ -1,11 +1,12 @@
 import { LogIn, Scissors } from 'lucide-react';
 import { Link, NavLink } from 'react-router-dom';
 
+import { ProfileMenu } from '@/components/layout/ProfileMenu';
 import { Button } from '@/components/ui';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 
 export function Navbar() {
-  const { isAuthenticated, role, signOut } = useAuth();
+  const { isAuthenticated, role } = useAuth();
   const navItems = [
     { to: '/', label: 'Inicio' },
     ...(isAuthenticated ? [{ to: '/client-dashboard', label: 'Agendar' }] : []),
@@ -24,7 +25,7 @@ export function Navbar() {
           <span>Barber App</span>
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Navegacion principal">
+        <nav aria-label="Navegacion principal" className="hidden items-center gap-1 md:flex">
           {navItems.map((item) => (
             <NavLink
               className={({ isActive }) =>
@@ -42,9 +43,7 @@ export function Navbar() {
         </nav>
 
         {isAuthenticated ? (
-          <Button aria-label="Cerrar sesion" onClick={() => void signOut()} size="sm" variant="secondary">
-            Salir
-          </Button>
+          <ProfileMenu />
         ) : (
           <Link to="/login">
             <Button aria-label="Iniciar sesion" size="sm" variant="secondary">
