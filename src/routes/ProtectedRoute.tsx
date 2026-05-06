@@ -23,11 +23,10 @@ export function ProtectedRoute({ requiredRole }: ProtectedRouteProps) {
     return <Navigate replace state={{ from: location }} to="/login" />;
   }
 
-  // Check role if required
   if (requiredRole) {
-    const hasRequiredRole = role === 'superadmin' || (Array.isArray(requiredRole)
+    const hasRequiredRole = Array.isArray(requiredRole)
       ? requiredRole.includes(role as UserRole)
-      : role === requiredRole);
+      : role === requiredRole;
 
     if (!hasRequiredRole) {
       return <Navigate replace to={getRoleRedirect(role)} />;
