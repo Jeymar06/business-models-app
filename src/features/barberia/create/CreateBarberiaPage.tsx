@@ -25,7 +25,7 @@ export function CreateBarberiaPage() {
 
   const form = useForm<CreateBarberiaFormValues>({
     defaultValues: defaultCreateBarberiaValues,
-    mode: 'onSubmit',
+    mode: 'onChange',
   });
 
   const watchedName = form.watch('nombre');
@@ -46,6 +46,12 @@ export function CreateBarberiaPage() {
 
   async function handleSubmit(values: CreateBarberiaFormValues) {
     console.log('✅ SUBMIT INICIADO');
+    
+    // Debug: obtener valores directamente del form
+    const formValues = form.getValues();
+    console.log('📋 Valores del form.getValues():', formValues);
+    console.log('📋 Valores recibidos en handleSubmit:', values);
+    
     if (!user) {
       setError('No hay usuario autenticado');
       console.error('❌ No hay usuario');
@@ -57,7 +63,6 @@ export function CreateBarberiaPage() {
 
     try {
       console.log('🔄 Iniciando creación de barberia...');
-      console.log('Valores:', values);
 
       const [logoUrl, bannerUrl] = await Promise.all([
         logoFile ? uploadBarberiaImage(logoFile, user.id, 'logos') : Promise.resolve(null),

@@ -4,8 +4,8 @@ export type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
 };
 
-export function Input({ className = '', id, label, ...props }: InputProps) {
-  const inputId = id ?? props.name;
+export function Input({ className = '', id, label, name, ...props }: InputProps) {
+  const inputId = id ?? name;
 
   return (
     <label className="grid gap-1.5 text-sm font-medium text-slate-700" htmlFor={inputId}>
@@ -17,6 +17,7 @@ export function Input({ className = '', id, label, ...props }: InputProps) {
           className,
         ].join(' ')}
         id={inputId}
+        name={name}
         {...props}
       />
     </label>
