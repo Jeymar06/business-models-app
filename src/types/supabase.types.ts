@@ -80,11 +80,37 @@ export interface Disponibilidad {
 export interface Cita {
   id: string;
   cliente_id: string;
+  barberia_id: string;
   barbero_id: string;
   servicio_id: string;
   fecha: string;
-  hora: string;
+  hora_inicio: string;
+  hora_fin: string;
   estado: AppointmentStatus;
+  notas: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CitaConDetalles {
+  cita_id: string;
+  cliente_id: string;
+  nombre_cliente: string | null;
+  email_cliente: string;
+  barberia_id: string;
+  nombre_barberia: string;
+  admin_id: string;
+  barbero_id: string;
+  nombre_barbero: string;
+  servicio_id: string;
+  nombre_servicio: string;
+  precio: number;
+  duracion_min: number;
+  fecha: string;
+  hora_inicio: string;
+  hora_fin: string;
+  estado: AppointmentStatus;
+  notas: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -219,13 +245,18 @@ export type Database = {
         Row: Cita;
         Insert: {
           cliente_id: string;
+          barberia_id: string;
           barbero_id: string;
           servicio_id: string;
           fecha: string;
-          hora: string;
+          hora_inicio: string;
+          hora_fin: string;
+          estado?: AppointmentStatus;
+          notas?: string | null;
         };
         Update: {
           estado?: AppointmentStatus;
+          notas?: string | null;
         };
       };
       notificaciones: {

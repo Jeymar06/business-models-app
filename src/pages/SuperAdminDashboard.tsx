@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui';
+import { useSuperadminCitas } from '@/features/superadmin/hooks/useSuperadminCitas';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import type { Barberia, Profile, UserRole } from '@/types/supabase.types';
 
@@ -17,6 +18,7 @@ export function SuperAdminDashboard() {
   const [barberias, setBarberias] = useState<Barberia[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const citasQuery = useSuperadminCitas();
 
   async function refresh() {
     if (!isSupabaseConfigured) return;
@@ -95,6 +97,24 @@ export function SuperAdminDashboard() {
             </article>
           ))}
           {!barberias.length ? <p className="text-sm text-slate-500">No hay barberias.</p> : null}
+        </div>
+      </section>
+
+      <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-panel">
+        <h2 className="mb-4 text-lg font-semibold text-ink">Citas recientes</h2>
+        <div className="space-y-3">
+          {(citasQuery.data ?? []).slice(0, 20).map((cita) => (
+            <article className="grid gap-2 rounded-md border border-slate-100 bg-slate-50 p-3 md:grid-cols-[1fr_1fr_1fr_auto]" key={cita.cita_id}>
+              <div>
+                <p className="font-semibold text-ink">{cita.nombre_barberia}</p>
+                <p className="text-xs text-slate-500">{cita.nombre_cliente || cita.email_cliente}</p>
+              </div>
+              <p className="text-sm text-slate-600">{cita.nombre_servicio} · {cita.nombre_barbero}</p>
+              <p className="text-sm text-slate-600">{cita.fecha} {cita.hora_inicio.slice(0, 5)}</p>
+              <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold capitalize text-slate-600">{cita.estado}</span>
+            </article>
+          ))}
+          {!citasQuery.isLoading && !(citasQuery.data ?? []).length ? <p className="text-sm text-slate-500">No hay citas.</p> : null}
         </div>
       </section>
 

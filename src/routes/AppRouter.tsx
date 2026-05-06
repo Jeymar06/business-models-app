@@ -8,6 +8,7 @@ import { LoginPage } from '@/pages/LoginPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { RegisterPage } from '@/pages/RegisterPage';
 import { AdminDashboard } from '@/pages/AdminDashboard';
+import { AdminCitasPage } from '@/pages/AdminCitasPage';
 import { AuthCallbackPage } from '@/pages/AuthCallbackPage';
 import { BookingPage } from '@/pages/BookingPage';
 import { ClientDashboard } from '@/pages/ClientDashboard';
@@ -40,20 +41,26 @@ export function AppRouter() {
             <Route element={<RegisterPage />} path="/register" />
 
             <Route element={<ProtectedRoute requiredRole={['client', 'admin', 'superadmin']} />}>
-              <Route element={<BookingPage />} path="/booking" />
+              <Route element={<BookingPage />} path="/booking/:barberia_id" />
+            </Route>
+
+            <Route element={<ProtectedRoute requiredRole={['client', 'admin', 'superadmin']} />}>
+              <Route element={<ClientDashboard />} path="/client-dashboard" />
+              <Route element={<ClientDashboard />} path="/dashboard/client" />
             </Route>
 
             <Route element={<ProtectedRoute requiredRole="client" />}>
-              <Route element={<ClientDashboard />} path="/client-dashboard" />
               <Route element={<CreateBarberiaPage />} path="/crear-barberia" />
             </Route>
 
             <Route element={<ProtectedRoute requiredRole="admin" />}>
               <Route element={<AdminDashboard />} path="/admin-dashboard" />
+              <Route element={<AdminCitasPage />} path="/admin-dashboard/citas" />
             </Route>
 
             <Route element={<ProtectedRoute requiredRole="superadmin" />}>
               <Route element={<SuperAdminDashboard />} path="/superadmin-dashboard" />
+              <Route element={<SuperAdminDashboard />} path="/dashboard/superadmin" />
             </Route>
 
             <Route element={<NotFoundPage />} path="*" />

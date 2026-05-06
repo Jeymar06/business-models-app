@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { CalendarDays, Clock, Scissors, Settings, Store, Trash2, UserRound } from 'lucide-react';
+import { CalendarCheck, CalendarDays, Clock, Scissors, Settings, Store, Trash2, UserRound } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
 
@@ -19,11 +19,13 @@ import { useServicios } from '@/features/admin/servicios/hooks/useServicios';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import type { Barbero, Disponibilidad, Servicio } from '@/types/supabase.types';
+import { AdminCitasPage } from './AdminCitasPage';
 
-type AdminSection = 'resumen' | 'barberos' | 'servicios' | 'horarios' | 'barberia' | 'configuracion';
+type AdminSection = 'resumen' | 'citas' | 'barberos' | 'servicios' | 'horarios' | 'barberia' | 'configuracion';
 
 const sections: Array<{ id: AdminSection; label: string; icon: ReactNode }> = [
   { id: 'resumen', label: 'Resumen', icon: <CalendarDays size={16} /> },
+  { id: 'citas', label: 'Citas', icon: <CalendarCheck size={16} /> },
   { id: 'barberos', label: 'Barberos', icon: <UserRound size={16} /> },
   { id: 'servicios', label: 'Servicios', icon: <Scissors size={16} /> },
   { id: 'horarios', label: 'Horarios', icon: <Clock size={16} /> },
@@ -204,6 +206,8 @@ export function AdminDashboard() {
             </div>
           </Section>
         ) : null}
+
+        {section === 'citas' && barberia ? <AdminCitasPage /> : null}
 
         {section === 'barberos' && barberia ? (
           <Section title="Barberos">

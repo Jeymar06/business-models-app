@@ -1,181 +1,213 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { addDays, format } from 'date-fns';
-import { CalendarCheck, Check, Clock, Scissors, UserRound } from 'lucide-react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { MapPin, Phone } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { useEffect, useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { useMemo, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { Button } from '@/components/ui';
-import { bookingService, type BookingSlot } from '@/features/booking/bookingService';
+import { BookingStepper } from '@/features/booking/components/BookingStepper';
+import { BookingSuccess } from '@/features/booking/components/BookingSuccess';
+import { bookingService } from '@/features/booking/bookingService';
+import { useBooking } from '@/features/booking/hooks/useBooking';
+import { useSlots } from '@/features/booking/hooks/useSlots';
+import { Step1Servicio } from '@/features/booking/steps/Step1Servicio';
+import { Step2Barbero } from '@/features/booking/steps/Step2Barbero';
+import { Step3Fecha } from '@/features/booking/steps/Step3Fecha';
+import { Step4Confirmar } from '@/features/booking/steps/Step4Confirmar';
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import type { Barbero, Barberia, Servicio } from '@/types/supabase.types';
-
-const dateSchema = z.object({
-  date: z.string().min(1, 'Selecciona una fecha'),
-});
-
-type DateForm = z.infer<typeof dateSchema>;
 
 export function BookingPage() {
+  const { barberia_id: barberiaId } = useParams();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { user } = useAuth();
-  const [barberias, setBarberias] = useState<Barberia[]>([]);
-  const [services, setServices] = useState<Servicio[]>([]);
-  const [barbers, setBarbers] = useState<Barbero[]>([]);
-  const [slots, setSlots] = useState<BookingSlot[]>([]);
-  const [selectedBarberia, setSelectedBarberia] = useState<string>('');
-  const [selectedService, setSelectedService] = useState<Servicio | null>(null);
-  const [selectedBarber, setSelectedBarber] = useState<Barbero | null>(null);
-  const [selectedSlot, setSelectedSlot] = useState<BookingSlot | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
+  const booking = useBooking();
+  const [successId, setSuccessId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const { register, watch } = useForm<DateForm>({
-    resolver: zodResolver(dateSchema),
-    defaultValues: { date: format(addDays(new Date(), 1), 'yyyy-MM-dd') },
+  const barberiaQuery = useQuery({
+    enabled: Boolean(barberiaId),
+    queryKey: ['booking', 'barberia', barberiaId],
+    queryFn: () => bookingService.getBarberiaById(barberiaId!),
   });
 
-  const selectedDate = watch('date');
-  const step = selectedSlot ? 4 : selectedBarber ? 3 : selectedService ? 2 : 1;
+  const serviciosQuery = useQuery({
+    enabled: Boolean(barberiaId),
+    queryKey: ['booking', 'servicios', barberiaId],
+    queryFn: () => bookingService.getServiciosByBarberia(barberiaId!),
+  });
 
-  useEffect(() => {
-    void bookingService.getBarberias().then((items) => {
-      setBarberias(items);
-      setSelectedBarberia(items[0]?.id ?? '');
-    });
-  }, []);
+  const barberosQuery = useQuery({
+    enabled: Boolean(barberiaId),
+    queryKey: ['booking', 'barberos', barberiaId],
+    queryFn: () => bookingService.getBarberosByBarberia(barberiaId!),
+  });
 
-  useEffect(() => {
-    if (!selectedBarberia) return;
-    void Promise.all([bookingService.getServices(selectedBarberia), bookingService.getBarbers(selectedBarberia)]).then(
-      ([nextServices, nextBarbers]) => {
-        setServices(nextServices);
-        setBarbers(nextBarbers);
-      },
-    );
-  }, [selectedBarberia]);
+  const disponibilidadQuery = useQuery({
+    enabled: Boolean(barberiaId && booking.currentStep >= 3),
+    queryKey: ['booking', 'available-days', barberiaId, booking.barbero?.id ?? 'any'],
+    queryFn: async () => {
+      if (booking.barbero) return bookingService.getDisponibilidadByBarbero(booking.barbero.id);
+      const barberos = barberosQuery.data ?? [];
+      return bookingService.getDisponibilidadByBarberos(barberos.map((barbero) => barbero.id));
+    },
+  });
 
-  useEffect(() => {
-    if (!selectedBarber || !selectedService || !selectedDate) return;
-    void bookingService.getSlots(selectedBarber.id, selectedService, new Date(`${selectedDate}T00:00:00`)).then(setSlots);
-  }, [selectedBarber, selectedDate, selectedService]);
+  const slotsQuery = useSlots({
+    anyBarbero: booking.anyBarbero,
+    barberiaId: barberiaId ?? '',
+    barbero: booking.barbero,
+    fecha: booking.fecha,
+    servicio: booking.servicio,
+  });
 
-  const summary = useMemo(
-    () => [
-      selectedService?.nombre,
-      selectedBarber?.nombre,
-      selectedSlot ? `${selectedSlot.fecha} ${selectedSlot.label}` : null,
-    ].filter(Boolean),
-    [selectedBarber, selectedService, selectedSlot],
-  );
+  const createMutation = useMutation({
+    mutationFn: async () => {
+      if (!user || !barberiaId || !booking.servicio || !booking.slot || !booking.fecha || !booking.slot.barbero_id) {
+        throw new Error('Completa todos los pasos antes de confirmar.');
+      }
 
-  async function confirmBooking() {
-    if (!user || !selectedBarber || !selectedService || !selectedSlot) return;
-    setIsSaving(true);
-    setMessage(null);
-    try {
-      await bookingService.createAppointment({
-        clienteId: user.id,
-        barberoId: selectedBarber.id,
-        servicioId: selectedService.id,
-        fecha: selectedSlot.fecha,
-        hora: selectedSlot.hora,
+      return bookingService.createCita({
+        cliente_id: user.id,
+        barberia_id: barberiaId,
+        barbero_id: booking.slot.barbero_id,
+        servicio_id: booking.servicio.id,
+        fecha: bookingService.formatDate(booking.fecha),
+        hora_inicio: booking.slot.hora_inicio,
+        hora_fin: booking.slot.hora_fin,
+        notas: booking.notas.trim() || null,
       });
-      setMessage('Cita creada. Te enviaremos confirmacion por email cuando el backend de notificaciones este activo.');
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No fue posible crear la cita.');
-    } finally {
-      setIsSaving(false);
-    }
+    },
+    onError: (err) => {
+      setError(err instanceof Error ? err.message : 'No fue posible crear la cita.');
+    },
+    onSuccess: async (cita) => {
+      setError(null);
+      setSuccessId(cita.id);
+      await queryClient.invalidateQueries({ queryKey: ['client', 'citas', user?.id] });
+      await queryClient.invalidateQueries({ queryKey: ['booking', 'slots'] });
+    },
+  });
+
+  const availableDays = useMemo(() => (
+    [...new Set((disponibilidadQuery.data ?? []).map((block) => block.dia_semana))]
+  ), [disponibilidadQuery.data]);
+
+  const barberia = barberiaQuery.data;
+
+  if (!barberiaId) {
+    return <MissingBarberia />;
+  }
+
+  if (barberiaQuery.isLoading) {
+    return <PageState title="Cargando barberia" text="Estamos preparando el flujo de reserva." />;
+  }
+
+  if (!barberia || !barberia.activo || !barberia.acepta_reservas) {
+    return <PageState title="Barberia no disponible" text="Esta barberia no existe o no acepta reservas por ahora." />;
+  }
+
+  if (successId) {
+    return <BookingSuccess citaId={successId} onAgain={() => { setSuccessId(null); booking.resetBooking(); }} />;
   }
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-      <section className="space-y-6">
-        <div>
-          <p className="text-sm font-medium text-steel">Paso {step} de 4</p>
-          <h1 className="text-3xl font-bold text-ink">Agenda tu cita</h1>
-        </div>
-
-        <div className="grid gap-4 rounded-lg border border-slate-200 bg-white p-5 shadow-panel">
-          <label className="grid gap-2 text-sm font-medium text-slate-700">
-            Barberia
-            <select className="h-10 rounded-md border border-slate-200 px-3" value={selectedBarberia} onChange={(event) => setSelectedBarberia(event.target.value)}>
-              {barberias.map((barberia) => (
-                <option key={barberia.id} value={barberia.id}>{barberia.nombre}</option>
-              ))}
-            </select>
-          </label>
-        </div>
-
-        <Step title="1. Servicio" icon={<Scissors size={18} />}>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {services.map((service) => (
-              <button key={service.id} className={optionClass(selectedService?.id === service.id)} onClick={() => { setSelectedService(service); setSelectedBarber(null); setSelectedSlot(null); }} type="button">
-                <span className="font-semibold">{service.nombre}</span>
-                <span className="text-sm text-slate-500">${service.precio.toLocaleString('es-CO')} · {service.duracion_min} min</span>
-              </button>
-            ))}
+      <div className="space-y-6">
+        <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-panel">
+          {barberia.banner_url ? <img alt={barberia.nombre} className="h-44 w-full object-cover" src={barberia.banner_url} /> : null}
+          <div className="p-5">
+            <p className="text-sm font-medium text-steel">Agendamiento</p>
+            <h1 className="text-3xl font-bold text-ink">{barberia.nombre}</h1>
+            <p className="mt-2 max-w-2xl text-slate-600">{barberia.descripcion}</p>
+            <div className="mt-4 flex flex-wrap gap-4 text-sm text-slate-500">
+              <span className="flex items-center gap-2"><MapPin size={16} />{barberia.direccion}, {barberia.ciudad}</span>
+              <span className="flex items-center gap-2"><Phone size={16} />{barberia.telefono}</span>
+            </div>
           </div>
-        </Step>
+        </section>
 
-        {selectedService ? (
-          <Step title="2. Barbero" icon={<UserRound size={18} />}>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {barbers.map((barber) => (
-                <button key={barber.id} className={optionClass(selectedBarber?.id === barber.id)} onClick={() => { setSelectedBarber(barber); setSelectedSlot(null); }} type="button">
-                  <span className="font-semibold">{barber.nombre}</span>
-                  <span className="text-sm text-slate-500">Disponible esta semana</span>
-                </button>
-              ))}
-            </div>
-          </Step>
-        ) : null}
+        {error ? <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}
 
-        {selectedBarber ? (
-          <Step title="3. Hora" icon={<Clock size={18} />}>
-            <input className="mb-4 h-10 rounded-md border border-slate-200 px-3 text-sm" min={format(new Date(), 'yyyy-MM-dd')} type="date" {...register('date')} />
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {slots.map((slot) => (
-                <button key={`${slot.fecha}-${slot.hora}`} className={optionClass(selectedSlot?.hora === slot.hora)} onClick={() => setSelectedSlot(slot)} type="button">
-                  {slot.label}
-                </button>
-              ))}
-            </div>
-          </Step>
-        ) : null}
-      </section>
+        <BookingStepper
+          canGoNext={booking.canGoNext}
+          currentStep={booking.currentStep}
+          isFinalLoading={createMutation.isPending}
+          onBack={booking.prevStep}
+          onConfirm={() => createMutation.mutate()}
+          onNext={booking.nextStep}
+        >
+          {booking.currentStep === 1 ? (
+            <Step1Servicio
+              onSelect={booking.selectServicio}
+              selectedServicio={booking.servicio}
+              servicios={serviciosQuery.data ?? []}
+            />
+          ) : null}
+
+          {booking.currentStep === 2 ? (
+            <Step2Barbero
+              anyBarbero={booking.anyBarbero}
+              barbero={booking.barbero}
+              barberos={barberosQuery.data ?? []}
+              onSelectAny={booking.selectAnyBarbero}
+              onSelectBarbero={booking.selectBarbero}
+            />
+          ) : null}
+
+          {booking.currentStep === 3 ? (
+            <Step3Fecha
+              availableDays={availableDays}
+              fecha={booking.fecha}
+              isLoading={slotsQuery.isLoading}
+              onSelectFecha={booking.selectFecha}
+              onSelectSlot={booking.selectSlot}
+              selectedSlot={booking.slot}
+              slots={slotsQuery.data ?? []}
+            />
+          ) : null}
+
+          {booking.currentStep === 4 ? (
+            <Step4Confirmar
+              barberia={barberia}
+              barbero={booking.barbero}
+              fecha={booking.fecha}
+              notas={booking.notas}
+              onNotasChange={booking.setNotas}
+              servicio={booking.servicio}
+              slot={booking.slot}
+            />
+          ) : null}
+        </BookingStepper>
+      </div>
 
       <aside className="h-fit rounded-lg border border-slate-200 bg-white p-5 shadow-panel">
-        <div className="mb-4 flex items-center gap-2 font-semibold text-ink">
-          <CalendarCheck size={18} />
-          Resumen
+        <h2 className="font-semibold text-ink">Tu reserva</h2>
+        <div className="mt-4 space-y-2 text-sm text-slate-600">
+          <p>{booking.servicio?.nombre ?? 'Selecciona un servicio'}</p>
+          <p>{booking.barbero?.nombre ?? (booking.anyBarbero ? 'Cualquier barbero disponible' : 'Selecciona un barbero')}</p>
+          <p>{booking.slot ? `${booking.slot.hora_inicio} - ${booking.slot.hora_fin}` : 'Selecciona fecha y hora'}</p>
         </div>
-        <div className="space-y-3 text-sm text-slate-600">
-          {summary.length ? summary.map((item) => <p key={item}>{item}</p>) : <p>Selecciona servicio, barbero y horario.</p>}
-        </div>
-        <Button className="mt-6 w-full" disabled={!selectedSlot || isSaving || Boolean(message)} onClick={confirmBooking}>
-          <Check size={18} />
-          {isSaving ? 'Confirmando...' : 'Confirmar cita'}
-        </Button>
-        {message ? <p className="mt-4 rounded-md bg-mint/10 p-3 text-sm text-ink">{message}</p> : null}
+        <Button className="mt-5 w-full" onClick={() => navigate('/client-dashboard')} variant="secondary">Mis citas</Button>
       </aside>
     </div>
   );
 }
 
-function Step({ children, icon, title }: { children: ReactNode; icon: ReactNode; title: string }) {
+function MissingBarberia() {
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-panel">
-      <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-ink">{icon}{title}</h2>
-      {children}
-    </section>
+    <PageState title="Elige una barberia" text="Entra desde una barberia del marketplace para agendar una cita.">
+      <Link to="/client-dashboard"><Button>Ver barberias</Button></Link>
+    </PageState>
   );
 }
 
-function optionClass(active: boolean) {
-  return [
-    'min-h-16 rounded-md border p-4 text-left transition',
-    active ? 'border-mint bg-mint/10 text-ink' : 'border-slate-200 bg-white text-slate-700 hover:border-steel',
-  ].join(' ');
+function PageState({ children, text, title }: { title: string; text: string; children?: ReactNode }) {
+  return (
+    <section className="rounded-lg border border-slate-200 bg-white p-8 shadow-panel">
+      <h1 className="text-2xl font-bold text-ink">{title}</h1>
+      <p className="mt-2 text-slate-600">{text}</p>
+      {children ? <div className="mt-5">{children}</div> : null}
+    </section>
+  );
 }

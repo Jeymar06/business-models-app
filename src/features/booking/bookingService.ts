@@ -1,114 +1,291 @@
-import { addMinutes, format, isSameDay, parse, startOfDay } from 'date-fns';
+import { format, getDay, isBefore, isSameDay, parseISO, startOfDay } from 'date-fns';
 
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
-import type { Barbero, Barberia, Cita, Disponibilidad, Servicio } from '@/types/supabase.types';
+import type { AppointmentStatus, Barbero, Barberia, Cita, CitaConDetalles, Disponibilidad, Servicio } from '@/types/supabase.types';
 
 export interface BookingSlot {
-  fecha: string;
-  hora: string;
-  label: string;
+  hora_inicio: string;
+  hora_fin: string;
+  disponible: boolean;
+  barbero_id?: string;
+  nombre_barbero?: string;
 }
 
-const demoBarberia: Barberia = {
-  id: 'demo-barberia',
-  nombre: 'Barberia Central',
-  slug: 'barberia-central',
-  descripcion: 'Barberia profesional con servicios de corte, barba y cuidado masculino.',
-  logo_url: null,
-  banner_url: null,
-  email_contacto: null,
-  sitio_web: null,
-  direccion: 'Calle principal #123',
-  ciudad: 'Bogota',
-  estado_provincia: null,
-  pais: 'Colombia',
-  codigo_postal: null,
-  latitud: null,
-  longitud: null,
-  telefono: '0000000000',
-  admin_id: 'demo-admin',
-  activo: true,
-  verificada: false,
-  acepta_reservas: true,
-  horario_apertura: '09:00',
-  horario_cierre: '18:00',
-  moneda: 'USD',
-  zona_horaria: 'America/Bogota',
-  politica_cancelacion: null,
-  tiempo_cancelacion_min: 1440,
-  visible: true,
-  destacado: false,
-  estado: 'activa',
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString(),
-};
+export interface CreateCitaInput {
+  cliente_id: string;
+  barberia_id: string;
+  barbero_id: string;
+  servicio_id: string;
+  fecha: string;
+  hora_inicio: string;
+  hora_fin: string;
+  notas?: string | null;
+}
 
-const demoServices: Servicio[] = [
-  { id: 'corte', nombre: 'Corte clasico', descripcion: null, precio: 35000, duracion_min: 40, barberia_id: demoBarberia.id, activo: true, created_at: '', updated_at: '' },
-  { id: 'barba', nombre: 'Barba premium', descripcion: null, precio: 25000, duracion_min: 30, barberia_id: demoBarberia.id, activo: true, created_at: '', updated_at: '' },
-  { id: 'combo', nombre: 'Corte + barba', descripcion: null, precio: 55000, duracion_min: 60, barberia_id: demoBarberia.id, activo: true, created_at: '', updated_at: '' },
-];
+export interface GenerateSlotsParams {
+  disponibilidad: Pick<Disponibilidad, 'dia_semana' | 'hora_inicio' | 'hora_fin'>[];
+  fecha: Date;
+  duracionMin: number;
+  citasExistentes: Pick<Cita, 'hora_inicio' | 'hora_fin' | 'estado'>[];
+}
 
-const demoBarbers: Barbero[] = [
-  { id: 'andres', nombre: 'Andres Rivera', barberia_id: demoBarberia.id, foto_url: null, activo: true, created_at: '', updated_at: '' },
-  { id: 'mateo', nombre: 'Mateo Cruz', barberia_id: demoBarberia.id, foto_url: null, activo: true, created_at: '', updated_at: '' },
-];
+const blockingStatuses: AppointmentStatus[] = ['pendiente', 'confirmada'];
+
+export function timeToMinutes(time: string) {
+  const [hours = '0', minutes = '0'] = time.slice(0, 5).split(':');
+  return Number(hours) * 60 + Number(minutes);
+}
+
+export function minutesToTime(minutes: number) {
+  const hours = Math.floor(minutes / 60).toString().padStart(2, '0');
+  const mins = (minutes % 60).toString().padStart(2, '0');
+  return `${hours}:${mins}`;
+}
+
+export function rangesOverlap(startA: string, endA: string, startB: string, endB: string) {
+  return timeToMinutes(startA) < timeToMinutes(endB) && timeToMinutes(startB) < timeToMinutes(endA);
+}
+
+export function isToday(date: Date) {
+  return isSameDay(date, new Date());
+}
+
+export function isPastSlot(date: Date, horaInicio: string) {
+  if (!isToday(date)) return false;
+  const now = new Date();
+  const slot = new Date(date);
+  const [hours, minutes] = horaInicio.split(':').map(Number);
+  slot.setHours(hours, minutes, 0, 0);
+  return slot <= now;
+}
+
+export function generateSlots({ citasExistentes, disponibilidad, duracionMin, fecha }: GenerateSlotsParams): BookingSlot[] {
+  const diaSemana = getDay(fecha);
+  const blocks = disponibilidad.filter((block) => block.dia_semana === diaSemana);
+
+  return blocks.flatMap((block) => {
+    const slots: BookingSlot[] = [];
+    let cursor = timeToMinutes(block.hora_inicio);
+    const end = timeToMinutes(block.hora_fin);
+
+    while (cursor + duracionMin <= end) {
+      const horaInicio = minutesToTime(cursor);
+      const horaFin = minutesToTime(cursor + duracionMin);
+      const isTaken = citasExistentes.some((cita) => (
+        blockingStatuses.includes(cita.estado)
+        && rangesOverlap(horaInicio, horaFin, cita.hora_inicio, cita.hora_fin)
+      ));
+
+      if (!isTaken && !isPastSlot(fecha, horaInicio)) {
+        slots.push({ hora_inicio: horaInicio, hora_fin: horaFin, disponible: true });
+      }
+
+      cursor += duracionMin;
+    }
+
+    return slots;
+  });
+}
+
+function normalizeError(error: unknown) {
+  if (error instanceof Error) return error;
+  return new Error('No fue posible completar la operacion.');
+}
+
+function toIsoDate(date: Date) {
+  return format(date, 'yyyy-MM-dd');
+}
 
 export const bookingService = {
   async getBarberias() {
-    if (!isSupabaseConfigured) return [demoBarberia];
-    const { data, error } = await supabase.from('barberias').select('*').order('nombre');
+    if (!isSupabaseConfigured) return [];
+
+    const { data, error } = await supabase
+      .from('barberias')
+      .select('*')
+      .eq('activo', true)
+      .eq('visible', true)
+      .eq('acepta_reservas', true)
+      .order('nombre');
+
     if (error) throw error;
     return data as Barberia[];
   },
 
-  async getServices(barberiaId?: string) {
-    if (!isSupabaseConfigured) return demoServices;
-    let query = supabase.from('servicios').select('*').order('nombre');
-    if (barberiaId) query = query.eq('barberia_id', barberiaId);
-    const { data, error } = await query;
+  async getBarberiaById(barberiaId: string) {
+    if (!isSupabaseConfigured) return null;
+
+    const { data, error } = await supabase
+      .from('barberias')
+      .select('*')
+      .eq('id', barberiaId)
+      .maybeSingle();
+
     if (error) throw error;
-    return (data as Servicio[]).filter((service) => service.activo);
+    return data as Barberia | null;
   },
 
-  async getBarbers(barberiaId?: string) {
-    if (!isSupabaseConfigured) return demoBarbers;
-    let query = supabase.from('barberos').select('*').order('nombre');
-    if (barberiaId) query = query.eq('barberia_id', barberiaId);
-    const { data, error } = await query;
+  async getServiciosByBarberia(barberiaId: string) {
+    const { data, error } = await supabase
+      .from('servicios')
+      .select('*')
+      .eq('barberia_id', barberiaId)
+      .eq('activo', true)
+      .order('nombre');
+
     if (error) throw error;
-    return (data as Barbero[]).filter((barber) => barber.activo);
+    return data as Servicio[];
   },
 
-  async getSlots(barberoId: string, servicio: Servicio, date: Date) {
-    if (!isSupabaseConfigured) return buildSlots(date, servicio.duracion_min, [], []);
+  async getBarberosByBarberia(barberiaId: string) {
+    const { data, error } = await supabase
+      .from('barberos')
+      .select('*')
+      .eq('barberia_id', barberiaId)
+      .eq('activo', true)
+      .order('nombre');
 
-    const weekday = date.getDay();
-    const fecha = format(date, 'yyyy-MM-dd');
-    const [{ data: availability, error: availabilityError }, { data: appointments, error: appointmentsError }] =
-      await Promise.all([
-        supabase.from('disponibilidad').select('*').eq('barbero_id', barberoId).eq('dia_semana', weekday),
-        supabase.from('citas').select('*').eq('barbero_id', barberoId).eq('fecha', fecha).neq('estado', 'cancelada'),
-      ]);
-
-    if (availabilityError) throw availabilityError;
-    if (appointmentsError) throw appointmentsError;
-
-    return buildSlots(date, servicio.duracion_min, availability as Disponibilidad[], appointments as Cita[]);
+    if (error) throw error;
+    return data as Barbero[];
   },
 
-  async createAppointment(input: { clienteId: string; barberoId: string; servicioId: string; fecha: string; hora: string }) {
-    if (!isSupabaseConfigured) return { id: crypto.randomUUID(), estado: 'confirmada', ...input };
+  async getDisponibilidadByBarbero(barberoId: string) {
+    const { data, error } = await supabase
+      .from('disponibilidad')
+      .select('*')
+      .eq('barbero_id', barberoId)
+      .order('dia_semana')
+      .order('hora_inicio');
+
+    if (error) throw error;
+    return data as Disponibilidad[];
+  },
+
+  async getDisponibilidadByBarberos(barberoIds: string[]) {
+    if (!barberoIds.length) return [];
+
+    const { data, error } = await supabase
+      .from('disponibilidad')
+      .select('*')
+      .in('barbero_id', barberoIds)
+      .order('dia_semana')
+      .order('hora_inicio');
+
+    if (error) throw error;
+    return data as Disponibilidad[];
+  },
+
+  async getCitasByBarberoFecha(barberoId: string, fecha: string) {
+    const { data, error } = await supabase
+      .from('citas')
+      .select('*')
+      .eq('barbero_id', barberoId)
+      .eq('fecha', fecha)
+      .in('estado', blockingStatuses);
+
+    if (error) throw error;
+    return data as Cita[];
+  },
+
+  async getCitasByBarberosFecha(barberoIds: string[], fecha: string) {
+    if (!barberoIds.length) return [];
 
     const { data, error } = await supabase
       .from('citas')
-      .insert({
-        cliente_id: input.clienteId,
-        barbero_id: input.barberoId,
-        servicio_id: input.servicioId,
-        fecha: input.fecha,
-        hora: input.hora,
-      } as never)
+      .select('*')
+      .in('barbero_id', barberoIds)
+      .eq('fecha', fecha)
+      .in('estado', blockingStatuses);
+
+    if (error) throw error;
+    return data as Cita[];
+  },
+
+  async getMisCitas(clienteId: string) {
+    const { data, error } = await (supabase as any)
+      .from('citas_con_detalles')
+      .select('*')
+      .eq('cliente_id', clienteId)
+      .order('fecha', { ascending: true })
+      .order('hora_inicio', { ascending: true });
+
+    if (error) throw error;
+    return data as CitaConDetalles[];
+  },
+
+  async getCitasByBarberia(barberiaId: string) {
+    const { data, error } = await (supabase as any)
+      .from('citas_con_detalles')
+      .select('*')
+      .eq('barberia_id', barberiaId)
+      .order('fecha', { ascending: true })
+      .order('hora_inicio', { ascending: true });
+
+    if (error) throw error;
+    return data as CitaConDetalles[];
+  },
+
+  async getTodasLasCitas() {
+    const { data, error } = await (supabase as any)
+      .from('citas_con_detalles')
+      .select('*')
+      .order('fecha', { ascending: false })
+      .order('hora_inicio', { ascending: false });
+
+    if (error) throw error;
+    return data as CitaConDetalles[];
+  },
+
+  async checkSlotDisponible(input: Pick<CreateCitaInput, 'barbero_id' | 'fecha' | 'hora_inicio' | 'hora_fin'>) {
+    const citas = await this.getCitasByBarberoFecha(input.barbero_id, input.fecha);
+    return !citas.some((cita) => rangesOverlap(input.hora_inicio, input.hora_fin, cita.hora_inicio, cita.hora_fin));
+  },
+
+  async checkClienteNoTieneCitaMismaHora(input: Pick<CreateCitaInput, 'cliente_id' | 'fecha' | 'hora_inicio'>) {
+    const { data, error } = await supabase
+      .from('citas')
+      .select('id')
+      .eq('cliente_id', input.cliente_id)
+      .eq('fecha', input.fecha)
+      .eq('hora_inicio', input.hora_inicio)
+      .in('estado', blockingStatuses);
+
+    if (error) throw error;
+    return (data ?? []).length === 0;
+  },
+
+  async createCita(input: CreateCitaInput) {
+    if (isBefore(startOfDay(parseISO(input.fecha)), startOfDay(new Date()))) {
+      throw new Error('No puedes agendar una fecha pasada.');
+    }
+
+    const [slotDisponible, clienteDisponible] = await Promise.all([
+      this.checkSlotDisponible(input),
+      this.checkClienteNoTieneCitaMismaHora(input),
+    ]);
+
+    if (!slotDisponible) throw new Error('Este horario ya no esta disponible. Elige otro.');
+    if (!clienteDisponible) throw new Error('Ya tienes una cita en ese horario.');
+
+    const { data, error } = await supabase
+      .from('citas')
+      .insert({ ...input, estado: 'pendiente' } as never)
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === '23505') throw new Error('Este horario ya no esta disponible. Elige otro.');
+      throw normalizeError(error);
+    }
+
+    return data as Cita;
+  },
+
+  async cancelarCita(citaId: string) {
+    const { data, error } = await supabase
+      .from('citas')
+      .update({ estado: 'cancelada' } as never)
+      .eq('id', citaId)
       .select()
       .single();
 
@@ -116,38 +293,19 @@ export const bookingService = {
     return data as Cita;
   },
 
-  async getClientAppointments(clienteId: string) {
-    if (!isSupabaseConfigured) return [];
+  async adminUpdateEstadoCita(citaId: string, estado: AppointmentStatus) {
     const { data, error } = await supabase
       .from('citas')
-      .select('*')
-      .eq('cliente_id', clienteId)
-      .order('fecha', { ascending: true })
-      .order('hora', { ascending: true });
+      .update({ estado } as never)
+      .eq('id', citaId)
+      .select()
+      .single();
+
     if (error) throw error;
-    return data as Cita[];
+    return data as Cita;
+  },
+
+  formatDate(date: Date) {
+    return toIsoDate(date);
   },
 };
-
-function buildSlots(date: Date, duration: number, availability: Disponibilidad[], appointments: Cita[]): BookingSlot[] {
-  const blocks = availability.length
-    ? availability
-    : [{ hora_inicio: '09:00', hora_fin: '18:00' } as Disponibilidad];
-
-  return blocks.flatMap((block) => {
-    const slots: BookingSlot[] = [];
-    let cursor = parse(block.hora_inicio.slice(0, 5), 'HH:mm', startOfDay(date));
-    const end = parse(block.hora_fin.slice(0, 5), 'HH:mm', startOfDay(date));
-
-    while (addMinutes(cursor, duration) <= end) {
-      const hora = format(cursor, 'HH:mm');
-      const isTaken = appointments.some((appointment) => appointment.hora.slice(0, 5) === hora && isSameDay(parse(appointment.fecha, 'yyyy-MM-dd', new Date()), date));
-      if (!isTaken) {
-        slots.push({ fecha: format(date, 'yyyy-MM-dd'), hora, label: format(cursor, 'h:mm a') });
-      }
-      cursor = addMinutes(cursor, duration);
-    }
-
-    return slots;
-  });
-}

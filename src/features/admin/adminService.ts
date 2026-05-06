@@ -1,5 +1,5 @@
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
-import type { Barbero, Barberia, Cita, Disponibilidad, Servicio } from '@/types/supabase.types';
+import type { Barbero, Barberia, CitaConDetalles, Disponibilidad, Servicio } from '@/types/supabase.types';
 
 export interface BarberoInput {
   nombre: string;
@@ -223,12 +223,12 @@ export const adminService = {
   },
 
   async getAppointments(barberiaId: string) {
-    const { data, error } = await supabase
-      .from('citas')
-      .select('*, barberos!inner(barberia_id)')
-      .eq('barberos.barberia_id', barberiaId)
+    const { data, error } = await (supabase as any)
+      .from('citas_con_detalles')
+      .select('*')
+      .eq('barberia_id', barberiaId)
       .order('fecha', { ascending: true });
     if (error) throw error;
-    return data as unknown as Cita[];
+    return data as CitaConDetalles[];
   },
 };

@@ -30,9 +30,15 @@ export function ProtectedRoute({ requiredRole }: ProtectedRouteProps) {
       : role === requiredRole);
 
     if (!hasRequiredRole) {
-      return <Navigate replace to="/" />;
+      return <Navigate replace to={getRoleRedirect(role)} />;
     }
   }
 
   return <Outlet />;
+}
+
+function getRoleRedirect(role: string | null) {
+  if (role === 'superadmin') return '/superadmin-dashboard';
+  if (role === 'admin') return '/admin-dashboard';
+  return '/client-dashboard';
 }
