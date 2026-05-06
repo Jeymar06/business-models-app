@@ -70,11 +70,11 @@ export function ProfileMenu() {
         aria-controls="profile-menu"
         aria-expanded={isOpen}
         aria-haspopup="menu"
-        className="flex h-10 items-center gap-3 rounded-full border border-slate-200 bg-white pl-1 pr-3 text-left transition hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-steel focus-visible:ring-offset-2"
+        className="flex h-10 items-center gap-3 rounded-full border border-white/10 bg-white/6 pl-1 pr-3 text-left text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/10"
         onClick={() => setIsOpen((current) => !current)}
         type="button"
       >
-        <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-ink text-sm font-semibold text-white">
+        <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-[#202020] text-sm font-semibold text-white">
           {profile?.avatar_url ? (
             <img alt={displayName} className="h-full w-full object-cover" referrerPolicy="no-referrer" src={profile.avatar_url} />
           ) : (
@@ -82,20 +82,20 @@ export function ProfileMenu() {
           )}
         </span>
         <span className="hidden min-w-0 md:block">
-          <span className="block truncate text-sm font-semibold text-ink">{displayName}</span>
-          <span className="block truncate text-xs text-slate-500">{secondaryText}</span>
+          <span className="block truncate text-sm font-semibold text-white">{displayName}</span>
+          <span className="block truncate text-xs text-white/56">{secondaryText}</span>
         </span>
       </button>
 
       {isOpen ? (
         <div
-          className="absolute right-0 top-[calc(100%+0.75rem)] z-30 w-64 rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl shadow-slate-200/70"
+          className="surface-panel absolute right-0 top-[calc(100%+0.85rem)] z-30 w-72 rounded-3xl p-2 text-ink"
           id="profile-menu"
           role="menu"
         >
-          <div className="border-b border-slate-100 px-3 pb-3 pt-2">
-            <p className="truncate text-sm font-semibold text-ink">{displayName}</p>
-            <p className="truncate text-xs text-slate-500">{profile?.email}</p>
+          <div className="rounded-[20px] bg-[#111111] px-4 pb-4 pt-3 text-white">
+            <p className="truncate text-sm font-semibold">{displayName}</p>
+            <p className="truncate text-xs text-white/60">{profile?.email}</p>
           </div>
 
           <div className="py-2">
@@ -104,9 +104,9 @@ export function ProfileMenu() {
             <MenuLink icon={<CircleHelp size={16} />} label="Ayuda y soporte" onSelect={() => setIsOpen(false)} to="/support" />
           </div>
 
-          <div className="border-t border-slate-100 pt-2">
+          <div className="border-t border-black/6 pt-2">
             <button
-              className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-200"
+              className="flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium text-danger transition hover:bg-danger/10 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-danger/10"
               disabled={isSigningOut}
               onClick={() => void handleSignOut()}
               role="menuitem"
@@ -135,12 +135,12 @@ function MenuLink({
 }) {
   return (
     <Link
-      className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-steel"
+      className="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-black/4 hover:text-ink focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-black/5"
       onClick={onSelect}
       role="menuitem"
       to={to}
     >
-      <span className="text-slate-400">{icon}</span>
+      <span className="text-steel">{icon}</span>
       {label}
     </Link>
   );
