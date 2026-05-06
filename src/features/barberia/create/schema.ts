@@ -2,9 +2,9 @@ import { z } from 'zod';
 
 export const createBarberiaSchema = z.object({
   nombre: z.string().trim().min(3, 'El nombre debe tener al menos 3 caracteres'),
-  descripcion: z.string().trim().min(20, 'Describe la barberia con al menos 20 caracteres'),
-  telefono: z.string().trim().min(7, 'Ingresa un telefono valido').regex(/^[+()\d\s-]+$/, 'Ingresa un telefono valido'),
-  emailContacto: z.string().trim().refine((value) => !value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value), 'Email invalido'),
+  descripcion: z.string().trim().min(10, 'Describe la barberia con al menos 10 caracteres'),
+  telefono: z.string().trim().min(7, 'Ingresa un telefono valido').regex(/^[\d\s()+-]*$/, 'Ingresa un telefono valido'),
+  emailContacto: z.string().trim().email('Email invalido').or(z.string().length(0)),
   direccion: z.string().trim().min(3, 'La direccion es requerida'),
   ciudad: z.string().trim().min(2, 'La ciudad es requerida'),
   estadoProvincia: z.string().trim(),

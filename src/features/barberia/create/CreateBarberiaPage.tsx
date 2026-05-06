@@ -27,7 +27,7 @@ export function CreateBarberiaPage() {
   const form = useForm<CreateBarberiaFormValues>({
     resolver: zodResolver(createBarberiaSchema) as any,
     defaultValues: defaultCreateBarberiaValues,
-    mode: 'onTouched',
+    mode: 'onChange',
   });
 
   const watchedName = form.watch('nombre');

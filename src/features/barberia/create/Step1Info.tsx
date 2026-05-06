@@ -31,7 +31,7 @@ export function Step1Info({
           <FieldError message={errors.telefono?.message} />
         </div>
         <div>
-          <Input label="Email de contacto" type="email" {...register('emailContacto')} />
+          <Input label="Email de contacto" {...register('emailContacto')} />
           <FieldError message={errors.emailContacto?.message} />
         </div>
       </div>
