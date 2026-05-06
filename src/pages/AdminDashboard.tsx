@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { CalendarDays, Clock, Scissors, Settings, Store, Trash2, UserRound } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
@@ -17,6 +17,7 @@ import { useDisponibilidad } from '@/features/admin/horarios/hooks/useDisponibil
 import { ServicioForm } from '@/features/admin/servicios/components/ServicioForm';
 import { ServicioList } from '@/features/admin/servicios/components/ServicioList';
 import { useServicios } from '@/features/admin/servicios/hooks/useServicios';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import type { Barbero, Disponibilidad, Servicio } from '@/types/supabase.types';
 
@@ -33,6 +34,8 @@ const sections: Array<{ id: AdminSection; label: string; icon: ReactNode }> = [
 
 export function AdminDashboard() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { profile } = useAuth();
   const [section, setSection] = useState<AdminSection>('resumen');
   const [editingBarbero, setEditingBarbero] = useState<Barbero | null>(null);
   const [editingServicio, setEditingServicio] = useState<Servicio | null>(null);
@@ -119,7 +122,12 @@ export function AdminDashboard() {
     setIsDeleting(true);
     try {
       await adminService.deleteBarberia(barberia.id);
-      report('Barberia eliminada exitosamente.');
+      
+      // Invalidate caches to update state
+      await queryClient.invalidateQueries({ queryKey: ['admin'] });
+      await queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] });
+      
+      report('Barberia eliminada exitosamente. Serás redirigido...');
       setTimeout(() => navigate('/'), 2000);
     } catch (error) {
       report('Error al eliminar la barberia.');
