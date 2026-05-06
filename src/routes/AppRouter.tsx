@@ -43,20 +43,17 @@ export function AppRouter() {
             <Route element={<LoginPage />} path="/login" />
             <Route element={<RegisterPage />} path="/register" />
 
-            <Route element={<ProtectedRoute requiredRole={['client', 'admin', 'superadmin']} />}>
+            <Route element={<ProtectedRoute requiredRole="client" />}>
               <Route element={<BookingPage />} path="/booking/:barberia_id" />
+              <Route element={<ClientDashboard />} path="/client-dashboard" />
+              <Route element={<ClientDashboard />} path="/dashboard/client" />
+              <Route element={<CreateBarberiaPage />} path="/crear-barberia" />
             </Route>
 
             <Route element={<ProtectedRoute requiredRole={['client', 'admin', 'superadmin']} />}>
-              <Route element={<ClientDashboard />} path="/client-dashboard" />
-              <Route element={<ClientDashboard />} path="/dashboard/client" />
               <Route element={<ProfilePage />} path="/profile" />
               <Route element={<ChangePasswordPage />} path="/change-password" />
               <Route element={<SupportPage />} path="/support" />
-            </Route>
-
-            <Route element={<ProtectedRoute requiredRole="client" />}>
-              <Route element={<CreateBarberiaPage />} path="/crear-barberia" />
             </Route>
 
             <Route element={<ProtectedRoute requiredRole="admin" />}>
