@@ -22,8 +22,11 @@ export interface DisponibilidadInput {
 
 export interface BarberiaInput {
   nombre: string;
-  direccion?: string;
-  telefono?: string;
+  descripcion: string;
+  direccion: string;
+  telefono: string;
+  ciudad: string;
+  pais: string;
 }
 
 export const adminService = {
@@ -40,8 +43,12 @@ export const adminService = {
       .insert({
         admin_id: adminId,
         nombre: input.nombre,
-        direccion: input.direccion || null,
-        telefono: input.telefono || null,
+        slug: input.nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'barberia',
+        descripcion: input.descripcion || 'Barberia profesional disponible para reservas en BarberApp.',
+        direccion: input.direccion,
+        telefono: input.telefono,
+        ciudad: input.ciudad || 'Ciudad pendiente',
+        pais: input.pais || 'Colombia',
         estado: 'activa',
       } as never)
       .select()
@@ -55,8 +62,11 @@ export const adminService = {
       .from('barberias')
       .update({
         nombre: input.nombre,
-        direccion: input.direccion || null,
-        telefono: input.telefono || null,
+        descripcion: input.descripcion || 'Barberia profesional disponible para reservas en BarberApp.',
+        direccion: input.direccion,
+        telefono: input.telefono,
+        ciudad: input.ciudad || 'Ciudad pendiente',
+        pais: input.pais || 'Colombia',
       } as never)
       .eq('id', id)
       .select()
