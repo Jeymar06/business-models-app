@@ -27,7 +27,7 @@ export function CreateBarberiaPage() {
   const form = useForm<CreateBarberiaFormValues>({
     resolver: zodResolver(createBarberiaSchema) as any,
     defaultValues: defaultCreateBarberiaValues,
-    mode: 'onBlur',
+    mode: 'onSubmit',
   });
 
   const watchedName = form.watch('nombre');
@@ -47,15 +47,23 @@ export function CreateBarberiaPage() {
   }
 
   async function handleSubmit(values: CreateBarberiaFormValues) {
-    if (!user) return;
+    if (!user) {
+      setError('No hay usuario autenticado');
+      return;
+    }
     setError(null);
     setIsSaving(true);
 
     try {
+      console.log('🔄 Iniciando creación de barberia...');
+      console.log('Valores del formulario:', values);
+
       const [logoUrl, bannerUrl] = await Promise.all([
         logoFile ? uploadBarberiaImage(logoFile, user.id, 'logos') : Promise.resolve(null),
         bannerFile ? uploadBarberiaImage(bannerFile, user.id, 'banners') : Promise.resolve(null),
       ]);
+
+      console.log('✅ Imágenes subidas:', { logoUrl, bannerUrl });
 
       await barberiaService.createBarberia({
         ...values,
@@ -64,9 +72,12 @@ export function CreateBarberiaPage() {
         bannerUrl,
       });
 
+      console.log('✅ Barberia creada exitosamente');
       window.location.assign('/admin-dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'No fue posible crear la barberia.');
+      const errorMsg = err instanceof Error ? err.message : 'No fue posible crear la barberia.';
+      console.error('❌ Error:', errorMsg);
+      setError(errorMsg);
       setIsSaving(false);
     }
   }
@@ -98,7 +109,10 @@ export function CreateBarberiaPage() {
 
         {error ? <div className="mb-5 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}
 
-        <form onSubmit={form.handleSubmit(handleSubmit)}>
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          form.handleSubmit(handleSubmit)(e);
+        }}>
           {currentStep === 0 ? <Step1Info errors={form.formState.errors} register={form.register} /> : null}
           {currentStep === 1 ? <Step2Ubicacion errors={form.formState.errors} register={form.register} /> : null}
           {currentStep === 2 ? (
