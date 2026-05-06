@@ -4,7 +4,8 @@ import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import { Button } from '@/components/ui';
+import { Badge, Button } from '@/components/ui';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { BookingStepper } from '@/features/booking/components/BookingStepper';
 import { BookingSuccess } from '@/features/booking/components/BookingSuccess';
 import { bookingService } from '@/features/booking/bookingService';
@@ -14,7 +15,6 @@ import { Step1Servicio } from '@/features/booking/steps/Step1Servicio';
 import { Step2Barbero } from '@/features/booking/steps/Step2Barbero';
 import { Step3Fecha } from '@/features/booking/steps/Step3Fecha';
 import { Step4Confirmar } from '@/features/booking/steps/Step4Confirmar';
-import { useAuth } from '@/features/auth/hooks/useAuth';
 
 export function BookingPage() {
   const { barberia_id: barberiaId } = useParams();
@@ -89,9 +89,7 @@ export function BookingPage() {
     },
   });
 
-  const availableDays = useMemo(() => (
-    [...new Set((disponibilidadQuery.data ?? []).map((block) => block.dia_semana))]
-  ), [disponibilidadQuery.data]);
+  const availableDays = useMemo(() => [...new Set((disponibilidadQuery.data ?? []).map((block) => block.dia_semana))], [disponibilidadQuery.data]);
 
   const barberia = barberiaQuery.data;
 
@@ -112,84 +110,94 @@ export function BookingPage() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+    <div className="grid gap-6 lg:grid-cols-[1fr_340px] animate-fade-up">
       <div className="space-y-6">
-        <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-panel">
-          {barberia.banner_url ? <img alt={barberia.nombre} className="h-44 w-full object-cover" src={barberia.banner_url} /> : null}
-          <div className="p-5">
-            <p className="text-sm font-medium text-steel">Agendamiento</p>
-            <h1 className="text-3xl font-bold text-ink">{barberia.nombre}</h1>
-            <p className="mt-2 max-w-2xl text-slate-600">{barberia.descripcion}</p>
-            <div className="mt-4 flex flex-wrap gap-4 text-sm text-slate-500">
+        <section className="surface-panel-dark overflow-hidden rounded-[32px] text-white shadow-panel">
+          {barberia.banner_url ? <img alt={barberia.nombre} className="h-56 w-full object-cover" src={barberia.banner_url} /> : null}
+          <div className="space-y-4 px-6 py-6 sm:px-8">
+            <div className="flex flex-wrap items-center gap-3">
+              <Badge variant="confirmed">Reservas activas</Badge>
+              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-white/44">Agendamiento</span>
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold sm:text-4xl">{barberia.nombre}</h1>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-white/68">{barberia.descripcion}</p>
+            </div>
+            <div className="flex flex-wrap gap-4 text-sm text-white/60">
               <span className="flex items-center gap-2"><MapPin size={16} />{barberia.direccion}, {barberia.ciudad}</span>
               <span className="flex items-center gap-2"><Phone size={16} />{barberia.telefono}</span>
             </div>
           </div>
         </section>
 
-        {error ? <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}
+        {error ? <div className="rounded-2xl border border-danger/20 bg-danger/10 p-3 text-sm text-danger">{error}</div> : null}
 
-        <BookingStepper
-          canGoNext={booking.canGoNext}
-          currentStep={booking.currentStep}
-          isFinalLoading={createMutation.isPending}
-          onBack={booking.prevStep}
-          onConfirm={() => createMutation.mutate()}
-          onNext={booking.nextStep}
-        >
-          {booking.currentStep === 1 ? (
-            <Step1Servicio
-              onSelect={booking.selectServicio}
-              selectedServicio={booking.servicio}
-              servicios={serviciosQuery.data ?? []}
-            />
-          ) : null}
-
-          {booking.currentStep === 2 ? (
-            <Step2Barbero
-              anyBarbero={booking.anyBarbero}
-              barbero={booking.barbero}
-              barberos={barberosQuery.data ?? []}
-              onSelectAny={booking.selectAnyBarbero}
-              onSelectBarbero={booking.selectBarbero}
-            />
-          ) : null}
-
-          {booking.currentStep === 3 ? (
-            <Step3Fecha
-              availableDays={availableDays}
-              fecha={booking.fecha}
-              isLoading={slotsQuery.isLoading}
-              onSelectFecha={booking.selectFecha}
-              onSelectSlot={booking.selectSlot}
-              selectedSlot={booking.slot}
-              slots={slotsQuery.data ?? []}
-            />
-          ) : null}
-
-          {booking.currentStep === 4 ? (
-            <Step4Confirmar
-              barberia={barberia}
-              barbero={booking.barbero}
-              fecha={booking.fecha}
-              notas={booking.notas}
-              onNotasChange={booking.setNotas}
-              servicio={booking.servicio}
-              slot={booking.slot}
-            />
-          ) : null}
-        </BookingStepper>
+        <div className="surface-panel rounded-[28px] p-4 sm:p-5">
+          <BookingStepper
+            canGoNext={booking.canGoNext}
+            currentStep={booking.currentStep}
+            isFinalLoading={createMutation.isPending}
+            onBack={booking.prevStep}
+            onConfirm={() => createMutation.mutate()}
+            onNext={booking.nextStep}
+          >
+            {booking.currentStep === 1 ? (
+              <Step1Servicio onSelect={booking.selectServicio} selectedServicio={booking.servicio} servicios={serviciosQuery.data ?? []} />
+            ) : null}
+            {booking.currentStep === 2 ? (
+              <Step2Barbero
+                anyBarbero={booking.anyBarbero}
+                barbero={booking.barbero}
+                barberos={barberosQuery.data ?? []}
+                onSelectAny={booking.selectAnyBarbero}
+                onSelectBarbero={booking.selectBarbero}
+              />
+            ) : null}
+            {booking.currentStep === 3 ? (
+              <Step3Fecha
+                availableDays={availableDays}
+                fecha={booking.fecha}
+                isLoading={slotsQuery.isLoading}
+                onSelectFecha={booking.selectFecha}
+                onSelectSlot={booking.selectSlot}
+                selectedSlot={booking.slot}
+                slots={slotsQuery.data ?? []}
+              />
+            ) : null}
+            {booking.currentStep === 4 ? (
+              <Step4Confirmar
+                barberia={barberia}
+                barbero={booking.barbero}
+                fecha={booking.fecha}
+                notas={booking.notas}
+                onNotasChange={booking.setNotas}
+                servicio={booking.servicio}
+                slot={booking.slot}
+              />
+            ) : null}
+          </BookingStepper>
+        </div>
       </div>
 
-      <aside className="h-fit rounded-lg border border-slate-200 bg-white p-5 shadow-panel">
-        <h2 className="font-semibold text-ink">Tu reserva</h2>
-        <div className="mt-4 space-y-2 text-sm text-slate-600">
-          <p>{booking.servicio?.nombre ?? 'Selecciona un servicio'}</p>
-          <p>{booking.barbero?.nombre ?? (booking.anyBarbero ? 'Cualquier barbero disponible' : 'Selecciona un barbero')}</p>
-          <p>{booking.slot ? `${booking.slot.hora_inicio} - ${booking.slot.hora_fin}` : 'Selecciona fecha y hora'}</p>
+      <aside className="surface-panel h-fit rounded-[28px] p-5 sm:p-6">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-steel">Tu reserva</p>
+        <h2 className="mt-2 text-2xl font-semibold text-ink">Resumen</h2>
+        <div className="mt-5 space-y-3 text-sm text-slate-600">
+          <SummaryRow label="Servicio" value={booking.servicio?.nombre ?? 'Selecciona un servicio'} />
+          <SummaryRow label="Barbero" value={booking.barbero?.nombre ?? (booking.anyBarbero ? 'Cualquier barbero disponible' : 'Selecciona un barbero')} />
+          <SummaryRow label="Horario" value={booking.slot ? `${booking.slot.hora_inicio} - ${booking.slot.hora_fin}` : 'Selecciona fecha y hora'} />
         </div>
-        <Button className="mt-5 w-full" onClick={() => navigate('/client-dashboard')} variant="secondary">Mis citas</Button>
+        <Button className="mt-6 w-full" onClick={() => navigate('/client-dashboard')} variant="secondary">Mis citas</Button>
       </aside>
+    </div>
+  );
+}
+
+function SummaryRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl bg-black/4 px-4 py-3">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-steel">{label}</p>
+      <p className="mt-2 text-sm font-medium text-ink">{value}</p>
     </div>
   );
 }
@@ -204,7 +212,7 @@ function MissingBarberia() {
 
 function PageState({ children, text, title }: { title: string; text: string; children?: ReactNode }) {
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-8 shadow-panel">
+    <section className="surface-panel rounded-[28px] p-8">
       <h1 className="text-2xl font-bold text-ink">{title}</h1>
       <p className="mt-2 text-slate-600">{text}</p>
       {children ? <div className="mt-5">{children}</div> : null}
