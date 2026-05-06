@@ -81,6 +81,7 @@ export function useAuth() {
       signIn: authService.signIn,
       signUp: authService.signUp,
       signOut: authService.signOut,
+      updatePassword: authService.updatePassword,
       signInWithGoogle: authService.signInWithGoogle,
     }),
     [isLoading, error, session, userProfile],
