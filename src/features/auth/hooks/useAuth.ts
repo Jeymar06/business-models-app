@@ -2,21 +2,13 @@ import type { Session, User } from '@supabase/supabase-js';
 import { useEffect, useMemo, useState } from 'react';
 
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
-import type { UserRole } from '@/types/supabase.types';
+import type { Profile } from '@/types/supabase.types';
 
 import { authService } from '../services/authService';
 
-interface UserProfile {
-  id: string;
-  email: string;
-  full_name: string | null;
-  avatar_url?: string | null;
-  role: UserRole;
-}
-
 export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [userProfile, setUserProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
