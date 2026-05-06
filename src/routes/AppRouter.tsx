@@ -10,7 +10,7 @@ import { BookingPage } from '@/pages/BookingPage';
 import { ChangePasswordPage } from '@/pages/ChangePasswordPage';
 import { ClientDashboard } from '@/pages/ClientDashboard';
 import { CreateBarberiaPage } from '@/pages/CreateBarberiaPage';
-import { LandingPage } from '@/pages/LandingPage';
+import { HomePage } from '@/pages/HomePage';
 import { LoginPage } from '@/pages/LoginPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { ProfilePage } from '@/pages/ProfilePage';
@@ -26,7 +26,7 @@ export function AppRouter() {
     return (
       <BrowserRouter>
         <div className="flex min-h-screen items-center justify-center bg-slate-50">
-          <div className="text-sm text-slate-500">Cargando sesión...</div>
+          <div className="text-sm text-slate-500">Cargando sesion...</div>
         </div>
       </BrowserRouter>
     );
@@ -38,7 +38,7 @@ export function AppRouter() {
         <Navbar />
         <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
           <Routes>
-            <Route element={<LandingPage />} path="/" />
+            <Route element={<HomePage />} path="/" />
             <Route element={<AuthCallbackPage />} path="/auth/callback" />
             <Route element={<LoginPage />} path="/login" />
             <Route element={<RegisterPage />} path="/register" />
