@@ -36,9 +36,18 @@ export function CreateBarberiaPage() {
 
   async function goNext() {
     const fields = stepFields[currentStep];
-    const isValid = fields.length ? await form.trigger(fields) : true;
-    if (!isValid) return;
-    setCurrentStep((step) => Math.min(step + 1, steps.length - 1));
+    if (!fields.length) {
+      setCurrentStep((step) => Math.min(step + 1, steps.length - 1));
+      return;
+    }
+    const isValid = await form.trigger(fields as any);
+    if (isValid) {
+      setCurrentStep((step) => Math.min(step + 1, steps.length - 1));
+    }
+  }
+
+  function goBack() {
+    setCurrentStep((step) => Math.max(step - 1, 0));
   }
 
   async function handleSubmit(values: CreateBarberiaFormValues) {
@@ -107,7 +116,7 @@ export function CreateBarberiaPage() {
           {currentStep === 3 ? <Step4Config errors={form.formState.errors} register={form.register} /> : null}
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-between">
-            <Button disabled={currentStep === 0 || isSaving} onClick={() => setCurrentStep((step) => step - 1)} type="button" variant="secondary">
+            <Button disabled={currentStep === 0 || isSaving} onClick={goBack} type="button" variant="secondary">
               <ArrowLeft size={18} />
               Anterior
             </Button>
