@@ -2,7 +2,6 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { CalendarDays, Clock, Scissors, Settings, Store, Trash2, UserRound } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui';
 import { adminService, type BarberoInput, type BarberiaInput, type DisponibilidadInput, type ServicioInput } from '@/features/admin/adminService';
@@ -33,7 +32,6 @@ const sections: Array<{ id: AdminSection; label: string; icon: ReactNode }> = [
 ];
 
 export function AdminDashboard() {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { profile } = useAuth();
   const [section, setSection] = useState<AdminSection>('resumen');
@@ -127,8 +125,8 @@ export function AdminDashboard() {
       await queryClient.invalidateQueries({ queryKey: ['admin'] });
       await queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] });
       
-      report('Barberia eliminada exitosamente. Serás redirigido...');
-      setTimeout(() => navigate('/'), 2000);
+      report('Barberia eliminada exitosamente. Seras redirigido...');
+      setTimeout(() => window.location.assign('/'), 1200);
     } catch (error) {
       report('Error al eliminar la barberia.');
       console.error(error);
@@ -146,7 +144,7 @@ export function AdminDashboard() {
     try {
       const { authService } = await import('@/features/auth/services/authService');
       await authService.deleteUserAccount();
-      navigate('/');
+      window.location.assign('/');
     } catch (error) {
       setMessage('Error al eliminar la cuenta.');
       console.error(error);

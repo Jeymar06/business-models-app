@@ -120,28 +120,9 @@ export const authService = {
 
   async deleteUserAccount() {
     ensureSupabase();
-    const user = await this.getCurrentUser();
-    if (!user) {
-      throw new Error('No hay usuario autenticado');
-    }
+    const { error } = await (supabase as any).rpc('delete_current_user');
+    if (error) throw error;
 
-    // Eliminar perfil de usuario de profiles table
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .delete()
-      .eq('id', user.id);
-
-    if (profileError) {
-      throw profileError;
-    }
-
-    // Eliminar usuario de auth
-    const { error: authError } = await supabase.auth.admin.deleteUser(user.id);
-    if (authError) {
-      throw authError;
-    }
-
-    // Sign out
-    await this.signOut();
+    await supabase.auth.signOut().catch(() => undefined);
   },
 };

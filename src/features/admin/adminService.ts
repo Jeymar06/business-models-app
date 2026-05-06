@@ -76,30 +76,8 @@ export const adminService = {
   },
 
   async deleteBarberia(id: string) {
-    // Get barberia to know admin_id
-    const { data: barberiaData, error: fetchError } = await supabase
-      .from('barberias')
-      .select('admin_id')
-      .eq('id', id)
-      .single();
-
-    if (fetchError) throw fetchError;
-    if (!barberiaData) throw new Error('Barberia not found');
-
-    const adminId = (barberiaData as any).admin_id as string;
-
-    // Delete barberia
-    const { error: deleteError } = await supabase.from('barberias').delete().eq('id', id);
-    if (deleteError) throw deleteError;
-
-    // Revert admin role to 'client'
-    const { error: updateError } = await (supabase as any)
-      .from('profiles')
-      .update({ role: 'client' })
-      .eq('id', adminId)
-      .eq('role', 'admin');
-
-    if (updateError) throw updateError;
+    const { error } = await (supabase as any).rpc('delete_my_barberia');
+    if (error) throw error;
   },
 
   async getBarbers(barberiaId: string) {
