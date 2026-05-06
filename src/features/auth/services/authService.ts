@@ -49,18 +49,7 @@ export const authService = {
     }
 
     if (data.user) {
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .upsert({
-          id: data.user.id,
-          email: credentials.email,
-          full_name: credentials.fullName,
-          role: 'client',
-        } as never);
-
-      if (profileError) {
-        console.error('Error creating profile:', profileError);
-      }
+      await authService.ensureUserProfile(data.user);
     }
 
     return data;
@@ -117,23 +106,8 @@ export const authService = {
 
   async ensureUserProfile(user: User): Promise<Profile | null> {
     ensureSupabase();
-
-    const fullName =
-      typeof user.user_metadata.full_name === 'string'
-        ? user.user_metadata.full_name
-        : typeof user.user_metadata.name === 'string'
-          ? user.user_metadata.name
-          : null;
-
-    const { data, error } = await supabase
-      .from('profiles')
-      .upsert({
-        id: user.id,
-        email: user.email ?? `${user.id}@oauth.local`,
-        full_name: fullName,
-        role: 'client',
-      } as never)
-      .select()
+    const { data, error } = await (supabase as any)
+      .rpc('ensure_profile_for_current_user')
       .single();
 
     if (error) {

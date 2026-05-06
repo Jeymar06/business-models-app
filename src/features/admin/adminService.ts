@@ -42,6 +42,7 @@ export const adminService = {
         nombre: input.nombre,
         direccion: input.direccion || null,
         telefono: input.telefono || null,
+        estado: 'activa',
       } as never)
       .select()
       .single();

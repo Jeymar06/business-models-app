@@ -9,9 +9,9 @@ export function Navbar() {
   const navItems = [
     { to: '/', label: 'Inicio' },
     ...(isAuthenticated ? [{ to: '/booking', label: 'Agendar' }] : []),
-    ...(role === 'client' ? [{ to: '/client-dashboard', label: 'Mis citas' }] : []),
+    ...(role === 'client' ? [{ to: '/client-dashboard', label: 'Mis citas' }, { to: '/crear-barberia', label: 'Crear mi barberia' }] : []),
     ...(role === 'admin' ? [{ to: '/admin-dashboard', label: 'Admin' }] : []),
-    ...(role === 'superadmin' ? [{ to: '/superadmin-dashboard', label: 'Superadmin' }] : []),
+    ...(role === 'superadmin' ? [{ to: '/admin-dashboard', label: 'Admin' }, { to: '/superadmin-dashboard', label: 'Superadmin' }] : []),
   ];
 
   return (

@@ -28,6 +28,7 @@ export function LandingPage() {
               <>
                 <Link to="/booking"><Button size="lg">Agendar cita<ArrowRight size={18} /></Button></Link>
                 <Link to={dashboardPath}><Button size="lg" variant="secondary">Ir al panel</Button></Link>
+                {role === 'client' ? <Link to="/crear-barberia"><Button size="lg" variant="secondary">Crear mi barberia</Button></Link> : null}
               </>
             ) : (
               <>

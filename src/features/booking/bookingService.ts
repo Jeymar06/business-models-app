@@ -15,6 +15,7 @@ const demoBarberia: Barberia = {
   direccion: 'Calle principal #123',
   telefono: null,
   admin_id: 'demo-admin',
+  estado: 'activa',
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
 };

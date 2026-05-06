@@ -6,6 +6,7 @@ export interface Profile {
   id: string;
   email: string;
   full_name: string | null;
+  avatar_url: string | null;
   role: UserRole;
   created_at: string;
   updated_at: string;
@@ -17,6 +18,7 @@ export interface Barberia {
   direccion: string | null;
   telefono: string | null;
   admin_id: string;
+  estado: 'pendiente' | 'activa' | 'suspendida';
   created_at: string;
   updated_at: string;
 }
@@ -72,10 +74,12 @@ export type Database = {
         Insert: {
           id: string;
           email: string;
+          avatar_url?: string | null;
           full_name?: string | null;
           role?: UserRole;
         };
         Update: {
+          avatar_url?: string | null;
           full_name?: string | null;
           role?: UserRole;
         };
@@ -87,11 +91,13 @@ export type Database = {
           direccion?: string | null;
           telefono?: string | null;
           admin_id: string;
+          estado?: 'pendiente' | 'activa' | 'suspendida';
         };
         Update: {
           nombre?: string;
           direccion?: string | null;
           telefono?: string | null;
+          estado?: 'pendiente' | 'activa' | 'suspendida';
         };
       };
       barberos: {

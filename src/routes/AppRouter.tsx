@@ -11,6 +11,7 @@ import { AdminDashboard } from '@/pages/AdminDashboard';
 import { AuthCallbackPage } from '@/pages/AuthCallbackPage';
 import { BookingPage } from '@/pages/BookingPage';
 import { ClientDashboard } from '@/pages/ClientDashboard';
+import { CreateBarberiaPage } from '@/pages/CreateBarberiaPage';
 import { SuperAdminDashboard } from '@/pages/SuperAdminDashboard';
 import { ProtectedRoute } from './ProtectedRoute';
 
@@ -44,6 +45,7 @@ export function AppRouter() {
 
             <Route element={<ProtectedRoute requiredRole="client" />}>
               <Route element={<ClientDashboard />} path="/client-dashboard" />
+              <Route element={<CreateBarberiaPage />} path="/crear-barberia" />
             </Route>
 
             <Route element={<ProtectedRoute requiredRole="admin" />}>

@@ -25,9 +25,9 @@ export function ProtectedRoute({ requiredRole }: ProtectedRouteProps) {
 
   // Check role if required
   if (requiredRole) {
-    const hasRequiredRole = Array.isArray(requiredRole)
+    const hasRequiredRole = role === 'superadmin' || (Array.isArray(requiredRole)
       ? requiredRole.includes(role as UserRole)
-      : role === requiredRole;
+      : role === requiredRole);
 
     if (!hasRequiredRole) {
       return <Navigate replace to="/" />;
