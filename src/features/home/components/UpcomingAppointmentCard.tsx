@@ -1,4 +1,5 @@
 import { CalendarClock, Clock3, MapPin } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Button } from '@/components/ui';
@@ -44,7 +45,7 @@ export function UpcomingAppointmentCard({ appointment }: { appointment: CitaConD
   );
 }
 
-function InfoRow({ icon, text }: { icon: React.ReactNode; text: string }) {
+function InfoRow({ icon, text }: { icon: ReactNode; text: string }) {
   return (
     <div className="flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2">
       <span className="text-steel">{icon}</span>
