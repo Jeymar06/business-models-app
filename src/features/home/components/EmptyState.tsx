@@ -14,11 +14,12 @@ export function EmptyState({
   title: string;
 }) {
   return (
-    <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-6 shadow-panel">
-      <h3 className="text-xl font-semibold text-ink">{title}</h3>
-      <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">{description}</p>
+    <div className="surface-panel rounded-[28px] border-dashed p-6 sm:p-7">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-steel">Sin contenido</p>
+      <h3 className="mt-3 text-2xl font-semibold text-ink">{title}</h3>
+      <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">{description}</p>
       {actionLabel && actionTo ? (
-        <div className="mt-4">
+        <div className="mt-5">
           <Link to={actionTo}>
             <Button size="sm">{actionLabel}</Button>
           </Link>
