@@ -2,6 +2,7 @@ import { ArrowRight, BellRing, CalendarCheck2, Crown, Scissors, ShieldCheck, Sto
 import { Link } from 'react-router-dom';
 
 import { Button } from '@/components/ui';
+import { barberHeroImage } from '@/features/home/heroImage';
 
 const pillars = [
   {
@@ -32,14 +33,19 @@ export function PublicHome() {
     <div className="-mx-4 space-y-16 pb-6 sm:-mx-6 lg:-mx-8">
       <section className="px-4 sm:px-6 lg:px-8">
         <div className="surface-panel-dark relative isolate overflow-hidden rounded-none px-6 py-10 text-white sm:rounded-[36px] sm:px-8 lg:min-h-[calc(100svh-8rem)] lg:px-12 lg:py-12">
-          <div className="hero-mesh absolute inset-0 opacity-25" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.22),transparent_22%),radial-gradient(circle_at_left_center,rgba(16,185,129,0.12),transparent_18%)]" />
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${barberHeroImage})` }}
+          />
+          <div className="hero-fade absolute inset-0" />
+          <div className="hero-mesh absolute inset-0 opacity-20" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.18),transparent_24%),radial-gradient(circle_at_left_center,rgba(16,185,129,0.08),transparent_18%)]" />
           <div className="absolute inset-y-0 left-[54%] hidden w-px bg-gradient-to-b from-transparent via-white/18 to-transparent lg:block" />
 
           <div className="relative grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
             <div className="flex max-w-2xl flex-col justify-between gap-10">
               <div className="space-y-6 animate-fade-up">
-                <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/12 bg-white/6 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-white/70">
+                <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/12 bg-white/6 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-white/70 backdrop-blur-md">
                   <Crown size={14} />
                   Sistema premium para barberias modernas
                 </div>
@@ -77,7 +83,7 @@ export function PublicHome() {
             </div>
 
             <div className="grid gap-4 lg:pl-8">
-              <div className="rounded-[30px] border border-white/10 bg-gradient-to-br from-white/12 to-white/5 p-6 backdrop-blur-md">
+              <div className="rounded-[30px] border border-white/10 bg-gradient-to-br from-black/50 to-black/24 p-6 backdrop-blur-md">
                 <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-5">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/48">Ritual diario</p>
@@ -90,7 +96,7 @@ export function PublicHome() {
 
                 <div className="grid gap-4 pt-5 sm:grid-cols-3 lg:grid-cols-1">
                   {pillars.map((pillar, index) => (
-                    <article className="rounded-2xl border border-white/10 bg-black/18 p-4" key={pillar.title}>
+                    <article className="rounded-2xl border border-white/10 bg-black/24 p-4" key={pillar.title}>
                       <div className="mb-3 flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-gold">
                           {pillar.icon}
