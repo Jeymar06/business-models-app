@@ -8,13 +8,15 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 
 import { barberiaService } from './barberiaService';
 import { uploadBarberiaImage } from './imageUpload';
-import { createBarberiaSchema, defaultCreateBarberiaValues, stepFields, type CreateBarberiaFormValues } from './schema';
+import { createBarberiaSchema, defaultCreateBarberiaValues, step1Schema, step2Schema, step4Schema, stepFields, type CreateBarberiaFormValues } from './schema';
 import { Step1Info } from './Step1Info';
 import { Step2Ubicacion } from './Step2Ubicacion';
 import { Step3Branding } from './Step3Branding';
 import { Step4Config } from './Step4Config';
 
 const steps = ['Informacion', 'Ubicacion', 'Branding', 'Configuracion'];
+
+const stepSchemas = [step1Schema, step2Schema, null, step4Schema];
 
 export function CreateBarberiaPage() {
   const { user } = useAuth();
@@ -25,9 +27,9 @@ export function CreateBarberiaPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   const form = useForm<CreateBarberiaFormValues>({
-    resolver: zodResolver(createBarberiaSchema) as any,
+    resolver: zodResolver(createBarberiaSchema),
     defaultValues: defaultCreateBarberiaValues,
-    mode: 'onChange',
+    mode: 'onBlur',
   });
 
   const watchedName = form.watch('nombre');
@@ -35,14 +37,25 @@ export function CreateBarberiaPage() {
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   async function goNext() {
-    const fields = stepFields[currentStep];
-    if (!fields.length) {
+    const stepSchema = stepSchemas[currentStep];
+    if (!stepSchema) {
       setCurrentStep((step) => Math.min(step + 1, steps.length - 1));
       return;
     }
-    const isValid = await form.trigger(fields as any);
-    if (isValid) {
+    
+    try {
+      const fields = stepFields[currentStep];
+      const dataToValidate = fields.reduce((acc, field) => {
+        acc[field as keyof CreateBarberiaFormValues] = form.getValues(field as keyof CreateBarberiaFormValues);
+        return acc;
+      }, {} as any);
+      
+      await stepSchema.parseAsync(dataToValidate);
       setCurrentStep((step) => Math.min(step + 1, steps.length - 1));
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Validation error:', err.message);
+      }
     }
   }
 
