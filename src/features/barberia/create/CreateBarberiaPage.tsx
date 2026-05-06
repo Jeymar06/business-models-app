@@ -115,7 +115,12 @@ export function CreateBarberiaPage() {
 
         {error ? <div className="mb-5 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}
 
-        <form onSubmit={form.handleSubmit(handleSubmit)}>
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          if (currentStep === steps.length - 1) {
+            form.handleSubmit(handleSubmit)(e);
+          }
+        }}>
           {currentStep === 0 ? <Step1Info errors={form.formState.errors} register={form.register} /> : null}
           {currentStep === 1 ? <Step2Ubicacion errors={form.formState.errors} register={form.register} /> : null}
           {currentStep === 2 ? (
