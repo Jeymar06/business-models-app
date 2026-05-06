@@ -7,7 +7,7 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 
 import { barberiaService } from './barberiaService';
 import { uploadBarberiaImage } from './imageUpload';
-import { defaultCreateBarberiaValues, type CreateBarberiaFormValues } from './schema';
+import { defaultCreateBarberiaValues, stepFields, type CreateBarberiaFormValues } from './schema';
 import { Step1Info } from './Step1Info';
 import { Step2Ubicacion } from './Step2Ubicacion';
 import { Step3Branding } from './Step3Branding';
@@ -32,58 +32,47 @@ export function CreateBarberiaPage() {
   const previewSlug = useMemo(() => barberiaService.generateSlug(watchedName || 'nombre-barberia'), [watchedName]);
   const progress = ((currentStep + 1) / steps.length) * 100;
 
-  function goNext() {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
-    }
+  async function goNext() {
+    const fields = stepFields[currentStep];
+    const isStepValid = fields.length ? await form.trigger(fields, { shouldFocus: true }) : true;
+    if (!isStepValid) return;
+
+    setCurrentStep((step) => Math.min(step + 1, steps.length - 1));
   }
 
   function goBack() {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
+    setCurrentStep((step) => Math.max(step - 1, 0));
   }
 
-  async function handleSubmit(values: CreateBarberiaFormValues) {
-    console.log('✅ SUBMIT INICIADO');
-    
-    // Debug: obtener valores directamente del form
-    const formValues = form.getValues();
-    console.log('📋 Valores del form.getValues():', formValues);
-    console.log('📋 Valores recibidos en handleSubmit:', values);
-    
+  async function handleCreate() {
+    const isValid = await form.trigger(undefined, { shouldFocus: true });
+    if (!isValid) return;
+
     if (!user) {
       setError('No hay usuario autenticado');
-      console.error('❌ No hay usuario');
       return;
     }
-    
+
     setError(null);
     setIsSaving(true);
 
     try {
-      console.log('🔄 Iniciando creación de barberia...');
-
+      const values = form.getValues();
       const [logoUrl, bannerUrl] = await Promise.all([
         logoFile ? uploadBarberiaImage(logoFile, user.id, 'logos') : Promise.resolve(null),
         bannerFile ? uploadBarberiaImage(bannerFile, user.id, 'banners') : Promise.resolve(null),
       ]);
 
-      console.log('✅ Imágenes listas:', { logoUrl, bannerUrl });
-
-      const result = await barberiaService.createBarberia({
+      await barberiaService.createBarberia({
         ...values,
         adminId: user.id,
         logoUrl,
         bannerUrl,
       });
-      
-      console.log('✅ Barberia creada:', result);
+
       window.location.assign('/admin-dashboard');
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Error desconocido';
-      console.error('❌ Error completo:', err);
-      setError(errorMsg);
+      setError(err instanceof Error ? err.message : 'Error desconocido');
       setIsSaving(false);
     }
   }
@@ -115,12 +104,7 @@ export function CreateBarberiaPage() {
 
         {error ? <div className="mb-5 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}
 
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          if (currentStep === steps.length - 1) {
-            form.handleSubmit(handleSubmit)(e);
-          }
-        }}>
+        <div>
           {currentStep === 0 ? <Step1Info errors={form.formState.errors} register={form.register} /> : null}
           {currentStep === 1 ? <Step2Ubicacion errors={form.formState.errors} register={form.register} /> : null}
           {currentStep === 2 ? (
@@ -140,18 +124,18 @@ export function CreateBarberiaPage() {
             </Button>
 
             {currentStep < steps.length - 1 ? (
-              <Button disabled={isSaving} onClick={goNext} type="button">
+              <Button disabled={isSaving} onClick={() => void goNext()} type="button">
                 Siguiente
                 <ArrowRight size={18} />
               </Button>
             ) : (
-              <Button disabled={isSaving} type="submit">
+              <Button disabled={isSaving} onClick={() => void handleCreate()} type="button">
                 <Check size={18} />
                 {isSaving ? 'Creando...' : 'Crear barberia'}
               </Button>
             )}
           </div>
-        </form>
+        </div>
       </section>
     </div>
   );
