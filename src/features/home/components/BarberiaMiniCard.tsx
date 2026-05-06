@@ -1,4 +1,5 @@
 import { MapPin, Scissors, Sparkles } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Badge, Button } from '@/components/ui';
@@ -35,7 +36,7 @@ export function BarberiaMiniCard({ barberia }: { barberia: Barberia }) {
   );
 }
 
-function InfoRow({ icon, text }: { icon: React.ReactNode; text: string }) {
+function InfoRow({ icon, text }: { icon: ReactNode; text: string }) {
   return (
     <div className="flex items-center gap-2 rounded-2xl bg-black/4 px-3 py-2.5">
       <span className="text-steel">{icon}</span>
