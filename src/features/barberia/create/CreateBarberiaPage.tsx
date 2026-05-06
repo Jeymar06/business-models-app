@@ -1,4 +1,3 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -8,7 +7,7 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 
 import { barberiaService } from './barberiaService';
 import { uploadBarberiaImage } from './imageUpload';
-import { createBarberiaSchema, defaultCreateBarberiaValues, type CreateBarberiaFormValues } from './schema';
+import { defaultCreateBarberiaValues, type CreateBarberiaFormValues } from './schema';
 import { Step1Info } from './Step1Info';
 import { Step2Ubicacion } from './Step2Ubicacion';
 import { Step3Branding } from './Step3Branding';
@@ -25,7 +24,6 @@ export function CreateBarberiaPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   const form = useForm<CreateBarberiaFormValues>({
-    resolver: zodResolver(createBarberiaSchema) as any,
     defaultValues: defaultCreateBarberiaValues,
     mode: 'onSubmit',
   });
@@ -47,36 +45,39 @@ export function CreateBarberiaPage() {
   }
 
   async function handleSubmit(values: CreateBarberiaFormValues) {
+    console.log('✅ SUBMIT INICIADO');
     if (!user) {
       setError('No hay usuario autenticado');
+      console.error('❌ No hay usuario');
       return;
     }
+    
     setError(null);
     setIsSaving(true);
 
     try {
       console.log('🔄 Iniciando creación de barberia...');
-      console.log('Valores del formulario:', values);
+      console.log('Valores:', values);
 
       const [logoUrl, bannerUrl] = await Promise.all([
         logoFile ? uploadBarberiaImage(logoFile, user.id, 'logos') : Promise.resolve(null),
         bannerFile ? uploadBarberiaImage(bannerFile, user.id, 'banners') : Promise.resolve(null),
       ]);
 
-      console.log('✅ Imágenes subidas:', { logoUrl, bannerUrl });
+      console.log('✅ Imágenes listas:', { logoUrl, bannerUrl });
 
-      await barberiaService.createBarberia({
+      const result = await barberiaService.createBarberia({
         ...values,
         adminId: user.id,
         logoUrl,
         bannerUrl,
       });
-
-      console.log('✅ Barberia creada exitosamente');
+      
+      console.log('✅ Barberia creada:', result);
       window.location.assign('/admin-dashboard');
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'No fue posible crear la barberia.';
-      console.error('❌ Error:', errorMsg);
+      const errorMsg = err instanceof Error ? err.message : 'Error desconocido';
+      console.error('❌ Error completo:', err);
       setError(errorMsg);
       setIsSaving(false);
     }
@@ -109,10 +110,7 @@ export function CreateBarberiaPage() {
 
         {error ? <div className="mb-5 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}
 
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          form.handleSubmit(handleSubmit)(e);
-        }}>
+        <form onSubmit={form.handleSubmit(handleSubmit)}>
           {currentStep === 0 ? <Step1Info errors={form.formState.errors} register={form.register} /> : null}
           {currentStep === 1 ? <Step2Ubicacion errors={form.formState.errors} register={form.register} /> : null}
           {currentStep === 2 ? (
