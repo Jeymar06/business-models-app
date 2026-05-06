@@ -1,16 +1,20 @@
 import type { ButtonHTMLAttributes } from 'react';
 
 const variants = {
-  primary: 'bg-ink text-white hover:bg-slate-800 focus-visible:ring-ink',
+  primary:
+    'bg-ink text-white shadow-soft hover:-translate-y-px hover:bg-[#1f1f1f] hover:shadow-panel active:translate-y-0 active:bg-black focus-visible:ring-ink/30',
   secondary:
-    'border border-slate-200 bg-white text-ink hover:border-steel hover:text-steel focus-visible:ring-steel',
-  ghost: 'text-slate-600 hover:bg-slate-100 hover:text-ink focus-visible:ring-slate-400',
+    'bg-white text-ink shadow-soft ring-1 ring-black/8 hover:bg-mist hover:ring-black/12 active:bg-[#f3f4f6] focus-visible:ring-black/15',
+  outline:
+    'border border-white/18 bg-white/6 text-white backdrop-blur hover:bg-white/12 active:bg-white/16 focus-visible:ring-white/20',
+  ghost:
+    'bg-transparent text-steel hover:bg-black/5 hover:text-ink active:bg-black/10 focus-visible:ring-black/10',
 };
 
 const sizes = {
-  sm: 'h-9 px-3 text-sm',
+  sm: 'h-9 px-3.5 text-sm',
   md: 'h-10 px-4 text-sm',
-  lg: 'h-11 px-5 text-base',
+  lg: 'h-12 px-5 text-base',
 };
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -28,9 +32,9 @@ export function Button({
   return (
     <button
       className={[
-        'inline-flex items-center justify-center gap-2 rounded-md font-medium transition',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-        'disabled:cursor-not-allowed disabled:opacity-60',
+        'inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-all duration-200',
+        'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-offset-0',
+        'disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0 disabled:hover:shadow-none',
         variants[variant],
         sizes[size],
         className,
