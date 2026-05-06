@@ -27,7 +27,7 @@ export function CreateBarberiaPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   const form = useForm<CreateBarberiaFormValues>({
-    resolver: zodResolver(createBarberiaSchema),
+    resolver: zodResolver(createBarberiaSchema) as any,
     defaultValues: defaultCreateBarberiaValues,
     mode: 'onBlur',
   });
