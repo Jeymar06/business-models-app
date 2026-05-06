@@ -52,16 +52,16 @@ export function HomePage() {
 
 function HomeLoadingState() {
   return (
-    <div className="space-y-6">
-      <div className="h-40 animate-pulse rounded-[28px] bg-slate-200" />
+    <div className="space-y-6 animate-fade-up">
+      <div className="surface-panel-dark skeleton-barber h-48 rounded-[28px] animate-shimmer" />
       <div className="grid gap-4 md:grid-cols-3">
         {Array.from({ length: 3 }).map((_, index) => (
-          <div className="h-36 animate-pulse rounded-2xl bg-slate-200" key={index} />
+          <div className="surface-panel skeleton-barber h-36 rounded-3xl animate-shimmer" key={index} />
         ))}
       </div>
       <div className="grid gap-4 xl:grid-cols-2">
-        <div className="h-64 animate-pulse rounded-2xl bg-slate-200" />
-        <div className="h-64 animate-pulse rounded-2xl bg-slate-200" />
+        <div className="surface-panel skeleton-barber h-64 rounded-3xl animate-shimmer" />
+        <div className="surface-panel skeleton-barber h-64 rounded-3xl animate-shimmer" />
       </div>
     </div>
   );
