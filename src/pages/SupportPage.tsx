@@ -1,4 +1,5 @@
 import { CircleHelp, Mail, MessageSquareText } from 'lucide-react';
+import type { ReactNode } from 'react';
 
 export function SupportPage() {
   return (
@@ -24,7 +25,7 @@ function SupportCard({
   title,
 }: {
   description: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
 }) {
   return (
