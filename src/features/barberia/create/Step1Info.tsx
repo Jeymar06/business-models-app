@@ -25,7 +25,7 @@ export function Step1Info({
       </label>
       <FieldError message={errors.descripcion?.message} />
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2">
         <div>
           <Input label="Telefono" {...register('telefono')} />
           <FieldError message={errors.telefono?.message} />
@@ -33,10 +33,6 @@ export function Step1Info({
         <div>
           <Input label="Email de contacto" type="email" {...register('emailContacto')} />
           <FieldError message={errors.emailContacto?.message} />
-        </div>
-        <div>
-          <Input label="Sitio web" placeholder="https://..." {...register('sitioWeb')} />
-          <FieldError message={errors.sitioWeb?.message} />
         </div>
       </div>
     </div>
