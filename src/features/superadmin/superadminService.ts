@@ -373,7 +373,7 @@ export const superadminService = {
 
     const filtered = rows.filter((row) => {
       const matchesName = matchesSearch([row.nombre], filters.search);
-      const matchesCity = !filters.city || filters.city === 'all' || row.ciudad === filters.city;
+      const matchesCity = !filters.city || filters.city === 'all' || normalizeText(row.ciudad).includes(normalizeText(filters.city));
       const matchesState = !filters.state || filters.state === 'all' || row.state === filters.state;
       return matchesName && matchesCity && matchesState;
     });
