@@ -1,15 +1,15 @@
-import { PublicHome } from '@/features/home/components/PublicHome';
-import { ClientHome } from '@/features/home/components/ClientHome';
 import { AdminHome } from '@/features/home/components/AdminHome';
-import { SuperadminHome } from '@/features/home/components/SuperadminHome';
+import { ClientHome } from '@/features/home/components/ClientHome';
 import { EmptyState } from '@/features/home/components/EmptyState';
+import { SuperadminHome } from '@/features/home/components/SuperadminHome';
 import { useHomeData } from '@/features/home/hooks/useHomeData';
+import { LandingPage } from '@/pages/LandingPage';
 
 export function HomePage() {
   const { adminData, clientData, errorMessage, isLoading, profile, superadminData, variant } = useHomeData();
 
   if (variant === 'public') {
-    return <PublicHome />;
+    return <LandingPage />;
   }
 
   if (isLoading) {
