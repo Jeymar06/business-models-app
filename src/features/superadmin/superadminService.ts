@@ -520,10 +520,11 @@ export const superadminService = {
 
   async updateUserRole(userId: string, role: UserRole) {
     ensureSupabase();
-
     const profile = await getProfileOrThrow(userId);
     assertMutableUser(profile);
 
+    // TODO: si las políticas RLS dejan de permitir este cambio directo,
+    // mover esta operación a una Edge Function segura con validación server-side.
     const { data, error } = await (supabase as any)
       .from('profiles')
       .update({ role })
@@ -537,10 +538,11 @@ export const superadminService = {
 
   async suspendUser(userId: string) {
     ensureSupabase();
-
     const profile = await getProfileOrThrow(userId);
     assertMutableUser(profile);
 
+    // TODO: si la suspensión necesita auditoría o privilegios más altos,
+    // reemplazar este update por una Edge Function protegida.
     return strictProfileLifecycleUpdate(userId, {
       activo: false,
       status: 'suspended',
@@ -550,10 +552,11 @@ export const superadminService = {
 
   async softDeleteUser(userId: string) {
     ensureSupabase();
-
     const profile = await getProfileOrThrow(userId);
     assertMutableUser(profile);
 
+    // TODO: si el flujo de ocultado requiere auditoría centralizada,
+    // migrar esta acción a una Edge Function segura.
     return strictProfileLifecycleUpdate(userId, {
       activo: false,
       status: 'deleted',
