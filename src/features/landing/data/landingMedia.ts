@@ -1,41 +1,44 @@
-import logo from '@/assets/landing/full/barber-flow-logo.webp';
-import image00 from '@/assets/landing/full/image-00.webp';
-import image01 from '@/assets/landing/full/image-01.webp';
-import image04 from '@/assets/landing/full/image-04.webp';
-import image06 from '@/assets/landing/full/image-06.webp';
-import image09 from '@/assets/landing/full/image-09.webp';
-import image10 from '@/assets/landing/full/image-10.webp';
-import image11 from '@/assets/landing/full/image-11.webp';
-import image12 from '@/assets/landing/full/image-12.webp';
-import image17 from '@/assets/landing/full/image-17.webp';
-import video00 from '@/assets/landing/full/video-00.mp4';
-import video01 from '@/assets/landing/full/video-01.mp4';
-import video02 from '@/assets/landing/full/video-02.mp4';
-import video03 from '@/assets/landing/full/video-03.mp4';
-import video05 from '@/assets/landing/full/video-05.mp4';
+const landingLogoDataUri =
+  'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=600&q=80';
 
-export const landingLogo = logo;
+const videos = {
+  primary: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+  secondary: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+  tertiary: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+};
+
+const images = {
+  intro: 'https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=1200&q=80',
+  posterA: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1200&q=80',
+  posterB: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=1200&q=80',
+  posterC: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1200&q=80',
+  detail: 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=1200&q=80',
+  product: 'https://images.unsplash.com/photo-1512690459411-b0fd1b68f3e6?auto=format&fit=crop&w=1200&q=80',
+  client: 'https://images.unsplash.com/photo-1516880711640-ef7db81be3e1?auto=format&fit=crop&w=1200&q=80',
+};
+
+export const landingLogo = landingLogoDataUri;
 
 export const landingMediaGroups = {
   hero: {
-    centerVideo: video00,
-    centerPoster: image10,
+    centerVideo: videos.primary,
+    centerPoster: images.posterA,
   },
-  introGallery: [video03, video05, image09],
+  introGallery: [videos.tertiary, videos.secondary, images.intro],
   features: {
-    video: video01,
-    poster: image04,
-    sideTop: image00,
+    video: videos.secondary,
+    poster: images.posterB,
+    sideTop: images.detail,
   },
-  problem: [image11],
+  problem: [images.product],
   clients: {
-    video: video02,
-    poster: image01,
-    images: [image12],
+    video: videos.tertiary,
+    poster: images.posterC,
+    images: [images.client],
   },
   howItWorks: [
-    { video: video03, poster: image17 },
-    { video: video00, poster: image10 },
-    { video: video05, poster: image06 },
+    { video: videos.primary, poster: images.posterA },
+    { video: videos.secondary, poster: images.posterB },
+    { video: videos.tertiary, poster: images.posterC },
   ],
 };
