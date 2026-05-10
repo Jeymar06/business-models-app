@@ -1,8 +1,9 @@
-import { Menu, Scissors, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Button } from '@/components/ui';
+import { landingLogo } from '@/features/landing/data/landingMedia';
 
 const navItems = [
   { href: '#inicio', label: 'Inicio' },
@@ -17,20 +18,26 @@ export function LandingNavbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0B0B0B]/88 text-white backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-4 sm:px-6 lg:px-8">
-        <a className="flex items-center gap-3" href="#inicio">
-          <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/6 text-gold shadow-glow">
-            <Scissors aria-hidden size={18} />
+      <div className="mx-auto flex h-20 max-w-[1280px] items-center justify-between px-4 sm:px-6 lg:px-8">
+        <a className="group flex items-center gap-4" href="#inicio">
+          <span className="overflow-hidden rounded-2xl border border-white/10 bg-white/6 px-2 py-2 transition duration-300 group-hover:-translate-y-0.5 group-hover:border-gold/30 group-hover:bg-white/10">
+            <img alt="Barber Flow" className="h-11 w-auto transition duration-300 group-hover:scale-[1.04]" src={landingLogo} />
           </span>
           <div>
-            <span className="block text-sm font-semibold tracking-[0.18em] text-white/62">BARBER FLOW</span>
-            <span className="block text-base font-semibold text-white">Plataforma para barberias</span>
+            <span className="block text-base font-semibold tracking-[0.22em] text-white/72 transition duration-300 group-hover:text-gold">BARBER FLOW</span>
+            <span className="block text-lg font-semibold text-white transition duration-300 group-hover:translate-x-0.5">
+              Plataforma para barberias
+            </span>
           </div>
         </a>
 
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav className="hidden items-center gap-2 md:flex">
           {navItems.map((item) => (
-            <a className="text-sm font-medium text-white/72 transition hover:text-white" href={item.href} key={item.href}>
+            <a
+              className="rounded-full px-4 py-2 text-base font-medium text-white/72 transition duration-300 hover:-translate-y-0.5 hover:bg-white/8 hover:text-white"
+              href={item.href}
+              key={item.href}
+            >
               {item.label}
             </a>
           ))}
