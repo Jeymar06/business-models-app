@@ -2,42 +2,44 @@ import { Eye, EyeOff, LogIn, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { Button, Input, Pill } from '@/components/ui';
+import { Button, Input, Pill, useToast } from '@/components/ui';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { barberHeroImage } from '@/features/home/heroImage';
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const toast = useToast();
   const { signIn, signInWithGoogle } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    setError(null);
     setIsLoading(true);
 
     try {
       await signIn({ email, password });
+      toast.success('Bienvenido de vuelta.', 'Sesión iniciada');
       navigate('/');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
+      toast.error(err instanceof Error ? err.message : 'Error al iniciar sesión', 'Acceso denegado');
     } finally {
       setIsLoading(false);
     }
   }
 
   async function handleGoogleSignIn() {
-    setError(null);
     setIsLoading(true);
 
     try {
       await signInWithGoogle();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al iniciar sesión con Google');
+      toast.error(
+        err instanceof Error ? err.message : 'Error al iniciar sesión con Google',
+        'Error',
+      );
       setIsLoading(false);
     }
   }
@@ -106,8 +108,6 @@ export function LoginPage() {
               </button>
             </div>
           </div>
-
-          {error ? <div className="rounded-2xl border border-danger/22 bg-danger/8 p-3 text-sm text-danger">{error}</div> : null}
 
           <Button className="w-full" disabled={isLoading} size="lg" type="submit" variant="gold">
             {isLoading ? 'Entrando...' : 'Iniciar sesión'}

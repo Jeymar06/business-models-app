@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import { Badge, Button, Pill } from '@/components/ui';
+import { Badge, Button, Pill, useToast } from '@/components/ui';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { BookingStepper } from '@/features/booking/components/BookingStepper';
 import { BookingSuccess } from '@/features/booking/components/BookingSuccess';
@@ -22,8 +22,8 @@ export function BookingPage() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const booking = useBooking();
+  const toast = useToast();
   const [successId, setSuccessId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const barberiaQuery = useQuery({
     enabled: Boolean(barberiaId),
@@ -79,11 +79,11 @@ export function BookingPage() {
       });
     },
     onError: (err) => {
-      setError(err instanceof Error ? err.message : 'No fue posible crear la cita.');
+      toast.error(err instanceof Error ? err.message : 'No fue posible crear la cita.', 'Error');
     },
     onSuccess: async (cita) => {
-      setError(null);
       setSuccessId(cita.id);
+      toast.success(`Código ${cita.id.slice(0, 8).toUpperCase()}`, 'Cita confirmada');
       await queryClient.invalidateQueries({ queryKey: ['client', 'citas', user?.id] });
       await queryClient.invalidateQueries({ queryKey: ['booking', 'slots'] });
     },
@@ -145,12 +145,6 @@ export function BookingPage() {
             </div>
           </div>
         </section>
-
-        {error ? (
-          <div className="rounded-2xl border border-danger/24 bg-danger/8 p-4 text-sm text-danger">
-            {error}
-          </div>
-        ) : null}
 
         <div className="rounded-[28px] border border-ink/8 bg-paper p-6 shadow-soft sm:p-8">
           <BookingStepper

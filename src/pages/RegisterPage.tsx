@@ -2,12 +2,13 @@ import { Eye, EyeOff, ShieldCheck, UserPlus } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { Button, Input } from '@/components/ui';
+import { Button, Input, Pill, useToast } from '@/components/ui';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { barberHeroImage } from '@/features/home/heroImage';
 
 export function RegisterPage() {
   const navigate = useNavigate();
+  const toast = useToast();
   const { signUp } = useAuth();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -15,35 +16,31 @@ export function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    setError(null);
 
     if (!fullName.trim()) {
-      setError('El nombre es requerido');
+      toast.error('El nombre es requerido', 'Datos incompletos');
       return;
     }
-
     if (password !== confirmPassword) {
-      setError('Las contraseñas no coinciden');
+      toast.error('Las contraseñas no coinciden', 'Validación');
       return;
     }
-
     if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres');
+      toast.error('La contraseña debe tener al menos 6 caracteres', 'Validación');
       return;
     }
 
     setIsLoading(true);
-
     try {
       await signUp({ fullName, email, password });
+      toast.success('Por favor inicia sesión.', 'Cuenta creada');
       navigate('/login', { state: { message: 'Cuenta creada. Por favor inicia sesión.' } });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al crear la cuenta');
+      toast.error(err instanceof Error ? err.message : 'Error al crear la cuenta', 'Error');
     } finally {
       setIsLoading(false);
     }
@@ -51,30 +48,48 @@ export function RegisterPage() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-stretch">
-      <section className="surface-panel rounded-[32px] p-6 sm:p-8 lg:p-10">
-        <div className="space-y-2">
-          <p className="text-sm font-semibold tracking-[0.18em] text-steel">CREAR CUENTA</p>
-          <h2 className="text-3xl font-bold text-ink">Únete a BarberApp</h2>
-          <p className="text-sm leading-7 text-slate-500">Crea tu acceso y empieza a reservar o a gestionar tu barbería desde una misma plataforma.</p>
+      <section className="surface-panel rounded-[36px] p-6 sm:p-10 lg:p-12">
+        <div className="space-y-3">
+          <p className="eyebrow text-ink/45">Crear cuenta</p>
+          <h2 className="font-display text-4xl font-semibold tracking-tight text-ink">
+            Únete a <span className="font-display-italic text-gold-700">Barber Flow.</span>
+          </h2>
+          <p className="text-sm leading-7 text-ink/55">
+            Crea tu acceso y empieza a reservar o a gestionar tu barbería desde una misma plataforma.
+          </p>
         </div>
 
         <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label className="mb-2 block text-sm font-medium text-ink" htmlFor="fullName">
+            <label className="eyebrow mb-2 block text-ink/55" htmlFor="fullName">
               Nombre completo
             </label>
-            <Input id="fullName" onChange={(event) => setFullName(event.target.value)} placeholder="Juan Pérez" required type="text" value={fullName} />
+            <Input
+              id="fullName"
+              onChange={(event) => setFullName(event.target.value)}
+              placeholder="Juan Pérez"
+              required
+              type="text"
+              value={fullName}
+            />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-ink" htmlFor="email">
+            <label className="eyebrow mb-2 block text-ink/55" htmlFor="email">
               Email
             </label>
-            <Input id="email" onChange={(event) => setEmail(event.target.value)} placeholder="tu@email.com" required type="email" value={email} />
+            <Input
+              id="email"
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="tu@email.com"
+              required
+              type="email"
+              value={email}
+            />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-ink" htmlFor="password">
+            <label className="eyebrow mb-2 block text-ink/55" htmlFor="password">
               Contraseña
             </label>
             <div className="relative">
@@ -88,7 +103,7 @@ export function RegisterPage() {
               />
               <button
                 aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-ink/40 transition-colors hover:text-ink"
                 onClick={() => setShowPassword((current) => !current)}
                 type="button"
               >
@@ -98,7 +113,7 @@ export function RegisterPage() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-ink" htmlFor="confirmPassword">
+            <label className="eyebrow mb-2 block text-ink/55" htmlFor="confirmPassword">
               Confirmar contraseña
             </label>
             <div className="relative">
@@ -111,8 +126,8 @@ export function RegisterPage() {
                 value={confirmPassword}
               />
               <button
-                aria-label={showConfirmPassword ? 'Ocultar confirmacion' : 'Mostrar confirmacion'}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                aria-label={showConfirmPassword ? 'Ocultar confirmación' : 'Mostrar confirmación'}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-ink/40 transition-colors hover:text-ink"
                 onClick={() => setShowConfirmPassword((current) => !current)}
                 type="button"
               >
@@ -121,37 +136,43 @@ export function RegisterPage() {
             </div>
           </div>
 
-          {error ? <div className="rounded-2xl border border-danger/20 bg-danger/10 p-3 text-sm text-danger">{error}</div> : null}
-
-          <Button className="w-full" disabled={isLoading} type="submit">
-            {isLoading ? 'Creando...' : 'Crear cuenta'}
+          <Button className="w-full" disabled={isLoading} size="lg" type="submit" variant="gold">
+            {isLoading ? 'Creando…' : 'Crear cuenta'}
             {!isLoading ? <UserPlus size={18} /> : null}
           </Button>
         </form>
 
-        <div className="mt-6 flex items-start gap-3 rounded-[24px] bg-black/4 p-4 text-sm text-slate-600">
-          <ShieldCheck className="mt-0.5 shrink-0 text-mint-dark" size={18} />
-          <span>Tu cuenta queda lista para cliente y también puede crecer a barbería administrada desde el mismo login.</span>
+        <div className="mt-6 flex items-start gap-3 rounded-[24px] bg-ink/4 p-4 text-sm text-ink/60">
+          <ShieldCheck className="mt-0.5 shrink-0 text-gold-700" size={18} />
+          <span>
+            Tu cuenta queda lista para cliente y también puede crecer a barbería administrada desde el mismo login.
+          </span>
         </div>
 
-        <p className="mt-6 text-center text-sm text-slate-600">
+        <p className="mt-6 text-center text-sm text-ink/60">
           ¿Ya tienes cuenta?{' '}
-          <Link className="font-medium text-ink hover:text-mint-dark" to="/login">
+          <Link
+            className="font-display font-semibold text-ink underline decoration-gold-500 decoration-2 underline-offset-4 transition-colors hover:text-gold-700"
+            to="/login"
+          >
             Inicia sesión
           </Link>
         </p>
       </section>
 
-      <section className="surface-panel-dark relative isolate overflow-hidden rounded-[32px] px-6 py-8 text-white sm:px-8 lg:min-h-[720px] lg:px-10 lg:py-10">
+      <section className="surface-panel-dark relative isolate overflow-hidden rounded-[36px] px-6 py-10 text-cream sm:px-10 lg:min-h-[720px] lg:px-12 lg:py-12">
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${barberHeroImage})` }} />
         <div className="hero-fade absolute inset-0" />
-        <div className="hero-mesh absolute inset-0 opacity-20" />
-        <div className="relative flex h-full flex-col justify-between gap-8">
-          <div className="space-y-4">
-            <p className="text-sm font-semibold tracking-[0.18em] text-gold">NUEVA ETAPA</p>
-            <h1 className="max-w-xl text-4xl font-bold leading-tight">Empieza con una cuenta simple y escala a un negocio mejor organizado.</h1>
-            <p className="max-w-lg text-sm leading-7 text-white/68">
-              BarberApp une reservas, operación y visibilidad en una experiencia oscura, moderna y preparada para mobile.
+        <div className="hero-mesh absolute inset-0 opacity-25" />
+        <div className="relative flex h-full flex-col justify-between gap-10">
+          <div className="space-y-6">
+            <Pill tone="gold">Nueva etapa</Pill>
+            <h1 className="font-display max-w-xl text-4xl font-semibold leading-[1.04] tracking-tight sm:text-5xl">
+              Empieza simple,{' '}
+              <span className="font-display-italic text-gold-200">escala editorial.</span>
+            </h1>
+            <p className="max-w-lg text-base leading-8 text-cream/72">
+              Barber Flow une reservas, operación y visibilidad en una experiencia oscura, moderna y preparada para mobile.
             </p>
           </div>
 
@@ -169,8 +190,8 @@ export function RegisterPage() {
 function ValueCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/6 px-4 py-3 backdrop-blur-sm">
-      <p className="text-xl font-semibold text-white">{value}</p>
-      <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-white/44">{label}</p>
+      <p className="font-display text-2xl font-semibold tracking-tight text-cream">{value}</p>
+      <p className="eyebrow mt-1 text-cream/45">{label}</p>
     </div>
   );
 }
