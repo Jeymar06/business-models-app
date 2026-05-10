@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import { Badge, Button } from '@/components/ui';
+import { Badge, Button, Pill } from '@/components/ui';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { BookingStepper } from '@/features/booking/components/BookingStepper';
 import { BookingSuccess } from '@/features/booking/components/BookingSuccess';
@@ -89,7 +89,10 @@ export function BookingPage() {
     },
   });
 
-  const availableDays = useMemo(() => [...new Set((disponibilidadQuery.data ?? []).map((block) => block.dia_semana))], [disponibilidadQuery.data]);
+  const availableDays = useMemo(
+    () => [...new Set((disponibilidadQuery.data ?? []).map((block) => block.dia_semana))],
+    [disponibilidadQuery.data],
+  );
 
   const barberia = barberiaQuery.data;
 
@@ -98,11 +101,11 @@ export function BookingPage() {
   }
 
   if (barberiaQuery.isLoading) {
-    return <PageState title="Cargando barberia" text="Estamos preparando el flujo de reserva." />;
+    return <PageState title="Cargando barbería" text="Estamos preparando el flujo de reserva." />;
   }
 
   if (!barberia || !barberia.activo || !barberia.acepta_reservas) {
-    return <PageState title="Barberia no disponible" text="Esta barberia no existe o no acepta reservas por ahora." />;
+    return <PageState title="Barbería no disponible" text="Esta barbería no existe o no acepta reservas por ahora." />;
   }
 
   if (successId) {
@@ -110,29 +113,46 @@ export function BookingPage() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_340px] animate-fade-up">
+    <div className="grid gap-6 lg:grid-cols-[1fr_360px] animate-fade-up">
       <div className="space-y-6">
-        <section className="surface-panel-dark overflow-hidden rounded-[32px] text-white shadow-panel">
-          {barberia.banner_url ? <img alt={barberia.nombre} className="h-56 w-full object-cover" src={barberia.banner_url} /> : null}
-          <div className="space-y-4 px-6 py-6 sm:px-8">
+        <section className="relative overflow-hidden rounded-[36px] border border-white/8 bg-[linear-gradient(180deg,rgba(33,29,25,0.96),rgba(20,18,16,0.98))] text-cream shadow-[0_30px_80px_rgba(0,0,0,0.42)]">
+          {barberia.banner_url ? (
+            <div className="relative h-60 overflow-hidden">
+              <img alt={barberia.nombre} className="h-full w-full object-cover" src={barberia.banner_url} />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_30%,rgba(20,18,16,0.95)_100%)]" />
+            </div>
+          ) : null}
+          <div className="space-y-5 px-7 py-8 sm:px-10">
             <div className="flex flex-wrap items-center gap-3">
               <Badge variant="confirmed">Reservas activas</Badge>
-              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-white/44">Agendamiento</span>
+              <Pill tone="gold">Agendamiento</Pill>
             </div>
             <div>
-              <h1 className="text-3xl font-bold sm:text-4xl">{barberia.nombre}</h1>
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-white/68">{barberia.descripcion}</p>
+              <h1 className="font-display text-4xl font-semibold leading-[1.04] tracking-tight sm:text-5xl">
+                {barberia.nombre}
+              </h1>
+              <p className="mt-4 max-w-2xl text-base leading-7 text-cream/68">{barberia.descripcion}</p>
             </div>
-            <div className="flex flex-wrap gap-4 text-sm text-white/60">
-              <span className="flex items-center gap-2"><MapPin size={16} />{barberia.direccion}, {barberia.ciudad}</span>
-              <span className="flex items-center gap-2"><Phone size={16} />{barberia.telefono}</span>
+            <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-cream/65">
+              <span className="flex items-center gap-2">
+                <MapPin className="text-gold-300" size={16} />
+                {barberia.direccion}, {barberia.ciudad}
+              </span>
+              <span className="flex items-center gap-2">
+                <Phone className="text-gold-300" size={16} />
+                <span className="numeric">{barberia.telefono}</span>
+              </span>
             </div>
           </div>
         </section>
 
-        {error ? <div className="rounded-2xl border border-danger/20 bg-danger/10 p-3 text-sm text-danger">{error}</div> : null}
+        {error ? (
+          <div className="rounded-2xl border border-danger/24 bg-danger/8 p-4 text-sm text-danger">
+            {error}
+          </div>
+        ) : null}
 
-        <div className="surface-panel rounded-[28px] p-4 sm:p-5">
+        <div className="rounded-[28px] border border-ink/8 bg-paper p-6 shadow-soft sm:p-8">
           <BookingStepper
             canGoNext={booking.canGoNext}
             currentStep={booking.currentStep}
@@ -179,43 +199,81 @@ export function BookingPage() {
         </div>
       </div>
 
-      <aside className="surface-panel h-fit rounded-[28px] p-5 sm:p-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-steel">Tu reserva</p>
-        <h2 className="mt-2 text-2xl font-semibold text-ink">Resumen</h2>
-        <div className="mt-5 space-y-3 text-sm text-slate-600">
-          <SummaryRow label="Servicio" value={booking.servicio?.nombre ?? 'Selecciona un servicio'} />
-          <SummaryRow label="Barbero" value={booking.barbero?.nombre ?? (booking.anyBarbero ? 'Cualquier barbero disponible' : 'Selecciona un barbero')} />
-          <SummaryRow label="Horario" value={booking.slot ? `${booking.slot.hora_inicio} - ${booking.slot.hora_fin}` : 'Selecciona fecha y hora'} />
+      <aside className="h-fit rounded-[28px] border border-ink/8 bg-paper p-7 shadow-soft sm:sticky sm:top-24">
+        <p className="eyebrow text-gold-700">Tu reserva</p>
+        <h2 className="font-display mt-2 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+          Resumen
+        </h2>
+        <div className="mt-6 space-y-3">
+          <SummaryRow label="Servicio" value={booking.servicio?.nombre ?? 'Selecciona un servicio'} active={Boolean(booking.servicio)} />
+          <SummaryRow
+            label="Barbero"
+            value={booking.barbero?.nombre ?? (booking.anyBarbero ? 'Cualquier barbero disponible' : 'Selecciona un barbero')}
+            active={Boolean(booking.barbero) || booking.anyBarbero}
+          />
+          <SummaryRow
+            label="Horario"
+            value={booking.slot ? `${booking.slot.hora_inicio} – ${booking.slot.hora_fin}` : 'Selecciona fecha y hora'}
+            active={Boolean(booking.slot)}
+            monospace
+          />
         </div>
-        <Button className="mt-6 w-full" onClick={() => navigate('/client-dashboard')} variant="secondary">Mis citas</Button>
+        <Button className="mt-7 w-full" onClick={() => navigate('/client-dashboard')} variant="outline-ink">
+          Mis citas
+        </Button>
       </aside>
     </div>
   );
 }
 
-function SummaryRow({ label, value }: { label: string; value: string }) {
+function SummaryRow({
+  active,
+  label,
+  monospace,
+  value,
+}: {
+  active?: boolean;
+  label: string;
+  monospace?: boolean;
+  value: string;
+}) {
   return (
-    <div className="rounded-2xl bg-black/4 px-4 py-3">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-steel">{label}</p>
-      <p className="mt-2 text-sm font-medium text-ink">{value}</p>
+    <div
+      className={[
+        'rounded-2xl border px-4 py-3 transition-colors duration-300',
+        active ? 'border-gold-500/24 bg-gold-500/6' : 'border-ink/8 bg-ink/3',
+      ].join(' ')}
+    >
+      <p className="eyebrow text-ink/45">{label}</p>
+      <p
+        className={[
+          'mt-2 text-sm font-medium text-ink',
+          monospace ? 'numeric' : '',
+        ].join(' ')}
+      >
+        {value}
+      </p>
     </div>
   );
 }
 
 function MissingBarberia() {
   return (
-    <PageState title="Elige una barberia" text="Entra desde una barberia del marketplace para agendar una cita.">
-      <Link to="/client-dashboard"><Button>Ver barberias</Button></Link>
+    <PageState title="Elige una barbería" text="Entra desde una barbería del marketplace para agendar una cita.">
+      <Link to="/client-dashboard">
+        <Button variant="primary">Ver barberías</Button>
+      </Link>
     </PageState>
   );
 }
 
 function PageState({ children, text, title }: { title: string; text: string; children?: ReactNode }) {
   return (
-    <section className="surface-panel rounded-[28px] p-8">
-      <h1 className="text-2xl font-bold text-ink">{title}</h1>
-      <p className="mt-2 text-slate-600">{text}</p>
-      {children ? <div className="mt-5">{children}</div> : null}
+    <section className="rounded-[28px] border border-ink/8 bg-paper p-10 shadow-soft">
+      <p className="eyebrow text-gold-700">Booking</p>
+      <h1 className="font-display mt-3 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">{title}</h1>
+      <p className="mt-3 max-w-xl text-base leading-7 text-ink/60">{text}</p>
+      {children ? <div className="mt-6">{children}</div> : null}
     </section>
   );
 }

@@ -14,52 +14,70 @@
 ### Decisiones de diseño
 - **Pattern**: Hero-Centric + Social Proof (Editorial Grid).
 - **Style**: Editorial Magazine + Vintage Analog (premium barbería).
-- **Typography**: Fraunces (display serif con `opsz`+`SOFT`+`WONK`) + Manrope (body grotesque) + JetBrains Mono (numéricos). Reemplaza **Inter** (anti-pattern AI slop).
-- **Palette**: Negro cálido `#0A0908` + escala de oro completa (`#FBF6E3` → `#382B08`) + cream `#F5F1E8`. Cero gradientes púrpura/rosa.
+- **Typography**: Fraunces (display serif `opsz/SOFT/WONK`) + Manrope (body grotesque) + JetBrains Mono (numéricos). Reemplaza **Inter** (anti-pattern AI slop).
+- **Palette**: Negro cálido `#0A0908` + escala de oro 50-900 + cream `#F5F1E8`. Cero gradientes púrpura/rosa.
 - **Effects**: hover lift 280ms cubic-bezier, gold-flow shimmer, soft float, grain overlay, `prefers-reduced-motion` honrado.
-- **Accesibilidad**: focus-visible gold ring, `cursor-pointer` global en interactivos, contraste WCAG AA, scrollbar refinada.
+- **Accesibilidad**: focus-visible gold ring, `cursor-pointer` global, contraste WCAG AA, scrollbar refinada.
 
-## Cambios implementados (May 10, 2026)
+## Sesión 1 (May 10, 2026) — Landing + Auth ✅
+- Foundation: `tailwind.config.ts`, `src/index.css`, `index.html` con Google Fonts.
+- Componentes UI: `Button` (7 variantes incl. **gold** signature), `Input`, `Pill`.
+- Landing completa: Hero, Navbar (sticky scroll-aware), Features, ProblemSolution, Pricing, FinalCTA, Footer, HowItWorks, FAQ (+ rotativo), Owners, Clients.
+- Auth: LoginPage editorial split, Navbar/Footer interno.
 
-### Foundation
-- `tailwind.config.ts` → escala de gold 50-900, ink warm, cream, fonts display/sans/mono, animations editorial.
-- `src/index.css` → variables CSS, fuentes Fraunces+Manrope vía Google Fonts CDN, utilities (`font-display`, `font-display-italic`, `eyebrow`, `numeric`, `editorial-rule`, `grain-overlay`), `prefers-reduced-motion`, scrollbar custom, focus-visible gold.
-- `index.html` → preconnect Google Fonts, meta description editorial.
+## Sesión 2 (May 10, 2026) — Dashboards + Booking + UI primitives ✅
 
-### Componentes UI
-- `Button.tsx` → 7 variantes (primary, **gold** signature, secondary, outline, outline-ink, ghost, ghost-ink) + 4 tamaños + 3 shapes (pill/rounded/sharp) + micro-animaciones suaves.
-- `Input.tsx` → focus-visible con ring dorado, hover refinado, micro lift.
-- `Pill.tsx` (nuevo) → tag editorial 5 tonos (gold/cream/ink/mint/outline) para eyebrows y estados.
+### Nuevos componentes UI editorial
+- `Card.tsx` → 5 tonos (light/cream/dark/muted/glass), 5 radios, 5 paddings, modo interactivo.
+- `Toast.tsx` → ToastProvider + useToast() con success/error/info, dark-mode glass, auto-dismiss 4.8s.
+- `Modal.tsx` → 4 tamaños, light/dark tone, ESC to close, scroll-lock, animate-fade-up.
 
-### Refactor visual
-- `HeroSection` → H1 Fraunces 5xl-7xl con acento itálico dorado, stats numéricos mono, dashboard mock con tipografía editorial.
-- `LandingNavbar` → sticky scroll-aware (transparente→sólido), logo editorial, CTA `gold`.
-- `FeaturesSection` → cards con índice numérico decorativo, hover gold-flow.
-- `ProblemSolutionSection` → split editorial con radial gold accent.
-- `PricingSection` → plan Pro destacado con scale+lift, CTA gold, ticks circulares dorados.
-- `FinalCTASection` → caja gold-veil con headline italic acento.
-- `LandingFooter` → multi-columna editorial con copy italic.
-- `HowItWorksSection` → números 7xl Fraunces gigantes con conectores.
-- `FAQSection` → details con ícono `+` que rota a 45° (gold) al abrir.
-- `OwnersSection` / `ClientsSection` → tipografía display + cards editoriales.
-- `LoginPage` → split panel oscuro+cream con headline italic, CTA gold, link con subrayado dorado.
-- `Navbar` (interno) / `Footer` (interno) → typography display + cream.
+### Primitivos Home refactorizados (impacto en 3 dashboards)
+- `HomeMetricCard` → cifra `font-display numeric` 4xl, hover gold-glow.
+- `QuickActionCard` → hover gold-flow line + arrow translate, ícono que invierte color al hover.
+- `EmptyState` → glow radial dorado + headline Fraunces 3xl.
+- `UpcomingAppointmentCard` → hero card dark con headline display + grid info dorado.
+- `BarberiaMiniCard` → header oscuro + body cream, hover lift + gold border.
+
+### Variantes Home
+- `ClientHome` → hero dark + nombre italic, secciones explorar/resumen/atajos con jerarquía display.
+- `AdminHome` → hero del nombre de barbería, gestión rápida con grids editoriales, status rows refinados.
+- `SuperadminHome` → hero "Control global", monitoreo cards, alertas globales.
+
+### Booking flow
+- `BookingPage` → hero dark con banner + gradient veil, sidebar resumen sticky con estados activos (gold-tint), error styling refinado, page-states editoriales.
+- `BookingStepper` → progress bar gold-gradient + indicadores por paso, tipografía Fraunces, botón final `gold`.
+- `BookingSuccess` → glow radial mint+gold, código en pill numeric, headline italic acento.
+- `EmptyState` (booking) → tipografía display.
+
+### Code-splitting + performance
+- `vite.config.ts` → `manualChunks` para vendor-react / vendor-supabase / vendor-charts / vendor-forms / vendor-icons / vendor-date / vendor-query.
+- `AppRouter` → todas las 14 rutas vía `React.lazy` + `<Suspense>` con fallback editorial.
+- `ToastProvider` envuelve `<AppShell>`.
+
+### Métricas del build
+| Antes | Después |
+|---|---|
+| 1 chunk monolítico 761 kB (217 kB gz) | 14 chunks lazy + 7 vendor chunks |
+| Initial ~217 kB gz | Initial **~140 kB gz** (-35%) |
+| TTI universal | TTI por ruta optimizado |
 
 ## Validación
 - `npx tsc -b --noEmit` → 0 errores.
-- `npx vite build` → 2674 módulos transformados, build OK.
-- Screenshots verificados (Hero, Features, Pricing, Login) en viewport 1440×900.
+- `npx vite build` → 14 chunks, vendor splits correctos, CSS 61 kB.
+- Screenshots validados: Hero, Pricing, Login, FAQ, HowItWorks (Fraunces 7xl numerals visible).
 
 ## Backlog / Próximos pasos
-- **P1**: Refactor editorial de Dashboards (Client/Admin/Superadmin) — todavía con styling viejo (`text-white`, sin font-display).
-- **P1**: BookingPage steps con la misma jerarquía editorial.
-- **P2**: Code-splitting del bundle (alerta vite: 761kB → considerar dynamic imports).
-- **P2**: Componente Card reutilizable + Toast/Modal editorial.
-- **P2**: Empty states con typography Fraunces + ilustración SVG.
-- **P3**: Tema light (modo cream) para dashboards de día.
-- **P3**: Página `/superadmin` con dashboard de métricas tipo "Data-Dense Dashboard" style.
+- **P2**: Refactor editorial profundo de `AdminDashboard` interno (panel barberos/servicios/horarios), `AdminCitasPage`, `SuperAdminDashboard` listado.
+- **P2**: Migrar mensajes `setError` locales a `useToast` (Booking, Login, Register).
+- **P2**: Usar `Modal` editorial para confirmaciones destructivas (eliminar cuenta, eliminar barbería).
+- **P3**: BookingSteps individuales (Step1-Step4) — UI internamente aún básica.
+- **P3**: Tema light cream alternativo para dashboards de día.
+- **P3**: Image lazy-loading + video poster fallback (5 mp4 pesan ~6 MB).
+- **P3**: SEO meta tags por ruta + Open Graph dinámico.
 
 ## Notas
 - No se modificó auth, lógica de negocio ni endpoints Supabase.
 - No se removieron features existentes.
 - Fonts cargadas vía CDN Google Fonts con preconnect (latencia mínima).
+- Bundle inicial reducido ~35% (gzipped) tras code-splitting.
