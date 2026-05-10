@@ -1,55 +1,41 @@
-import landingLogoFile from "../../../assets/landing/full/logo.png";
-import videoPrimary from "../../../assets/landing/full/video-primary.mp4";
-import videoSecondary from "../../../assets/landing/full/video-secondary.mp4";
-import videoTertiary from "../../../assets/landing/full/video-tertiary.mp4";
+import logo from '@/assets/landing/full/barber-flow-logo.webp';
+import image00 from '@/assets/landing/full/image-00.webp';
+import image01 from '@/assets/landing/full/image-01.webp';
+import image04 from '@/assets/landing/full/image-04.webp';
+import image06 from '@/assets/landing/full/image-06.webp';
+import image09 from '@/assets/landing/full/image-09.webp';
+import image10 from '@/assets/landing/full/image-10.webp';
+import image11 from '@/assets/landing/full/image-11.webp';
+import image12 from '@/assets/landing/full/image-12.webp';
+import image17 from '@/assets/landing/full/image-17.webp';
+import video00 from '@/assets/landing/full/video-00.mp4';
+import video01 from '@/assets/landing/full/video-01.mp4';
+import video02 from '@/assets/landing/full/video-02.mp4';
+import video03 from '@/assets/landing/full/video-03.mp4';
+import video05 from '@/assets/landing/full/video-05.mp4';
 
-import introImage from "../../../assets/landing/full/intro.png";
-import posterAImage from "../../../assets/landing/full/poster-a.png";
-import posterBImage from "../../../assets/landing/full/poster-b.png";
-import posterCImage from "../../../assets/landing/full/poster-c.png";
-import detailImage from "../../../assets/landing/full/detail.png";
-import productImage from "../../../assets/landing/full/product.png";
-import clientImage from "../../../assets/landing/full/client.png";
-
-const landingLogoDataUri = landingLogoFile;
-const videos = {
-  primary: videoPrimary,
-  secondary: videoSecondary,
-  tertiary: videoTertiary,
-};
-
-const images = {
-  intro: introImage,
-  posterA: posterAImage,
-  posterB: posterBImage,
-  posterC: posterCImage,
-  detail: detailImage,
-  product: productImage,
-  client: clientImage,
-};
-
-export const landingLogo = landingLogoDataUri;
+export const landingLogo = logo;
 
 export const landingMediaGroups = {
   hero: {
-    centerVideo: videos.primary,
-    centerPoster: images.posterA,
+    centerVideo: video00,
+    centerPoster: image10,
   },
-  introGallery: [videos.tertiary, videos.secondary, images.intro],
+  introGallery: [video03, video05, image09],
   features: {
-    video: videos.secondary,
-    poster: images.posterB,
-    sideTop: images.detail,
+    video: video01,
+    poster: image04,
+    sideTop: image00,
   },
-  problem: [images.product],
+  problem: [image11],
   clients: {
-    video: videos.tertiary,
-    poster: images.posterC,
-    images: [images.client],
+    video: video02,
+    poster: image01,
+    images: [image12],
   },
   howItWorks: [
-    { video: videos.primary, poster: images.posterA },
-    { video: videos.secondary, poster: images.posterB },
-    { video: videos.tertiary, poster: images.posterC },
+    { video: video03, poster: image17 },
+    { video: video00, poster: image10 },
+    { video: video05, poster: image06 },
   ],
 };

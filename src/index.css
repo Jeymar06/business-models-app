@@ -150,6 +150,29 @@ select {
   animation: goldFlow 4s ease-in-out infinite;
 }
 
+.landing-media-drift {
+  animation: mediaDrift 8.4s ease-in-out infinite;
+}
+
+.landing-media-drift-delayed {
+  animation: mediaDrift 10.2s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+.landing-video-glow {
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.42);
+}
+
+.landing-cta-pop {
+  animation: ctaFloat 4.4s ease-in-out infinite;
+  box-shadow: 0 18px 40px rgba(212, 175, 55, 0.18);
+}
+
+.landing-cta-outline {
+  animation: ctaFloat 5.2s ease-in-out infinite;
+  animation-delay: 0.35s;
+}
+
 .landing-pro-plan {
   position: relative;
   overflow: hidden;
@@ -191,6 +214,26 @@ select {
   }
   100% {
     transform: translateX(-8%);
+  }
+}
+
+@keyframes mediaDrift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes ctaFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
   }
 }
 
