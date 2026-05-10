@@ -25,8 +25,11 @@ export function AppRouter() {
   if (isLoading) {
     return (
       <BrowserRouter>
-        <div className="flex min-h-screen items-center justify-center bg-[#111111] px-4 text-center text-sm text-white/72">
-          Cargando sesion...
+        <div className="flex min-h-screen items-center justify-center bg-ink px-4 text-center">
+          <div className="space-y-3">
+            <p className="eyebrow text-gold-300">Barber Flow</p>
+            <p className="font-display text-2xl tracking-tight text-cream">Cargando sesión…</p>
+          </div>
         </div>
       </BrowserRouter>
     );

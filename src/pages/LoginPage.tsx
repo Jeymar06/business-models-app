@@ -2,7 +2,7 @@ import { Eye, EyeOff, LogIn, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { Button, Input } from '@/components/ui';
+import { Button, Input, Pill } from '@/components/ui';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { barberHeroImage } from '@/features/home/heroImage';
 
@@ -44,16 +44,19 @@ export function LoginPage() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
-      <section className="surface-panel-dark relative isolate overflow-hidden rounded-[32px] px-6 py-8 text-white sm:px-8 lg:min-h-[720px] lg:px-10 lg:py-10">
+      <section className="surface-panel-dark relative isolate overflow-hidden rounded-[36px] px-6 py-10 text-cream sm:px-10 lg:min-h-[720px] lg:px-12 lg:py-12">
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${barberHeroImage})` }} />
         <div className="hero-fade absolute inset-0" />
-        <div className="hero-mesh absolute inset-0 opacity-20" />
-        <div className="relative flex h-full flex-col justify-between gap-8">
-          <div className="space-y-4">
-            <p className="text-sm font-semibold tracking-[0.18em] text-gold">BARBERAPP</p>
-            <h1 className="max-w-xl text-4xl font-bold leading-tight">Accede a una experiencia de reservas más elegante y más clara.</h1>
-            <p className="max-w-lg text-sm leading-7 text-white/68">
-              Gestiona tu agenda, revisa tus citas o entra al panel de tu barbería con una interfaz premium pensada para moverse rápido.
+        <div className="hero-mesh absolute inset-0 opacity-25" />
+        <div className="relative flex h-full flex-col justify-between gap-10">
+          <div className="space-y-6">
+            <Pill tone="gold">Barber Flow · Editorial</Pill>
+            <h1 className="font-display max-w-xl text-4xl font-semibold leading-[1.04] tracking-tight sm:text-5xl">
+              Accede a una experiencia{' '}
+              <span className="font-display-italic text-gold-200">más elegante y clara.</span>
+            </h1>
+            <p className="max-w-lg text-base leading-8 text-cream/72">
+              Gestiona tu agenda, revisa tus citas o entra al panel de tu barbería con una interfaz pensada para moverse rápido.
             </p>
           </div>
 
@@ -65,23 +68,23 @@ export function LoginPage() {
         </div>
       </section>
 
-      <section className="surface-panel rounded-[32px] p-6 sm:p-8 lg:p-10">
-        <div className="space-y-2">
-          <p className="text-sm font-semibold tracking-[0.18em] text-steel">INICIAR SESIÓN</p>
-          <h2 className="text-3xl font-bold text-ink">Bienvenido de vuelta</h2>
-          <p className="text-sm leading-7 text-slate-500">Entra con tu cuenta para continuar en BarberApp.</p>
+      <section className="surface-panel rounded-[36px] p-6 sm:p-10 lg:p-12">
+        <div className="space-y-3">
+          <p className="eyebrow text-ink/45">Iniciar sesión</p>
+          <h2 className="font-display text-4xl font-semibold tracking-tight text-ink">Bienvenido de vuelta</h2>
+          <p className="text-sm leading-7 text-ink/55">Entra con tu cuenta para continuar en Barber Flow.</p>
         </div>
 
         <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label className="mb-2 block text-sm font-medium text-ink" htmlFor="email">
+            <label className="eyebrow mb-2 block text-ink/55" htmlFor="email">
               Email
             </label>
             <Input id="email" onChange={(event) => setEmail(event.target.value)} placeholder="tu@email.com" required type="email" value={email} />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-ink" htmlFor="password">
+            <label className="eyebrow mb-2 block text-ink/55" htmlFor="password">
               Contraseña
             </label>
             <div className="relative">
@@ -95,7 +98,7 @@ export function LoginPage() {
               />
               <button
                 aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-ink/40 transition-colors hover:text-ink"
                 onClick={() => setShowPassword((current) => !current)}
                 type="button"
               >
@@ -104,32 +107,32 @@ export function LoginPage() {
             </div>
           </div>
 
-          {error ? <div className="rounded-2xl border border-danger/20 bg-danger/10 p-3 text-sm text-danger">{error}</div> : null}
+          {error ? <div className="rounded-2xl border border-danger/22 bg-danger/8 p-3 text-sm text-danger">{error}</div> : null}
 
-          <Button className="w-full" disabled={isLoading} type="submit">
+          <Button className="w-full" disabled={isLoading} size="lg" type="submit" variant="gold">
             {isLoading ? 'Entrando...' : 'Iniciar sesión'}
             {!isLoading ? <LogIn size={18} /> : null}
           </Button>
         </form>
 
-        <div className="my-6 flex items-center gap-4">
-          <div className="h-px flex-1 bg-black/8" />
-          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">o</span>
-          <div className="h-px flex-1 bg-black/8" />
+        <div className="my-7 flex items-center gap-4">
+          <div className="h-px flex-1 bg-ink/8" />
+          <span className="eyebrow text-ink/40">o</span>
+          <div className="h-px flex-1 bg-ink/8" />
         </div>
 
-        <Button className="w-full" disabled={isLoading} onClick={handleGoogleSignIn} variant="secondary">
+        <Button className="w-full" disabled={isLoading} onClick={handleGoogleSignIn} size="lg" variant="outline-ink">
           Continuar con Google
         </Button>
 
-        <div className="mt-6 flex items-start gap-3 rounded-[24px] bg-black/4 p-4 text-sm text-slate-600">
-          <ShieldCheck className="mt-0.5 shrink-0 text-mint-dark" size={18} />
+        <div className="mt-6 flex items-start gap-3 rounded-[24px] bg-ink/4 p-4 text-sm text-ink/60">
+          <ShieldCheck className="mt-0.5 shrink-0 text-gold-700" size={18} />
           <span>Tu sesión y tus flujos de cuenta usan la misma capa de autenticación integrada con Supabase.</span>
         </div>
 
-        <p className="mt-6 text-center text-sm text-slate-600">
+        <p className="mt-6 text-center text-sm text-ink/60">
           ¿No tienes cuenta?{' '}
-          <Link className="font-medium text-ink hover:text-mint-dark" to="/register">
+          <Link className="font-display font-semibold text-ink underline decoration-gold-500 decoration-2 underline-offset-4 transition-colors hover:text-gold-700" to="/register">
             Crear cuenta
           </Link>
         </p>
@@ -141,8 +144,8 @@ export function LoginPage() {
 function ValueCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/6 px-4 py-3 backdrop-blur-sm">
-      <p className="text-xl font-semibold text-white">{value}</p>
-      <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-white/44">{label}</p>
+      <p className="font-display text-2xl font-semibold tracking-tight text-cream">{value}</p>
+      <p className="eyebrow mt-1 text-cream/45">{label}</p>
     </div>
   );
 }

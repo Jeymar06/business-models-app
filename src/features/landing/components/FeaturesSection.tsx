@@ -32,31 +32,45 @@ const iconMap = {
 
 export function FeaturesSection() {
   return (
-    <section className="mx-auto max-w-[1200px] px-4 py-16 sm:px-6 lg:px-8 lg:py-20" id="funciones">
-      <div className="space-y-4">
-        <p className="text-sm font-semibold tracking-[0.18em] text-gold">FUNCIONES PRINCIPALES</p>
-        <h2 className="max-w-3xl text-3xl font-semibold text-white sm:text-4xl">
-          Todo lo que Barber Flow necesita mostrar sobre el producto, sin ruido visual de mas.
-        </h2>
-        <p className="max-w-2xl text-base leading-7 text-[#C9C9C9]">
-          La plataforma concentra experiencia de cliente, operacion de barberia y supervision de negocio en un mismo entorno.
+    <section className="mx-auto max-w-[1200px] px-4 py-20 sm:px-6 lg:px-8 lg:py-28" id="funciones">
+      <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
+        <div className="space-y-5">
+          <p className="eyebrow text-gold-300">Funciones principales</p>
+          <h2 className="font-display max-w-xl text-4xl font-semibold leading-[1.04] tracking-tight text-cream sm:text-5xl">
+            Todo lo que tu barbería necesita.{' '}
+            <span className="font-display-italic text-gold-200">Sin ruido.</span>
+          </h2>
+        </div>
+        <p className="max-w-xl text-base leading-8 text-cream/68 lg:text-lg">
+          La plataforma concentra experiencia de cliente, operación de barbería y supervisión de negocio en un mismo entorno editorial.
         </p>
       </div>
 
-      <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {landingFeatures.map((feature) => {
+      <div className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {landingFeatures.map((feature, idx) => {
           const Icon = iconMap[feature.title as keyof typeof iconMap];
 
           return (
             <article
-              className="landing-hover-lift rounded-[28px] border border-white/10 bg-[#111111] p-5 transition duration-300"
+              className="landing-hover-lift group relative overflow-hidden rounded-[28px] border border-white/8 bg-[#141210] p-6"
               key={feature.title}
             >
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-gold/16 bg-gold/10 text-gold">
-                <Icon size={18} />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 -top-px h-px bg-gold-flow opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+              />
+              <div className="flex items-center justify-between">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-gold-500/16 bg-gold-500/10 text-gold-300">
+                  <Icon size={20} />
+                </div>
+                <span className="font-display numeric text-sm text-cream/30">
+                  {String(idx + 1).padStart(2, '0')}
+                </span>
               </div>
-              <h3 className="mt-5 text-xl font-semibold text-white">{feature.title}</h3>
-              <p className="mt-3 text-sm leading-7 text-[#C9C9C9]">{feature.description}</p>
+              <h3 className="font-display mt-6 text-2xl font-semibold tracking-tight text-cream">
+                {feature.title}
+              </h3>
+              <p className="mt-3 text-[0.95rem] leading-7 text-cream/68">{feature.description}</p>
             </article>
           );
         })}

@@ -14,7 +14,7 @@ import { landingMediaGroups } from '@/features/landing/data/landingMedia';
 
 export function LandingPage() {
   return (
-    <div className="bg-[#0b0b0b] text-white">
+    <div className="bg-ink text-cream">
       <LandingNavbar />
       <HeroSection />
 
@@ -38,7 +38,7 @@ export function LandingPage() {
             alt: 'Atmosfera editorial Barber Flow 2',
           },
         ]}
-        className="bg-[#0b0b0b] py-8 lg:py-10"
+        className="bg-ink py-10 lg:py-12"
         columnsClassName="md:grid-cols-3"
       />
 
@@ -50,7 +50,7 @@ export function LandingPage() {
           { type: 'image', src: landingMediaGroups.features.sideTop, alt: 'Detalle visual de producto Barber Flow' },
           { type: 'image', src: landingMediaGroups.problem[0], alt: 'Escena de producto y barberia' },
         ]}
-        className="bg-[#0b0b0b] pb-8"
+        className="bg-ink pb-10"
         columnsClassName="md:grid-cols-3"
         dark
       />
@@ -67,7 +67,7 @@ export function LandingPage() {
           { type: 'image', src: landingMediaGroups.clients.images[0], alt: 'Escena editorial para clientes Barber Flow' },
           { type: 'video', src: landingMediaGroups.clients.video, poster: landingMediaGroups.clients.poster, alt: 'Video para duenos y operacion Barber Flow' },
         ]}
-        className="bg-[#111111] py-8"
+        className="bg-ink-soft py-10"
         columnsClassName="md:grid-cols-3"
         dark
       />

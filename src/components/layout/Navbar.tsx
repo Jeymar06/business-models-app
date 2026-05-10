@@ -16,7 +16,7 @@ export function Navbar() {
       ? [
           { to: '/client-dashboard', label: 'Agendar' },
           { to: '/client-dashboard', label: 'Mis citas' },
-          { to: '/crear-barberia', label: 'Crear barberia' },
+          { to: '/crear-barberia', label: 'Crear barbería' },
         ]
       : []),
     ...(role === 'admin' ? [{ to: '/admin-dashboard', label: 'Admin' }] : []),
@@ -24,27 +24,29 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/8 bg-[#111111]/88 text-white backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-white/8 bg-ink/85 text-cream backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link className="flex items-center gap-3" to="/">
-          <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/6 text-gold shadow-glow">
+        <Link className="group flex items-center gap-3" to="/">
+          <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-gold-300 transition-all duration-300 group-hover:border-gold-500/40 group-hover:bg-gold-500/10">
             <Scissors aria-hidden size={18} />
           </span>
-          <div>
-            <span className="block text-sm font-semibold tracking-[0.18em] text-white/60">BARBERAPP</span>
-            <span className="block text-base font-semibold text-white">Reservas premium</span>
+          <div className="leading-tight">
+            <span className="eyebrow block text-cream/55">Barber Flow</span>
+            <span className="font-display block text-lg font-semibold tracking-tight text-cream">
+              Reservas premium
+            </span>
           </div>
         </Link>
 
-        <nav aria-label="Navegacion principal" className="hidden items-center gap-1 rounded-full border border-white/8 bg-white/5 p-1 md:flex">
+        <nav aria-label="Navegación principal" className="hidden items-center gap-1 rounded-full border border-white/8 bg-white/4 p-1 md:flex">
           {navItems.map((item) => (
             <NavLink
               className={({ isActive }) =>
                 [
-                  'rounded-full px-4 py-2 text-sm font-medium transition-all duration-200',
+                  'rounded-full px-4 py-2 text-sm font-medium transition-all duration-300',
                   isActive
-                    ? 'bg-white text-ink shadow-soft'
-                    : 'text-white/72 hover:bg-white/8 hover:text-white',
+                    ? 'bg-cream text-ink shadow-soft'
+                    : 'text-cream/70 hover:bg-white/8 hover:text-cream',
                 ].join(' ')
               }
               key={`${item.to}-${item.label}`}
@@ -60,7 +62,7 @@ export function Navbar() {
             <ProfileMenu />
           ) : (
             <Link className="hidden sm:block" to="/login">
-              <Button aria-label="Iniciar sesion" size="sm" variant="outline">
+              <Button aria-label="Iniciar sesión" size="sm" variant="outline">
                 <LogIn aria-hidden size={16} />
                 Entrar
               </Button>
@@ -69,8 +71,8 @@ export function Navbar() {
 
           <button
             aria-expanded={isMobileMenuOpen}
-            aria-label={isMobileMenuOpen ? 'Cerrar menu' : 'Abrir menu'}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/6 text-white transition hover:bg-white/10 md:hidden"
+            aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-cream transition hover:bg-white/10 md:hidden"
             onClick={() => setIsMobileMenuOpen((current) => !current)}
             type="button"
           >
@@ -80,16 +82,16 @@ export function Navbar() {
       </div>
 
       {isMobileMenuOpen ? (
-        <div className="border-t border-white/8 bg-[#111111]/96 px-4 py-4 md:hidden">
-          <nav aria-label="Navegacion movil" className="mx-auto grid max-w-[1200px] gap-2">
+        <div className="border-t border-white/8 bg-ink/96 px-4 py-4 md:hidden">
+          <nav aria-label="Navegación móvil" className="mx-auto grid max-w-[1200px] gap-2">
             {navItems.map((item) => (
               <NavLink
                 className={({ isActive }) =>
                   [
                     'rounded-2xl border px-4 py-3 text-sm font-medium transition',
                     isActive
-                      ? 'border-white bg-white text-ink'
-                      : 'border-white/10 bg-white/5 text-white/78 hover:bg-white/8 hover:text-white',
+                      ? 'border-cream bg-cream text-ink'
+                      : 'border-white/10 bg-white/5 text-cream/78 hover:bg-white/8 hover:text-cream',
                   ].join(' ')
                 }
                 key={`mobile-${item.to}-${item.label}`}
@@ -104,7 +106,7 @@ export function Navbar() {
               <Link onClick={() => setIsMobileMenuOpen(false)} to="/login">
                 <Button className="mt-2 w-full" size="md" variant="outline">
                   <LogIn aria-hidden size={16} />
-                  Iniciar sesion
+                  Iniciar sesión
                 </Button>
               </Link>
             ) : null}
