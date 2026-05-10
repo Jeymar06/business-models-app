@@ -1,20 +1,31 @@
-const landingLogoDataUri =
-  'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=600&q=80';
+import landingLogoFile from "../../../assets/landing/full/logo.png";
+import videoPrimary from "../../../assets/landing/full/video-primary.mp4";
+import videoSecondary from "../../../assets/landing/full/video-secondary.mp4";
+import videoTertiary from "../../../assets/landing/full/video-tertiary.mp4";
 
+import introImage from "../../../assets/landing/full/intro.png";
+import posterAImage from "../../../assets/landing/full/poster-a.png";
+import posterBImage from "../../../assets/landing/full/poster-b.png";
+import posterCImage from "../../../assets/landing/full/poster-c.png";
+import detailImage from "../../../assets/landing/full/detail.png";
+import productImage from "../../../assets/landing/full/product.png";
+import clientImage from "../../../assets/landing/full/client.png";
+
+const landingLogoDataUri = landingLogoFile;
 const videos = {
-  primary: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-  secondary: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-  tertiary: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+  primary: videoPrimary,
+  secondary: videoSecondary,
+  tertiary: videoTertiary,
 };
 
 const images = {
-  intro: 'https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=1200&q=80',
-  posterA: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1200&q=80',
-  posterB: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=1200&q=80',
-  posterC: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1200&q=80',
-  detail: 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=1200&q=80',
-  product: 'https://images.unsplash.com/photo-1512690459411-b0fd1b68f3e6?auto=format&fit=crop&w=1200&q=80',
-  client: 'https://images.unsplash.com/photo-1516880711640-ef7db81be3e1?auto=format&fit=crop&w=1200&q=80',
+  intro: introImage,
+  posterA: posterAImage,
+  posterB: posterBImage,
+  posterC: posterCImage,
+  detail: detailImage,
+  product: productImage,
+  client: clientImage,
 };
 
 export const landingLogo = landingLogoDataUri;
