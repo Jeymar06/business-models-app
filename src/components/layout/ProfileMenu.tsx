@@ -1,7 +1,7 @@
 import { CircleHelp, KeyRound, Loader2, LogOut, UserCircle2 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/hooks/useAuth';
 
@@ -11,18 +11,24 @@ function getInitial(value?: string | null) {
 }
 
 export function ProfileMenu() {
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+  const profileEmail = profile?.email || user?.email || null;
 
   const fallbackInitial = useMemo(
-    () => getInitial(profile?.full_name) ?? getInitial(profile?.email) ?? 'U',
-    [profile?.email, profile?.full_name],
+    () => getInitial(profile?.full_name) ?? getInitial(profileEmail) ?? 'U',
+    [profile?.full_name, profileEmail],
   );
 
-  const displayName = profile?.full_name?.trim() || profile?.email || 'Usuario';
-  const secondaryText = profile?.full_name?.trim() ? profile.email : 'Mi cuenta';
+  const displayName = profile?.full_name?.trim() || profileEmail || 'Usuario';
+  const secondaryText = profile?.full_name?.trim() ? profileEmail : 'Mi cuenta';
+
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -95,7 +101,7 @@ export function ProfileMenu() {
         >
           <div className="rounded-[20px] bg-[#111111] px-4 pb-4 pt-3 text-white">
             <p className="truncate text-sm font-semibold">{displayName}</p>
-            <p className="truncate text-xs text-white/60">{profile?.email}</p>
+            <p className="truncate text-xs text-white/60">{profileEmail || 'Sin correo disponible'}</p>
           </div>
 
           <div className="py-2">
