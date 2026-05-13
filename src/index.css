@@ -120,7 +120,7 @@ a {
   font-family: 'Fraunces', ui-serif, Georgia, serif;
   font-optical-sizing: auto;
   font-variation-settings: 'SOFT' 30, 'WONK' 0;
-  letter-spacing: -0.015em;
+  letter-spacing: 0;
 }
 
 .font-display-italic {
@@ -278,6 +278,56 @@ a {
   content: '';
   opacity: 0.32;
   pointer-events: none;
+}
+
+.landing-page {
+  isolation: isolate;
+}
+
+.landing-hero-title-char {
+  transform-origin: 50% 100%;
+}
+
+.landing-hero-orbit {
+  will-change: transform, opacity;
+}
+
+.landing-hero-orbit:nth-child(1) {
+  animation: mediaDrift 9s ease-in-out infinite;
+}
+
+.landing-hero-orbit:nth-child(2) {
+  animation: mediaDrift 10s ease-in-out infinite;
+  animation-delay: 0.3s;
+}
+
+.landing-hero-orbit:nth-child(3) {
+  animation: mediaDrift 11s ease-in-out infinite;
+  animation-delay: 0.7s;
+}
+
+.landing-horizontal-track,
+.landing-marquee-track,
+.landing-video-reveal-media {
+  will-change: transform;
+}
+
+.landing-video-reveal-media {
+  will-change: clip-path, transform;
+}
+
+.landing-word {
+  color: rgba(245, 241, 232, 0.12);
+}
+
+.landing-tilt-card {
+  transform-origin: 50% 70%;
+}
+
+@media (max-width: 767px) {
+  .landing-horizontal-track {
+    transform: none !important;
+  }
 }
 
 .landing-hover-lift {

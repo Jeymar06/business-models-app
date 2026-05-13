@@ -27,16 +27,16 @@ export function LandingNavbar() {
   return (
     <header
       className={[
-        'sticky top-0 z-50 text-cream backdrop-blur-xl transition-all duration-500 ease-[cubic-bezier(0.2,0.7,0.2,1)]',
+        'fixed left-0 top-0 z-50 w-full text-cream backdrop-blur-xl transition-all duration-500 ease-[cubic-bezier(0.2,0.7,0.2,1)]',
         scrolled
           ? 'border-b border-white/10 bg-ink/85 shadow-[0_18px_44px_rgba(0,0,0,0.4)]'
-          : 'border-b border-transparent bg-ink/55',
+          : 'border-b border-transparent bg-ink/25',
       ].join(' ')}
     >
       <div className="mx-auto flex h-20 max-w-[1280px] items-center justify-between px-4 sm:px-6 lg:px-8">
         <a className="group flex items-center gap-4" href="#inicio">
-          <span className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 px-2 py-2 transition duration-500 group-hover:-translate-y-0.5 group-hover:border-gold-500/40 group-hover:bg-white/10">
-            <img alt="Barber Flow" className="h-11 w-auto transition duration-500 group-hover:scale-[1.04]" src={landingLogo} />
+          <span className="h-14 w-14 overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition duration-500 group-hover:-translate-y-0.5 group-hover:border-gold-500/40 group-hover:bg-white/10">
+            <img alt="Barber Flow" className="h-full w-full object-cover object-left transition duration-500 group-hover:scale-[1.04]" src={landingLogo} />
           </span>
           <div className="leading-tight">
             <span className="eyebrow block text-cream/55 transition duration-300 group-hover:text-gold-200">
