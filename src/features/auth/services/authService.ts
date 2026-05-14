@@ -1,5 +1,6 @@
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import type { Profile } from '@/types/supabase.types';
+import { uploadPublicImage } from '@/utils/imageUpload';
 import type { User } from '@supabase/supabase-js';
 
 export interface AuthCredentials {
@@ -127,6 +128,42 @@ export const authService = {
     }
 
     return data as Profile;
+  },
+
+  async updateUserProfile(input: { userId: string; fullName?: string | null; avatarUrl?: string | null }) {
+    ensureSupabase();
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({
+        full_name: input.fullName ?? null,
+        avatar_url: input.avatarUrl ?? null,
+      } as never)
+      .eq('id', input.userId)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    await supabase.auth.updateUser({
+      data: {
+        full_name: input.fullName ?? null,
+        avatar_url: input.avatarUrl ?? null,
+      },
+    }).catch(() => undefined);
+
+    window.dispatchEvent(new CustomEvent('barber-flow-profile-updated'));
+    return data as Profile;
+  },
+
+  async uploadAvatar(file: File, userId: string) {
+    ensureSupabase();
+    return uploadPublicImage({
+      bucket: 'profiles',
+      file,
+      folder: `${userId}/avatars`,
+      maxWidth: 800,
+    });
   },
 
   async deleteUserAccount() {

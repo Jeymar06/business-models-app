@@ -5,6 +5,7 @@ import { Link, NavLink } from 'react-router-dom';
 import { ProfileMenu } from '@/components/layout/ProfileMenu';
 import { Button } from '@/components/ui';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { NotificationBell } from '@/features/notifications/NotificationBell';
 
 export function Navbar() {
   const { isAuthenticated, role } = useAuth();
@@ -59,7 +60,10 @@ export function Navbar() {
 
         <div className="flex items-center gap-3">
           {isAuthenticated ? (
-            <ProfileMenu />
+            <>
+              <NotificationBell />
+              <ProfileMenu />
+            </>
           ) : (
             <Link className="hidden sm:block" to="/login">
               <Button aria-label="Iniciar sesión" size="sm" variant="outline">

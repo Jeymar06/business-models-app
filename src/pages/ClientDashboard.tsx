@@ -90,14 +90,26 @@ export function ClientDashboard() {
                 key={barberia.id}
               >
                 <div className="relative overflow-hidden px-6 py-6 text-cream">
-                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(33,29,25,0.98),rgba(20,18,16,1))]" />
+                  {barberia.banner_url ? (
+                    <img alt={barberia.nombre} className="absolute inset-0 h-full w-full object-cover" src={barberia.banner_url} />
+                  ) : null}
+                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(33,29,25,0.86),rgba(20,18,16,0.98))]" />
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.22),transparent_28%)]" />
                   <div className="relative flex items-start justify-between gap-3">
-                    <div>
-                      <p className="eyebrow text-cream/45">Barbería</p>
-                      <h3 className="font-display mt-3 text-2xl font-semibold tracking-tight">
-                        {barberia.nombre}
-                      </h3>
+                    <div className="flex items-start gap-3">
+                      <span className="grid h-12 w-12 flex-none place-items-center overflow-hidden rounded-2xl border border-white/12 bg-white/8 text-sm font-semibold text-gold-200">
+                        {barberia.logo_url ? (
+                          <img alt={`Logo ${barberia.nombre}`} className="h-full w-full object-cover" src={barberia.logo_url} />
+                        ) : (
+                          barberia.nombre.charAt(0).toUpperCase()
+                        )}
+                      </span>
+                      <div>
+                        <p className="eyebrow text-cream/45">Barbería</p>
+                        <h3 className="font-display mt-3 text-2xl font-semibold tracking-tight">
+                          {barberia.nombre}
+                        </h3>
+                      </div>
                     </div>
                     <Badge variant="confirmed">Activa</Badge>
                   </div>

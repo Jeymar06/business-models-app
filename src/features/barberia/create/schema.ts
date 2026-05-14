@@ -10,6 +10,8 @@ export const createBarberiaSchema = z.object({
   estadoProvincia: z.string(),
   pais: z.string().min(2, 'El pais es requerido'),
   codigoPostal: z.string(),
+  logoUrl: z.string().refine((val) => !val || /^https?:\/\/.+/i.test(val), 'URL invalida'),
+  bannerUrl: z.string().refine((val) => !val || /^https?:\/\/.+/i.test(val), 'URL invalida'),
   moneda: z.string().min(3).max(3),
   zonaHoraria: z.string().min(3, 'Selecciona una zona horaria'),
   politicaCancelacion: z.string().min(10, 'Agrega una politica corta de cancelacion'),
@@ -30,6 +32,8 @@ export const defaultCreateBarberiaValues: CreateBarberiaFormValues = {
   estadoProvincia: '',
   pais: 'Colombia',
   codigoPostal: '',
+  logoUrl: '',
+  bannerUrl: '',
   moneda: 'USD',
   zonaHoraria: 'America/Bogota',
   politicaCancelacion: 'Puedes cancelar tu cita con al menos 24 horas de anticipacion.',
@@ -41,6 +45,6 @@ export const defaultCreateBarberiaValues: CreateBarberiaFormValues = {
 export const stepFields: Array<Array<keyof CreateBarberiaFormValues>> = [
   ['nombre', 'descripcion', 'telefono', 'emailContacto'],
   ['direccion', 'ciudad', 'estadoProvincia', 'pais', 'codigoPostal'],
-  [],
+  ['logoUrl', 'bannerUrl'],
   ['moneda', 'zonaHoraria', 'politicaCancelacion', 'tiempoCancelacionMin', 'horarioApertura', 'horarioCierre'],
 ];

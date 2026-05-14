@@ -7,7 +7,7 @@ import { FinalCTASection } from '@/features/landing/components/FinalCTASection';
 import { HeroSection } from '@/features/landing/components/HeroSection';
 import { HowItWorksSection } from '@/features/landing/components/HowItWorksSection';
 import { LandingFooter } from '@/features/landing/components/LandingFooter';
-import { LandingMarqueeSection, AnimatedMessageSection, PinnedShowcaseSection, ReelStackSection, VideoRevealSection } from '@/features/landing/components/MotionShowcaseSections';
+import { LandingMarqueeSection, AnimatedMessageSection, PinnedShowcaseSection, VideoRevealSection } from '@/features/landing/components/MotionShowcaseSections';
 import { LandingNavbar } from '@/features/landing/components/LandingNavbar';
 import { LandingPreloader } from '@/features/landing/components/LandingPreloader';
 import { OwnersSection } from '@/features/landing/components/OwnersSection';
@@ -42,7 +42,6 @@ export function LandingPage() {
         <ProblemSolutionSection />
         <OwnersSection />
         <ClientsSection />
-        <ReelStackSection />
         <HowItWorksSection />
         <PricingSection />
         <FAQSection />

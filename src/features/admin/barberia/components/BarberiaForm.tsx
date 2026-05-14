@@ -14,6 +14,8 @@ const barberiaSchema = z.object({
   telefono: z.string().min(7, 'El telefono es requerido'),
   ciudad: z.string().min(2, 'La ciudad es requerida'),
   pais: z.string().min(2, 'El pais es requerido'),
+  logoUrl: z.string().refine((val) => !val || /^https?:\/\/.+/i.test(val), 'URL invalida'),
+  bannerUrl: z.string().refine((val) => !val || /^https?:\/\/.+/i.test(val), 'URL invalida'),
 });
 
 export function BarberiaForm({
@@ -27,7 +29,7 @@ export function BarberiaForm({
 }) {
   const form = useForm<BarberiaInput>({
     resolver: zodResolver(barberiaSchema),
-    defaultValues: { nombre: '', descripcion: '', direccion: '', telefono: '', ciudad: '', pais: 'Colombia' },
+    defaultValues: { nombre: '', descripcion: '', direccion: '', telefono: '', ciudad: '', pais: 'Colombia', logoUrl: '', bannerUrl: '' },
   });
 
   useEffect(() => {
@@ -38,11 +40,24 @@ export function BarberiaForm({
       telefono: barberia?.telefono ?? '',
       ciudad: barberia?.ciudad ?? '',
       pais: barberia?.pais ?? 'Colombia',
+      logoUrl: barberia?.logo_url ?? '',
+      bannerUrl: barberia?.banner_url ?? '',
     });
   }, [barberia, form]);
 
+  const logoUrl = form.watch('logoUrl');
+  const bannerUrl = form.watch('bannerUrl');
+
   return (
     <form className="grid gap-3 rounded-md border border-slate-200 bg-slate-50 p-4 md:grid-cols-2" onSubmit={form.handleSubmit(onSubmit)}>
+      <div className="md:col-span-2 grid gap-3 md:grid-cols-[10rem_1fr] md:items-center">
+        <div className="grid h-32 w-32 place-items-center overflow-hidden rounded-3xl border border-slate-200 bg-white text-sm text-slate-400">
+          {logoUrl ? <img alt="Logo barberia" className="h-full w-full object-cover" src={logoUrl} /> : 'Logo'}
+        </div>
+        <div className="grid h-36 place-items-center overflow-hidden rounded-3xl border border-slate-200 bg-white text-sm text-slate-400">
+          {bannerUrl ? <img alt="Banner barberia" className="h-full w-full object-cover" src={bannerUrl} /> : 'Banner'}
+        </div>
+      </div>
       <Input label="Nombre" {...form.register('nombre')} />
       <Input label="Telefono" {...form.register('telefono')} />
       <label className="grid gap-1.5 text-sm font-medium text-slate-700 md:col-span-2">
@@ -55,6 +70,8 @@ export function BarberiaForm({
       <Input label="Direccion" {...form.register('direccion')} />
       <Input label="Ciudad" {...form.register('ciudad')} />
       <Input label="Pais" {...form.register('pais')} />
+      <Input label="URL del logo" placeholder="https://..." {...form.register('logoUrl')} />
+      <Input label="URL del banner" placeholder="https://..." {...form.register('bannerUrl')} />
       <Button className="self-end md:col-span-2" disabled={isSaving} type="submit">
         {isSaving ? 'Guardando...' : barberia ? 'Guardar' : 'Crear barberia'}
       </Button>
