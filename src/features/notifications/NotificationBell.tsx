@@ -1,4 +1,5 @@
 import { Bell, CalendarCheck2, CheckCheck, Loader2 } from 'lucide-react';
+import type { CSSProperties } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -10,7 +11,9 @@ export function NotificationBell() {
   const { isLoading, isMarking, markAllAsRead, markAsRead, notifications, unreadCount } = useNotifications(user?.id);
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const location = useLocation();
+  const [panelStyle, setPanelStyle] = useState<CSSProperties>();
 
   const targetPath = useMemo(() => {
     if (role === 'admin') return '/admin-dashboard';
@@ -25,6 +28,18 @@ export function NotificationBell() {
   useEffect(() => {
     if (!isOpen) return undefined;
 
+    function updatePanelPosition() {
+      const button = buttonRef.current;
+      if (!button) return;
+
+      const rect = button.getBoundingClientRect();
+      setPanelStyle({
+        position: 'fixed',
+        top: rect.bottom + 12,
+        right: Math.max(8, window.innerWidth - rect.right),
+      });
+    }
+
     function handlePointerDown(event: MouseEvent | TouchEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false);
@@ -35,14 +50,19 @@ export function NotificationBell() {
       if (event.key === 'Escape') setIsOpen(false);
     }
 
+    updatePanelPosition();
     document.addEventListener('mousedown', handlePointerDown);
     document.addEventListener('touchstart', handlePointerDown);
     document.addEventListener('keydown', handleEscape);
+    window.addEventListener('resize', updatePanelPosition);
+    window.addEventListener('scroll', updatePanelPosition, true);
 
     return () => {
       document.removeEventListener('mousedown', handlePointerDown);
       document.removeEventListener('touchstart', handlePointerDown);
       document.removeEventListener('keydown', handleEscape);
+      window.removeEventListener('resize', updatePanelPosition);
+      window.removeEventListener('scroll', updatePanelPosition, true);
     };
   }, [isOpen]);
 
@@ -62,6 +82,7 @@ export function NotificationBell() {
         aria-label={unreadCount ? `${unreadCount} notificaciones sin leer` : 'Notificaciones'}
         className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/6 text-cream transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/10"
         onClick={() => setIsOpen((current) => !current)}
+        ref={buttonRef}
         type="button"
       >
         <Bell size={18} />
@@ -74,9 +95,10 @@ export function NotificationBell() {
 
       {isOpen ? (
         <div
-          className="surface-panel absolute right-0 top-[calc(100%+0.85rem)] z-30 w-[min(calc(100vw-1rem),24rem)] rounded-3xl p-2 text-ink"
+          className="surface-panel z-[70] w-[min(calc(100vw-1rem),24rem)] rounded-3xl p-2 text-ink"
           id="notifications-menu"
           role="menu"
+          style={panelStyle}
         >
           <div className="rounded-[20px] bg-[#111111] px-4 py-4 text-white">
             <div className="flex items-start justify-between gap-3">

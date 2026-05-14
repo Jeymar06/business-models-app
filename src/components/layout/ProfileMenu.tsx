@@ -1,5 +1,5 @@
 import { CircleHelp, KeyRound, Loader2, LogOut, UserCircle2 } from 'lucide-react';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -16,8 +16,10 @@ export function ProfileMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const location = useLocation();
   const profileEmail = profile?.email || user?.email || null;
+  const [panelStyle, setPanelStyle] = useState<CSSProperties>();
 
   const fallbackInitial = useMemo(
     () => getInitial(profile?.full_name) ?? getInitial(profileEmail) ?? 'U',
@@ -37,6 +39,18 @@ export function ProfileMenu() {
       return undefined;
     }
 
+    function updatePanelPosition() {
+      const button = buttonRef.current;
+      if (!button) return;
+
+      const rect = button.getBoundingClientRect();
+      setPanelStyle({
+        position: 'fixed',
+        top: rect.bottom + 12,
+        right: Math.max(8, window.innerWidth - rect.right),
+      });
+    }
+
     function handlePointerDown(event: MouseEvent | TouchEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false);
@@ -49,14 +63,19 @@ export function ProfileMenu() {
       }
     }
 
+    updatePanelPosition();
     document.addEventListener('mousedown', handlePointerDown);
     document.addEventListener('touchstart', handlePointerDown);
     document.addEventListener('keydown', handleEscape);
+    window.addEventListener('resize', updatePanelPosition);
+    window.addEventListener('scroll', updatePanelPosition, true);
 
     return () => {
       document.removeEventListener('mousedown', handlePointerDown);
       document.removeEventListener('touchstart', handlePointerDown);
       document.removeEventListener('keydown', handleEscape);
+      window.removeEventListener('resize', updatePanelPosition);
+      window.removeEventListener('scroll', updatePanelPosition, true);
     };
   }, [isOpen]);
 
@@ -80,6 +99,7 @@ export function ProfileMenu() {
         aria-haspopup="menu"
         className="flex h-10 max-w-[12.5rem] items-center gap-2 overflow-hidden rounded-full border border-white/10 bg-white/6 pl-1 pr-2 text-left text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/10 lg:max-w-[14.5rem] lg:gap-3 lg:pr-3"
         onClick={() => setIsOpen((current) => !current)}
+        ref={buttonRef}
         type="button"
       >
         <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-[#202020] text-sm font-semibold text-white">
@@ -97,9 +117,10 @@ export function ProfileMenu() {
 
       {isOpen ? (
         <div
-          className="surface-panel absolute right-0 top-[calc(100%+0.85rem)] z-30 w-[min(calc(100vw-1rem),18rem)] rounded-3xl p-2 text-ink sm:w-72"
+          className="surface-panel z-[70] w-[min(calc(100vw-1rem),18rem)] rounded-3xl p-2 text-ink sm:w-72"
           id="profile-menu"
           role="menu"
+          style={panelStyle}
         >
           <div className="rounded-[20px] bg-[#111111] px-4 pb-4 pt-3 text-white">
             <p className="truncate text-sm font-semibold">{displayName}</p>
