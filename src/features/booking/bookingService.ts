@@ -104,6 +104,82 @@ function toIsoDate(date: Date) {
   return format(date, 'yyyy-MM-dd');
 }
 
+type CitaDetalleRow = {
+  id: string;
+  cliente_id: string;
+  barberia_id: string;
+  barbero_id: string;
+  servicio_id: string;
+  fecha: string;
+  hora_inicio: string;
+  hora_fin: string;
+  estado: AppointmentStatus;
+  notas: string | null;
+  created_at: string;
+  updated_at: string;
+  profiles: { full_name: string | null; email: string | null } | null;
+  barberias: { nombre: string; admin_id: string } | null;
+  barberos: { nombre: string } | null;
+  servicios: { nombre: string; precio: number; duracion_min: number } | null;
+};
+
+function mapCitaDetalle(row: CitaDetalleRow): CitaConDetalles {
+  return {
+    cita_id: row.id,
+    cliente_id: row.cliente_id,
+    nombre_cliente: row.profiles?.full_name ?? null,
+    email_cliente: row.profiles?.email ?? '',
+    barberia_id: row.barberia_id,
+    nombre_barberia: row.barberias?.nombre ?? 'Barberia',
+    admin_id: row.barberias?.admin_id ?? '',
+    barbero_id: row.barbero_id,
+    nombre_barbero: row.barberos?.nombre ?? 'Barbero',
+    servicio_id: row.servicio_id,
+    nombre_servicio: row.servicios?.nombre ?? 'Servicio',
+    precio: row.servicios?.precio ?? 0,
+    duracion_min: row.servicios?.duracion_min ?? 0,
+    fecha: row.fecha,
+    hora_inicio: row.hora_inicio,
+    hora_fin: row.hora_fin,
+    estado: row.estado,
+    notas: row.notas,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
+}
+
+async function fetchCitasConDetalles(filters: { clienteId?: string; barberiaId?: string }) {
+  let query = (supabase as any)
+    .from('citas')
+    .select(`
+      id,
+      cliente_id,
+      barberia_id,
+      barbero_id,
+      servicio_id,
+      fecha,
+      hora_inicio,
+      hora_fin,
+      estado,
+      notas,
+      created_at,
+      updated_at,
+      profiles:profiles!citas_cliente_id_fkey(full_name,email),
+      barberias:barberias!citas_barberia_id_fkey(nombre,admin_id),
+      barberos:barberos!citas_barbero_id_fkey(nombre),
+      servicios:servicios!citas_servicio_id_fkey(nombre,precio,duracion_min)
+    `)
+    .order('fecha', { ascending: true })
+    .order('hora_inicio', { ascending: true });
+
+  if (filters.clienteId) query = query.eq('cliente_id', filters.clienteId);
+  if (filters.barberiaId) query = query.eq('barberia_id', filters.barberiaId);
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return ((data ?? []) as CitaDetalleRow[]).map(mapCitaDetalle);
+}
+
 export const bookingService = {
   async getBarberias() {
     if (!isSupabaseConfigured) return [];
@@ -210,38 +286,16 @@ export const bookingService = {
   },
 
   async getMisCitas(clienteId: string) {
-    const { data, error } = await (supabase as any)
-      .from('citas_con_detalles')
-      .select('*')
-      .eq('cliente_id', clienteId)
-      .order('fecha', { ascending: true })
-      .order('hora_inicio', { ascending: true });
-
-    if (error) throw error;
-    return data as CitaConDetalles[];
+    return fetchCitasConDetalles({ clienteId });
   },
 
   async getCitasByBarberia(barberiaId: string) {
-    const { data, error } = await (supabase as any)
-      .from('citas_con_detalles')
-      .select('*')
-      .eq('barberia_id', barberiaId)
-      .order('fecha', { ascending: true })
-      .order('hora_inicio', { ascending: true });
-
-    if (error) throw error;
-    return data as CitaConDetalles[];
+    return fetchCitasConDetalles({ barberiaId });
   },
 
   async getTodasLasCitas() {
-    const { data, error } = await (supabase as any)
-      .from('citas_con_detalles')
-      .select('*')
-      .order('fecha', { ascending: false })
-      .order('hora_inicio', { ascending: false });
-
-    if (error) throw error;
-    return data as CitaConDetalles[];
+    const citas = await fetchCitasConDetalles({});
+    return citas.sort((left, right) => `${right.fecha}${right.hora_inicio}`.localeCompare(`${left.fecha}${left.hora_inicio}`));
   },
 
   async checkSlotDisponible(input: Pick<CreateCitaInput, 'barbero_id' | 'fecha' | 'hora_inicio' | 'hora_fin'>) {
