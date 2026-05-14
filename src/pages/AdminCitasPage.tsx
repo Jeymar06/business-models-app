@@ -44,11 +44,11 @@ export function AdminCitasPage() {
   }
 
   return (
-    <section className="space-y-6 rounded-[28px] border border-ink/10 bg-white p-7 shadow-soft sm:p-8">
+    <section className="space-y-6 rounded-[28px] border border-[#e5d8c5] bg-[#fffdfa] p-7 shadow-soft sm:p-8">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
           <p className="eyebrow text-[#8a6420]">Agenda</p>
-          <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">
+          <h1 className="font-display text-3xl font-semibold tracking-tight text-[#241b14]">
             Citas de {barberia.nombre}
           </h1>
         </div>
@@ -115,7 +115,7 @@ export function AdminCitasPage() {
 function FilterField({ children, label }: { children: React.ReactNode; label: string }) {
   return (
     <label className="block">
-      <span className="eyebrow mb-2 block text-ink/85">{label}</span>
+      <span className="eyebrow mb-2 block text-[#4e4033]">{label}</span>
       {children}
     </label>
   );
@@ -137,29 +137,29 @@ function CitasTable({
   if (!citas.length) return <PanelState title="Sin citas" text="No hay citas con esos filtros." />;
 
   return (
-    <div className="overflow-x-auto rounded-[22px] border border-ink/10 bg-white">
+    <div className="overflow-x-auto rounded-[22px] border border-[#e0d1bd] bg-white">
       <table className="min-w-full divide-y divide-ink/8 text-sm">
         <thead className="bg-[#f5efe3]">
           <tr className="text-left">
-            <th className="eyebrow px-5 py-4 text-ink/85">Cliente</th>
-            <th className="eyebrow px-5 py-4 text-ink/85">Servicio</th>
-            <th className="eyebrow px-5 py-4 text-ink/85">Barbero</th>
-            <th className="eyebrow px-5 py-4 text-ink/85">Fecha</th>
-            <th className="eyebrow px-5 py-4 text-ink/85">Estado</th>
-            <th className="eyebrow px-5 py-4 text-ink/85">Acciones</th>
+            <th className="eyebrow px-5 py-4 text-[#4e4033]">Cliente</th>
+            <th className="eyebrow px-5 py-4 text-[#4e4033]">Servicio</th>
+            <th className="eyebrow px-5 py-4 text-[#4e4033]">Barbero</th>
+            <th className="eyebrow px-5 py-4 text-[#4e4033]">Fecha</th>
+            <th className="eyebrow px-5 py-4 text-[#4e4033]">Estado</th>
+            <th className="eyebrow px-5 py-4 text-[#4e4033]">Acciones</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-ink/8">
           {citas.map((cita) => (
             <tr className="transition-colors duration-200 hover:bg-[#faf4e8]" key={cita.cita_id}>
-              <td className="px-5 py-4 font-display text-base font-semibold tracking-tight text-ink">
+              <td className="px-5 py-4 font-display text-base font-semibold tracking-tight text-[#241b14]">
                 {cita.nombre_cliente || cita.email_cliente}
               </td>
-              <td className="px-5 py-4 font-medium text-ink/92">{cita.nombre_servicio}</td>
-              <td className="px-5 py-4 font-medium text-ink/92">{cita.nombre_barbero}</td>
+              <td className="px-5 py-4 font-medium text-[#5b4b3d]">{cita.nombre_servicio}</td>
+              <td className="px-5 py-4 font-medium text-[#5b4b3d]">{cita.nombre_barbero}</td>
               <td className="px-5 py-4">
                 <div className="flex flex-col">
-                  <span className="font-medium text-ink/92">{format(new Date(`${cita.fecha}T00:00:00`), 'yyyy-MM-dd')}</span>
+                  <span className="font-medium text-[#5b4b3d]">{format(new Date(`${cita.fecha}T00:00:00`), 'yyyy-MM-dd')}</span>
                   <span className="numeric text-xs font-semibold text-[#8a6420]">{cita.hora_inicio.slice(0, 5)}</span>
                 </div>
               </td>
@@ -203,9 +203,9 @@ function badgeVariantForStatus(status: string) {
 
 function PanelState({ text, title }: { title: string; text: string }) {
   return (
-    <div className="rounded-2xl border border-dashed border-ink/18 bg-[#f5efe3] p-7 text-center">
-      <p className="font-display text-xl font-semibold tracking-tight text-ink">{title}</p>
-      <p className="mt-2 text-sm leading-7 text-ink/86">{text}</p>
+    <div className="rounded-2xl border border-dashed border-[#d8c8ae] bg-[#f8f1e6] p-7 text-center">
+      <p className="font-display text-xl font-semibold tracking-tight text-[#241b14]">{title}</p>
+      <p className="mt-2 text-sm leading-7 text-[#6d5a47]">{text}</p>
     </div>
   );
 }

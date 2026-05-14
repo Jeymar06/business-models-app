@@ -79,8 +79,11 @@ function formatCurrency(value: number, currency = 'COP') {
 }
 
 const adminEyebrowClass = 'text-[#8a6420]';
-const adminMutedTextClass = 'text-ink/82';
-const adminSurfaceClass = 'border border-ink/12 bg-[#f5efe3]';
+const adminTextStrongClass = 'text-[#241b14]';
+const adminMutedTextClass = 'text-[#5b4b3d]';
+const adminSoftTextClass = 'text-[#7b6a59]';
+const adminSurfaceClass = 'border border-[#dfd2be] bg-[#f7f0e4]';
+const adminEmptyClass = 'border border-dashed border-[#d8c8ae] bg-[#f8f1e6] text-[#6d5a47]';
 
 function getLastSevenDays() {
   return Array.from({ length: 7 }, (_, index) => {
@@ -328,10 +331,10 @@ export function AdminDashboard() {
   return (
     <>
       <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
-        <aside className="h-fit rounded-[28px] border border-ink/10 bg-white p-4 shadow-soft">
+        <aside className="h-fit rounded-[28px] border border-[#e5d8c5] bg-[#fffdfa] p-4 shadow-soft">
           <div className="px-3 py-3">
             <Pill tone="gold">Panel admin</Pill>
-            <h1 className="font-display mt-3 text-2xl font-semibold tracking-tight text-ink">
+            <h1 className={`font-display mt-3 text-2xl font-semibold tracking-tight ${adminTextStrongClass}`}>
               {barberia?.nombre ?? 'Barber Flow'}
             </h1>
             <p className={`mt-2 text-sm leading-6 ${adminMutedTextClass}`}>
@@ -345,13 +348,13 @@ export function AdminDashboard() {
                   'flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-left text-sm font-medium transition-all duration-300',
                   section === item.id
                     ? 'bg-ink text-cream shadow-soft'
-                    : 'text-ink/85 hover:bg-[#f5efe3] hover:text-ink',
+                    : 'text-[#3f342b] hover:bg-[#f7f0e4] hover:text-[#241b14]',
                 ].join(' ')}
                 key={item.id}
                 onClick={() => changeSection(item.id)}
                 type="button"
               >
-                <span className={section === item.id ? 'text-gold-300' : 'text-ink/45'}>
+                <span className={section === item.id ? 'text-gold-300' : 'text-[#6d5a47]'}>
                   {item.icon}
                 </span>
                 {item.label}
@@ -373,7 +376,7 @@ export function AdminDashboard() {
 
           {section === 'resumen' ? (
             <Section eyebrow="Vista general" title="Resumen operativo">
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 <Metric icon={<CalendarDays size={18} />} label="Citas hoy" value={stats.todayAppointments} />
                 <Metric icon={<UserRound size={18} />} label="Barberos activos" value={activeBarbers} />
                 <Metric icon={<Scissors size={18} />} label="Servicios activos" value={activeServices} />
@@ -436,7 +439,7 @@ export function AdminDashboard() {
 
           {section === 'estadisticas' && barberia ? (
             <Section eyebrow="Estadisticas" title={`Metricas de ${barberia.nombre}`}>
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 <Metric icon={<CalendarRange size={18} />} label="Citas del mes" value={stats.monthAppointments.length} />
                 <Metric
                   icon={<CircleDollarSign size={18} />}
@@ -476,7 +479,10 @@ export function AdminDashboard() {
                     ))}
                     </div>
                   ) : (
-                    <EmptyPanel text="Todavia no hay citas registradas en los ultimos 7 dias para mostrar actividad." />
+                    <CompactEmptyPanel
+                      title="Sin actividad reciente"
+                      text="Cuando entren nuevas citas en la semana, aqui veras el movimiento diario."
+                    />
                   )}
                 </StatsCard>
 
@@ -514,7 +520,10 @@ export function AdminDashboard() {
                     ))}
                     </div>
                   ) : (
-                    <EmptyPanel text="Aun no hay ingresos registrados en la ultima semana." />
+                    <CompactEmptyPanel
+                      title="Sin ingresos recientes"
+                      text="Los montos apareceran aqui cuando tengas citas confirmadas o completadas."
+                    />
                   )}
                 </StatsCard>
 
@@ -704,10 +713,10 @@ function Section({
   title: string;
 }) {
   return (
-    <section className="space-y-6 rounded-[28px] border border-ink/10 bg-white p-7 shadow-soft sm:p-8">
+    <section className="space-y-6 rounded-[28px] border border-[#e5d8c5] bg-[#fffdfa] p-7 shadow-soft sm:p-8">
       <div className="space-y-2">
         <p className={`eyebrow ${adminEyebrowClass}`}>{eyebrow}</p>
-        <h2 className="font-display text-3xl font-semibold tracking-tight text-ink">{title}</h2>
+        <h2 className={`font-display text-3xl font-semibold tracking-tight ${adminTextStrongClass}`}>{title}</h2>
       </div>
       {children}
     </section>
@@ -717,11 +726,11 @@ function Section({
 function Metric({ icon, label, value }: { icon: ReactNode; label: string; value: ReactNode }) {
   return (
     <div className={`rounded-[18px] p-5 ${adminSurfaceClass}`}>
-      <div className="mb-3 flex items-center gap-2 text-ink">
+      <div className={`mb-3 flex items-center gap-2 ${adminTextStrongClass}`}>
         {icon}
-        <span className="eyebrow text-ink/90">{label}</span>
+        <span className="eyebrow text-[#4e4033]">{label}</span>
       </div>
-      <p className="font-display numeric break-words text-[clamp(1.9rem,3vw,3rem)] font-semibold leading-tight tracking-tight text-ink">
+      <p className="font-display break-words text-[clamp(2rem,2.3vw,2.6rem)] font-semibold leading-[1.05] tracking-tight text-[#18110c]">
         {value}
       </p>
     </div>
@@ -738,9 +747,9 @@ function StatsCard({
   title: string;
 }) {
   return (
-    <div className="rounded-[22px] border border-ink/10 bg-white p-5 shadow-soft">
+    <div className="rounded-[22px] border border-[#e5d8c5] bg-[#fffdfa] p-5 shadow-soft">
       <p className={`eyebrow ${adminEyebrowClass}`}>{eyebrow}</p>
-      <h3 className="font-display mt-2 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">{title}</h3>
+      <h3 className={`font-display mt-2 text-2xl font-semibold tracking-tight sm:text-3xl ${adminTextStrongClass}`}>{title}</h3>
       <div className="mt-5">{children}</div>
     </div>
   );
@@ -752,8 +761,8 @@ function StatusBar({ label, total, value }: { label: string; total: number; valu
   return (
     <div>
       <div className="mb-2 flex items-center justify-between gap-3 text-sm">
-        <span className="font-medium text-ink">{label}</span>
-        <span className="numeric font-semibold text-ink">{value}</span>
+        <span className={`font-medium ${adminTextStrongClass}`}>{label}</span>
+        <span className={`font-semibold ${adminTextStrongClass}`}>{value}</span>
       </div>
       <div className="h-3 rounded-full bg-ink/8">
         <div
@@ -768,16 +777,25 @@ function StatusBar({ label, total, value }: { label: string; total: number; valu
 function InsightRow({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className={`flex items-center justify-between gap-4 rounded-[16px] px-4 py-3 text-sm ${adminSurfaceClass}`}>
-      <span className="font-medium text-ink">{label}</span>
-      <span className="font-display numeric font-semibold tracking-tight text-ink">{value}</span>
+      <span className={`font-medium ${adminTextStrongClass}`}>{label}</span>
+      <span className={`font-display font-semibold tracking-tight ${adminTextStrongClass}`}>{value}</span>
     </div>
   );
 }
 
 function EmptyPanel({ text }: { text: string }) {
   return (
-    <div className="rounded-[18px] border border-dashed border-ink/20 bg-[#f5efe3] p-5 text-sm leading-6 text-ink/88">
+    <div className={`rounded-[18px] p-5 text-sm leading-6 ${adminEmptyClass}`}>
       {text}
+    </div>
+  );
+}
+
+function CompactEmptyPanel({ text, title }: { text: string; title: string }) {
+  return (
+    <div className={`rounded-[18px] px-5 py-4 ${adminEmptyClass}`}>
+      <p className={`text-sm font-semibold ${adminTextStrongClass}`}>{title}</p>
+      <p className="mt-2 text-sm leading-6 text-[#6d5a47]">{text}</p>
     </div>
   );
 }
@@ -815,8 +833,8 @@ function PanelEmpty({ text, title }: { text: string; title: string }) {
   return (
     <div className="rounded-[28px] border border-ink/10 bg-white p-10 shadow-soft">
       <p className={`eyebrow ${adminEyebrowClass}`}>Admin</p>
-      <h1 className="font-display mt-3 text-3xl font-semibold tracking-tight text-ink">{title}</h1>
-      <p className="mt-3 max-w-xl text-base leading-7 text-ink/88">{text}</p>
+      <h1 className={`font-display mt-3 text-3xl font-semibold tracking-tight ${adminTextStrongClass}`}>{title}</h1>
+      <p className={`mt-3 max-w-xl text-base leading-7 ${adminMutedTextClass}`}>{text}</p>
     </div>
   );
 }
