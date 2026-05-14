@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 import type { FieldErrors, UseFormRegister } from 'react-hook-form';
 
 import { Input } from '@/components/ui';
+import { isRenderableMediaUrl } from '@/utils/media';
 
 import type { CreateBarberiaFormValues } from './schema';
 
@@ -67,7 +68,7 @@ function ImagePicker({
 }) {
   const previewUrl = useMemo(() => {
     if (file) return URL.createObjectURL(file);
-    return url.trim() || null;
+    return isRenderableMediaUrl(url) ? url.trim() : null;
   }, [file, url]);
 
   useEffect(() => {

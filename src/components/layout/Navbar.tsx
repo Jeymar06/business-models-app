@@ -17,7 +17,7 @@ export function Navbar() {
       ? [
           { to: '/client-dashboard', label: 'Agendar' },
           { to: '/client-dashboard', label: 'Mis citas' },
-          { to: '/crear-barberia', label: 'Crear barbería' },
+          { to: '/crear-barberia', label: 'Crear barberia' },
         ]
       : []),
     ...(role === 'admin' ? [{ to: '/admin-dashboard', label: 'Admin' }] : []),
@@ -26,12 +26,12 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-white/8 bg-ink/85 text-cream backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link className="group flex items-center gap-3" to="/">
+      <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-3 px-4 sm:px-6 lg:px-8">
+        <Link className="group flex min-w-0 items-center gap-3" to="/">
           <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-gold-300 transition-all duration-300 group-hover:border-gold-500/40 group-hover:bg-gold-500/10">
             <Scissors aria-hidden size={18} />
           </span>
-          <div className="leading-tight">
+          <div className="hidden leading-tight sm:block">
             <span className="eyebrow block text-cream/55">Barber Flow</span>
             <span className="font-display block text-lg font-semibold tracking-tight text-cream">
               Reservas premium
@@ -39,12 +39,12 @@ export function Navbar() {
           </div>
         </Link>
 
-        <nav aria-label="Navegación principal" className="hidden items-center gap-1 rounded-full border border-white/8 bg-white/4 p-1 md:flex">
+        <nav aria-label="Navegacion principal" className="hidden min-w-0 flex-1 items-center justify-center gap-1 rounded-full border border-white/8 bg-white/4 p-1 md:flex">
           {navItems.map((item) => (
             <NavLink
               className={({ isActive }) =>
                 [
-                  'rounded-full px-4 py-2 text-sm font-medium transition-all duration-300',
+                  'rounded-full px-3 py-2 text-sm font-medium transition-all duration-300 lg:px-4',
                   isActive
                     ? 'bg-cream text-ink shadow-soft'
                     : 'text-cream/70 hover:bg-white/8 hover:text-cream',
@@ -58,7 +58,7 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="ml-auto flex flex-none items-center gap-2 lg:gap-3">
           {isAuthenticated ? (
             <>
               <NotificationBell />
@@ -66,7 +66,7 @@ export function Navbar() {
             </>
           ) : (
             <Link className="hidden sm:block" to="/login">
-              <Button aria-label="Iniciar sesión" size="sm" variant="outline">
+              <Button aria-label="Iniciar sesion" size="sm" variant="outline">
                 <LogIn aria-hidden size={16} />
                 Entrar
               </Button>
@@ -75,7 +75,7 @@ export function Navbar() {
 
           <button
             aria-expanded={isMobileMenuOpen}
-            aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            aria-label={isMobileMenuOpen ? 'Cerrar menu' : 'Abrir menu'}
             className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-cream transition hover:bg-white/10 md:hidden"
             onClick={() => setIsMobileMenuOpen((current) => !current)}
             type="button"
@@ -87,7 +87,7 @@ export function Navbar() {
 
       {isMobileMenuOpen ? (
         <div className="border-t border-white/8 bg-ink/96 px-4 py-4 md:hidden">
-          <nav aria-label="Navegación móvil" className="mx-auto grid max-w-[1200px] gap-2">
+          <nav aria-label="Navegacion movil" className="mx-auto grid max-w-[1200px] gap-2">
             {navItems.map((item) => (
               <NavLink
                 className={({ isActive }) =>
@@ -110,7 +110,7 @@ export function Navbar() {
               <Link onClick={() => setIsMobileMenuOpen(false)} to="/login">
                 <Button className="mt-2 w-full" size="md" variant="outline">
                   <LogIn aria-hidden size={16} />
-                  Iniciar sesión
+                  Iniciar sesion
                 </Button>
               </Link>
             ) : null}

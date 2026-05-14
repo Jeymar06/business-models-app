@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { Button, Input } from '@/components/ui';
 import type { BarberiaInput } from '@/features/admin/adminService';
 import type { Barberia } from '@/types/supabase.types';
+import { isRenderableMediaUrl } from '@/utils/media';
 
 const barberiaSchema = z.object({
   nombre: z.string().min(2, 'Escribe el nombre de la barberia'),
@@ -47,15 +48,17 @@ export function BarberiaForm({
 
   const logoUrl = form.watch('logoUrl');
   const bannerUrl = form.watch('bannerUrl');
+  const safeLogoUrl = isRenderableMediaUrl(logoUrl) ? logoUrl.trim() : '';
+  const safeBannerUrl = isRenderableMediaUrl(bannerUrl) ? bannerUrl.trim() : '';
 
   return (
     <form className="grid gap-3 rounded-md border border-slate-200 bg-slate-50 p-4 md:grid-cols-2" onSubmit={form.handleSubmit(onSubmit)}>
       <div className="md:col-span-2 grid gap-3 md:grid-cols-[10rem_1fr] md:items-center">
         <div className="grid h-32 w-32 place-items-center overflow-hidden rounded-3xl border border-slate-200 bg-white text-sm text-slate-400">
-          {logoUrl ? <img alt="Logo barberia" className="h-full w-full object-cover" src={logoUrl} /> : 'Logo'}
+          {safeLogoUrl ? <img alt="Logo barberia" className="h-full w-full object-cover" src={safeLogoUrl} /> : 'Logo'}
         </div>
         <div className="grid h-36 place-items-center overflow-hidden rounded-3xl border border-slate-200 bg-white text-sm text-slate-400">
-          {bannerUrl ? <img alt="Banner barberia" className="h-full w-full object-cover" src={bannerUrl} /> : 'Banner'}
+          {safeBannerUrl ? <img alt="Banner barberia" className="h-full w-full object-cover" src={safeBannerUrl} /> : 'Banner'}
         </div>
       </div>
       <Input label="Nombre" {...form.register('nombre')} />

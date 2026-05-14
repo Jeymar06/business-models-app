@@ -89,6 +89,14 @@ export function generateSlots({ citasExistentes, disponibilidad, duracionMin, fe
 
 function normalizeError(error: unknown) {
   if (error instanceof Error) return error;
+  if (
+    typeof error === 'object'
+    && error !== null
+    && 'message' in error
+    && typeof (error as { message?: unknown }).message === 'string'
+  ) {
+    return new Error((error as { message: string }).message);
+  }
   return new Error('No fue posible completar la operacion.');
 }
 
@@ -269,7 +277,7 @@ export const bookingService = {
 
     const { data, error } = await supabase
       .from('citas')
-      .insert({ ...input, estado: 'pendiente' } as never)
+      .insert({ ...input, hora: input.hora_inicio, estado: 'pendiente' } as never)
       .select()
       .single();
 

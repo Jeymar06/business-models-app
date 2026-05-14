@@ -74,7 +74,7 @@ export function NotificationBell() {
 
       {isOpen ? (
         <div
-          className="surface-panel absolute right-0 top-[calc(100%+0.85rem)] z-30 w-[min(calc(100vw-2rem),24rem)] rounded-3xl p-2 text-ink"
+          className="surface-panel absolute right-0 top-[calc(100%+0.85rem)] z-30 w-[min(calc(100vw-1rem),24rem)] rounded-3xl p-2 text-ink"
           id="notifications-menu"
           role="menu"
         >

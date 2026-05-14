@@ -8,6 +8,7 @@ import { bookingService } from '@/features/booking/bookingService';
 import { useCitas } from '@/features/booking/hooks/useCitas';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import type { CitaConDetalles } from '@/types/supabase.types';
+import { isRenderableMediaUrl } from '@/utils/media';
 
 export function ClientDashboard() {
   const toast = useToast();
@@ -89,17 +90,22 @@ export function ClientDashboard() {
                 className="group relative overflow-hidden rounded-[24px] border border-ink/8 bg-paper shadow-soft transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-gold-500/35 hover:shadow-panel"
                 key={barberia.id}
               >
+                {(() => {
+                  const bannerUrl = isRenderableMediaUrl(barberia.banner_url) ? barberia.banner_url!.trim() : null;
+                  const logoUrl = isRenderableMediaUrl(barberia.logo_url) ? barberia.logo_url!.trim() : null;
+
+                  return (
                 <div className="relative overflow-hidden px-6 py-6 text-cream">
-                  {barberia.banner_url ? (
-                    <img alt={barberia.nombre} className="absolute inset-0 h-full w-full object-cover" src={barberia.banner_url} />
+                  {bannerUrl ? (
+                    <img alt={barberia.nombre} className="absolute inset-0 h-full w-full object-cover" src={bannerUrl} />
                   ) : null}
                   <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(33,29,25,0.86),rgba(20,18,16,0.98))]" />
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.22),transparent_28%)]" />
                   <div className="relative flex items-start justify-between gap-3">
                     <div className="flex items-start gap-3">
                       <span className="grid h-12 w-12 flex-none place-items-center overflow-hidden rounded-2xl border border-white/12 bg-white/8 text-sm font-semibold text-gold-200">
-                        {barberia.logo_url ? (
-                          <img alt={`Logo ${barberia.nombre}`} className="h-full w-full object-cover" src={barberia.logo_url} />
+                        {logoUrl ? (
+                          <img alt={`Logo ${barberia.nombre}`} className="h-full w-full object-cover" src={logoUrl} />
                         ) : (
                           barberia.nombre.charAt(0).toUpperCase()
                         )}
@@ -114,6 +120,8 @@ export function ClientDashboard() {
                     <Badge variant="confirmed">Activa</Badge>
                   </div>
                 </div>
+                  );
+                })()}
                 <div className="space-y-4 p-6">
                   <p className="text-sm leading-7 text-ink/65">
                     {barberia.direccion}, <span className="font-display italic text-ink/55">{barberia.ciudad}</span>

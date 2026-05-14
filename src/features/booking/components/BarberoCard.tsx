@@ -1,9 +1,11 @@
 import { UserRound } from 'lucide-react';
 
 import type { Barbero } from '@/types/supabase.types';
+import { isRenderableMediaUrl } from '@/utils/media';
 
 export function BarberoCard({ barbero, label, onSelect, selected }: { barbero?: Barbero; label?: string; selected: boolean; onSelect: () => void }) {
   const name = label ?? barbero?.nombre ?? 'Barbero';
+  const photoUrl = isRenderableMediaUrl(barbero?.foto_url) ? barbero?.foto_url!.trim() : null;
 
   return (
     <button
@@ -14,8 +16,8 @@ export function BarberoCard({ barbero, label, onSelect, selected }: { barbero?: 
       onClick={onSelect}
       type="button"
     >
-      {barbero?.foto_url ? (
-        <img alt={barbero.nombre} className="h-12 w-12 rounded-full object-cover" src={barbero.foto_url} />
+      {photoUrl ? (
+        <img alt={barbero!.nombre} className="h-12 w-12 rounded-full object-cover" src={photoUrl} />
       ) : (
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-ink text-white">
           {barbero ? barbero.nombre.charAt(0).toUpperCase() : <UserRound size={22} />}
