@@ -105,8 +105,7 @@ function toIsoDate(date: Date) {
 }
 
 type CitaDetalleRow = {
-  id?: string;
-  cita_id?: string;
+  id: string;
   cliente_id: string;
   barberia_id: string;
   barbero_id: string;
@@ -126,7 +125,7 @@ type CitaDetalleRow = {
 
 function mapCitaDetalle(row: CitaDetalleRow): CitaConDetalles {
   return {
-    cita_id: row.cita_id ?? row.id ?? '',
+    cita_id: row.id,
     cliente_id: row.cliente_id,
     nombre_cliente: row.profiles?.full_name ?? null,
     email_cliente: row.profiles?.email ?? '',
@@ -151,28 +150,24 @@ function mapCitaDetalle(row: CitaDetalleRow): CitaConDetalles {
 
 async function fetchCitasConDetalles(filters: { clienteId?: string; barberiaId?: string }) {
   let query = (supabase as any)
-    .from('citas_con_detalles')
+    .from('citas')
     .select(`
-      cita_id,
+      id,
       cliente_id,
-      nombre_cliente,
-      email_cliente,
       barberia_id,
-      nombre_barberia,
-      admin_id,
       barbero_id,
-      nombre_barbero,
       servicio_id,
-      nombre_servicio,
-      precio,
-      duracion_min,
       fecha,
       hora_inicio,
       hora_fin,
       estado,
       notas,
       created_at,
-      updated_at
+      updated_at,
+      profiles:profiles!citas_cliente_id_fkey(full_name,email),
+      barberias:barberias!citas_barberia_id_fkey(nombre,admin_id),
+      barberos:barberos!citas_barbero_id_fkey(nombre),
+      servicios:servicios!citas_servicio_id_fkey(nombre,precio,duracion_min)
     `)
     .order('fecha', { ascending: true })
     .order('hora_inicio', { ascending: true });
@@ -182,34 +177,7 @@ async function fetchCitasConDetalles(filters: { clienteId?: string; barberiaId?:
 
   const { data, error } = await query;
   if (error) throw error;
-  return ((data ?? []) as Array<CitaConDetalles | CitaDetalleRow>).map((row) => {
-    if ('nombre_barbero' in row && 'nombre_servicio' in row && 'nombre_barberia' in row) {
-      return {
-        cita_id: row.cita_id ?? '',
-        cliente_id: row.cliente_id,
-        nombre_cliente: row.nombre_cliente ?? null,
-        email_cliente: row.email_cliente ?? '',
-        barberia_id: row.barberia_id,
-        nombre_barberia: row.nombre_barberia,
-        admin_id: row.admin_id,
-        barbero_id: row.barbero_id,
-        nombre_barbero: row.nombre_barbero,
-        servicio_id: row.servicio_id,
-        nombre_servicio: row.nombre_servicio,
-        precio: row.precio,
-        duracion_min: row.duracion_min,
-        fecha: row.fecha,
-        hora_inicio: row.hora_inicio,
-        hora_fin: row.hora_fin,
-        estado: row.estado,
-        notas: row.notas,
-        created_at: row.created_at,
-        updated_at: row.updated_at,
-      } satisfies CitaConDetalles;
-    }
-
-    return mapCitaDetalle(row);
-  });
+  return ((data ?? []) as CitaDetalleRow[]).map(mapCitaDetalle);
 }
 
 export const bookingService = {
