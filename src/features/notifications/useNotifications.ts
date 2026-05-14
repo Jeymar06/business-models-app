@@ -19,7 +19,7 @@ export function useNotifications(userId?: string | null) {
   };
 
   const markAsRead = useMutation({
-    mutationFn: notificationsService.markAsRead,
+    mutationFn: (notificationId: string) => notificationsService.markAsRead(notificationId, userId ?? undefined),
     onSuccess: invalidate,
   });
 
