@@ -29,6 +29,8 @@ export function CreateBarberiaPage() {
   });
 
   const watchedName = form.watch('nombre');
+  const watchedLogoUrl = form.watch('logoUrl');
+  const watchedBannerUrl = form.watch('bannerUrl');
   const previewSlug = useMemo(() => barberiaService.generateSlug(watchedName || 'nombre-barberia'), [watchedName]);
   const progress = ((currentStep + 1) / steps.length) * 100;
 
@@ -66,8 +68,8 @@ export function CreateBarberiaPage() {
       await barberiaService.createBarberia({
         ...values,
         adminId: user.id,
-        logoUrl,
-        bannerUrl,
+        logoUrl: logoUrl || values.logoUrl.trim() || null,
+        bannerUrl: bannerUrl || values.bannerUrl.trim() || null,
       });
 
       window.location.assign('/admin-dashboard');
@@ -110,9 +112,13 @@ export function CreateBarberiaPage() {
           {currentStep === 2 ? (
             <Step3Branding
               bannerFile={bannerFile}
+              bannerUrl={watchedBannerUrl}
+              errors={form.formState.errors}
               logoFile={logoFile}
+              logoUrl={watchedLogoUrl}
               onBannerChange={setBannerFile}
               onLogoChange={setLogoFile}
+              register={form.register}
             />
           ) : null}
           {currentStep === 3 ? <Step4Config errors={form.formState.errors} register={form.register} /> : null}

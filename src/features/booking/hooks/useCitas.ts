@@ -16,6 +16,7 @@ export function useCitas(clienteId?: string) {
     mutationFn: bookingService.cancelarCita,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['client', 'citas', clienteId] });
+      await queryClient.invalidateQueries({ queryKey: ['notifications', clienteId] });
       await queryClient.invalidateQueries({ queryKey: ['booking', 'slots'] });
     },
   });

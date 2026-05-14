@@ -3,7 +3,7 @@ import type { Barberia } from '@/types/supabase.types';
 
 import type { CreateBarberiaFormValues } from './schema';
 
-export interface CreateBarberiaPayload extends CreateBarberiaFormValues {
+export interface CreateBarberiaPayload extends Omit<CreateBarberiaFormValues, 'logoUrl' | 'bannerUrl'> {
   adminId: string;
   logoUrl?: string | null;
   bannerUrl?: string | null;

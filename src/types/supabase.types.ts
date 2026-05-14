@@ -1,6 +1,14 @@
 // Auto-generated types from Supabase
 export type UserRole = 'client' | 'admin' | 'superadmin';
 export type AppointmentStatus = 'pendiente' | 'confirmada' | 'cancelada' | 'completada';
+export type NotificationType =
+  | 'cita_creada'
+  | 'cita_pendiente'
+  | 'cita_confirmada'
+  | 'cita_cancelada'
+  | 'cita_completada'
+  | 'recordatorio'
+  | 'sistema';
 
 export interface Profile {
   id: string;
@@ -113,6 +121,19 @@ export interface CitaConDetalles {
   notas: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface AppNotification {
+  id: string;
+  user_id: string | null;
+  cita_id: string;
+  tipo: NotificationType;
+  titulo: string | null;
+  mensaje: string | null;
+  leido_at: string | null;
+  enviado_at: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
 }
 
 export type Database = {
@@ -260,16 +281,21 @@ export type Database = {
         };
       };
       notificaciones: {
-        Row: {
-          id: string;
-          cita_id: string;
-          tipo: 'confirmacion' | 'recordatorio';
-          enviado_at: string | null;
-          created_at: string;
-        };
+        Row: AppNotification;
         Insert: {
+          user_id?: string | null;
           cita_id: string;
-          tipo: 'confirmacion' | 'recordatorio';
+          tipo: NotificationType;
+          titulo?: string | null;
+          mensaje?: string | null;
+          leido_at?: string | null;
+          metadata?: Record<string, unknown>;
+        };
+        Update: {
+          titulo?: string | null;
+          mensaje?: string | null;
+          leido_at?: string | null;
+          metadata?: Record<string, unknown>;
         };
       };
     };

@@ -47,8 +47,19 @@ export function useAuth() {
       }
     });
 
+    function handleProfileUpdated() {
+      supabase.auth.getUser().then(({ data }) => {
+        if (mounted && data.user) {
+          fetchUserProfile(data.user);
+        }
+      });
+    }
+
+    window.addEventListener('barber-flow-profile-updated', handleProfileUpdated);
+
     return () => {
       mounted = false;
+      window.removeEventListener('barber-flow-profile-updated', handleProfileUpdated);
       subscription.unsubscribe();
     };
   }, []);

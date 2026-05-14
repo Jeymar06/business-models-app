@@ -27,6 +27,8 @@ export interface BarberiaInput {
   telefono: string;
   ciudad: string;
   pais: string;
+  logoUrl: string;
+  bannerUrl: string;
 }
 
 export const adminService = {
@@ -49,6 +51,8 @@ export const adminService = {
         telefono: input.telefono,
         ciudad: input.ciudad || 'Ciudad pendiente',
         pais: input.pais || 'Colombia',
+        logo_url: input.logoUrl?.trim() || null,
+        banner_url: input.bannerUrl?.trim() || null,
         estado: 'activa',
       } as never)
       .select()
@@ -67,6 +71,8 @@ export const adminService = {
         telefono: input.telefono,
         ciudad: input.ciudad || 'Ciudad pendiente',
         pais: input.pais || 'Colombia',
+        logo_url: input.logoUrl?.trim() || null,
+        banner_url: input.bannerUrl?.trim() || null,
       } as never)
       .eq('id', id)
       .select()

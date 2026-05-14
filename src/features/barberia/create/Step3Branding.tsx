@@ -1,27 +1,48 @@
+import { useEffect, useMemo } from 'react';
+import type { FieldErrors, UseFormRegister } from 'react-hook-form';
+
+import { Input } from '@/components/ui';
+
+import type { CreateBarberiaFormValues } from './schema';
+
 export function Step3Branding({
   bannerFile,
+  bannerUrl,
+  errors,
   logoFile,
+  logoUrl,
   onBannerChange,
   onLogoChange,
+  register,
 }: {
   bannerFile: File | null;
+  bannerUrl: string;
+  errors: FieldErrors<CreateBarberiaFormValues>;
   logoFile: File | null;
+  logoUrl: string;
   onBannerChange: (file: File | null) => void;
   onLogoChange: (file: File | null) => void;
+  register: UseFormRegister<CreateBarberiaFormValues>;
 }) {
   return (
     <div className="grid gap-5">
       <ImagePicker
-        description="Ideal cuadrado, minimo 512x512."
+        description="Ideal cuadrado, minimo 512x512. Puedes subir archivo o pegar URL."
+        error={errors.logoUrl?.message}
         file={logoFile}
         label="Logo"
         onChange={onLogoChange}
+        registerProps={register('logoUrl')}
+        url={logoUrl}
       />
       <ImagePicker
-        description="Imagen horizontal para el marketplace, recomendado 1600x600."
+        description="Imagen horizontal para el marketplace, recomendado 1600x600. Puedes subir archivo o pegar URL."
+        error={errors.bannerUrl?.message}
         file={bannerFile}
         label="Banner"
         onChange={onBannerChange}
+        registerProps={register('bannerUrl')}
+        url={bannerUrl}
       />
     </div>
   );
@@ -29,19 +50,36 @@ export function Step3Branding({
 
 function ImagePicker({
   description,
+  error,
   file,
   label,
   onChange,
+  registerProps,
+  url,
 }: {
   description: string;
+  error?: string;
   file: File | null;
   label: string;
   onChange: (file: File | null) => void;
+  registerProps: ReturnType<UseFormRegister<CreateBarberiaFormValues>>;
+  url: string;
 }) {
-  const previewUrl = file ? URL.createObjectURL(file) : null;
+  const previewUrl = useMemo(() => {
+    if (file) return URL.createObjectURL(file);
+    return url.trim() || null;
+  }, [file, url]);
+
+  useEffect(() => {
+    return () => {
+      if (file && previewUrl?.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [file, previewUrl]);
 
   return (
-    <label className="grid gap-3 rounded-md border border-slate-200 bg-slate-50 p-4 text-sm">
+    <div className="grid gap-3 rounded-md border border-slate-200 bg-slate-50 p-4 text-sm">
       <div>
         <span className="font-semibold text-ink">{label}</span>
         <p className="text-slate-500">{description}</p>
@@ -59,6 +97,8 @@ function ImagePicker({
         onChange={(event) => onChange(event.target.files?.[0] ?? null)}
         type="file"
       />
-    </label>
+      <Input label={`URL de ${label.toLowerCase()}`} placeholder="https://..." {...registerProps} />
+      {error ? <p className="text-sm text-red-600">{error}</p> : null}
+    </div>
   );
 }

@@ -85,6 +85,7 @@ export function BookingPage() {
       setSuccessId(cita.id);
       toast.success(`Código ${cita.id.slice(0, 8).toUpperCase()}`, 'Cita confirmada');
       await queryClient.invalidateQueries({ queryKey: ['client', 'citas', user?.id] });
+      await queryClient.invalidateQueries({ queryKey: ['notifications', user?.id] });
       await queryClient.invalidateQueries({ queryKey: ['booking', 'slots'] });
     },
   });
@@ -124,6 +125,11 @@ export function BookingPage() {
           ) : null}
           <div className="space-y-5 px-7 py-8 sm:px-10">
             <div className="flex flex-wrap items-center gap-3">
+              {barberia.logo_url ? (
+                <span className="h-14 w-14 overflow-hidden rounded-2xl border border-white/12 bg-white/8">
+                  <img alt={`Logo ${barberia.nombre}`} className="h-full w-full object-cover" src={barberia.logo_url} />
+                </span>
+              ) : null}
               <Badge variant="confirmed">Reservas activas</Badge>
               <Pill tone="gold">Agendamiento</Pill>
             </div>

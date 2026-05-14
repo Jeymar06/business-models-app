@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { bookingService } from '@/features/booking/bookingService';
 import type { AppointmentStatus } from '@/types/supabase.types';
 
@@ -10,6 +11,7 @@ export interface AdminCitaFilters {
 }
 
 export function useAdminCitas(barberiaId?: string, filters: AdminCitaFilters = {}) {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const query = useQuery({
     enabled: Boolean(barberiaId),
@@ -22,6 +24,7 @@ export function useAdminCitas(barberiaId?: string, filters: AdminCitaFilters = {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['admin', 'citas', barberiaId] });
       await queryClient.invalidateQueries({ queryKey: ['admin', 'appointments', barberiaId] });
+      await queryClient.invalidateQueries({ queryKey: ['notifications', user?.id] });
       await queryClient.invalidateQueries({ queryKey: ['booking', 'slots'] });
     },
   });
