@@ -17,43 +17,43 @@ const showcaseCards = [
   {
     type: 'image' as const,
     src: landingMediaGroups.productShots.intro,
-    title: 'Gestion de citas impecable',
+    title: 'Reservas sin friccion',
     label: 'Reservas',
-    copy: 'Sincroniza horarios, servicios y reservas con una interfaz que se siente premium desde el primer scroll.',
+    copy: 'Tus clientes eligen servicio, horario y barbero en minutos, sin llamadas cruzadas ni mensajes perdidos.',
     rotate: -3,
   },
   {
     type: 'video' as const,
     src: landingMediaGroups.reels[0].video,
     poster: landingMediaGroups.reels[0].poster,
-    title: 'Un flujo que se mueve',
+    title: 'Agenda que respira orden',
     label: 'En vivo',
-    copy: 'El producto respira con videos, microinteracciones y transiciones pensadas para presentar confianza.',
+    copy: 'Cada cita aparece clara para el equipo completo y el dia avanza con menos pausas, dudas y reprocesos.',
     rotate: 2,
   },
   {
     type: 'image' as const,
     src: landingMediaGroups.productShots.product,
-    title: 'Control del negocio hoy',
+    title: 'Equipo alineado',
     label: 'Admin',
-    copy: 'Agenda, rendimiento y equipo aparecen en el mismo plano para tomar decisiones sin perder contexto.',
+    copy: 'Barberos, servicios y horarios quedan conectados para que tu operacion se sienta estable incluso en horas pico.',
     rotate: -1,
   },
   {
     type: 'video' as const,
     src: landingMediaGroups.reels[4].video,
     poster: landingMediaGroups.reels[4].poster,
-    title: 'Datos que entran en escena',
+    title: 'Metricas que si ayudan',
     label: 'Metricas',
-    copy: 'Lecturas visuales para entender ocupacion, ingresos y ritmo operativo de la barberia.',
+    copy: 'Visualiza ingresos, citas y rendimiento por barberia para detectar donde crecer y que ajustar primero.',
     rotate: 3,
   },
   {
     type: 'image' as const,
     src: landingMediaGroups.productShots.detail,
-    title: 'Precision para crecer',
+    title: 'Marca lista para crecer',
     label: 'Detalle',
-    copy: 'Una estetica editorial que mantiene el foco en lo importante: menos caos, mas control.',
+    copy: 'La experiencia cuida cada detalle para que tu negocio se vea mas profesional desde la primera reserva.',
     rotate: -2,
   },
 ];
@@ -122,10 +122,10 @@ export function PinnedShowcaseSection() {
           <p className="eyebrow text-gold-700">Showcase interactivo</p>
           <div className="mt-4 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <h2 className="font-display max-w-3xl text-4xl font-semibold leading-[1.02] sm:text-6xl">
-              Un carrusel que se siente como una presentacion de producto.
+              Convierte cada visita en una reserva mas clara, rapida y confiable.
             </h2>
             <p className="max-w-md text-base leading-7 text-ink/62">
-              Presenta las piezas clave del negocio como una secuencia clara: agenda, equipo, clientes, metricas y crecimiento.
+              Muestra como tu barberia organiza agenda, equipo, clientes y resultados en una sola experiencia que inspira confianza.
             </p>
           </div>
         </div>

@@ -179,12 +179,12 @@ export function AdminHome({ data, profile }: { data: AdminHomeData; profile: Pro
           </h2>
         </div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <QuickActionCard description="Abre el panel general de configuración de tu negocio." icon={<Store size={18} />} title="Mi barbería" to="/admin-dashboard" />
+          <QuickActionCard description="Abre el panel general de configuración de tu negocio." icon={<Store size={18} />} title="Mi barbería" to="/admin-dashboard?section=barberia" />
           <QuickActionCard description="Gestiona las citas y estados desde tu agenda." icon={<CalendarDays size={18} />} title="Citas" to="/admin-dashboard/citas" />
-          <QuickActionCard description="Administra barberos y sus datos activos." icon={<UserRound size={18} />} title="Barberos" to="/admin-dashboard" />
-          <QuickActionCard description="Actualiza servicios y precios disponibles." icon={<Scissors size={18} />} title="Servicios" to="/admin-dashboard" />
-          <QuickActionCard description="Completa horarios y disponibilidad semanal." icon={<Clock3 size={18} />} title="Horarios" to="/admin-dashboard" />
-          <QuickActionCard description="Consulta el resumen operativo de tu cuenta." icon={<BarChart3 size={18} />} title="Estadísticas" to="/admin-dashboard" />
+          <QuickActionCard description="Administra barberos y sus datos activos." icon={<UserRound size={18} />} title="Barberos" to="/admin-dashboard?section=barberos" />
+          <QuickActionCard description="Actualiza servicios y precios disponibles." icon={<Scissors size={18} />} title="Servicios" to="/admin-dashboard?section=servicios" />
+          <QuickActionCard description="Completa horarios y disponibilidad semanal." icon={<Clock3 size={18} />} title="Horarios" to="/admin-dashboard?section=horarios" />
+          <QuickActionCard description="Consulta indicadores, estados e ingresos de tu barbería." icon={<BarChart3 size={18} />} title="Estadísticas" to="/admin-dashboard?section=estadisticas" />
         </div>
       </section>
     </div>

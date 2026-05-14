@@ -1,7 +1,8 @@
-import { LogIn, Menu, Scissors, X } from 'lucide-react';
+import { LogIn, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 
+import { BrandSignature } from '@/components/layout/BrandSignature';
 import { ProfileMenu } from '@/components/layout/ProfileMenu';
 import { Button } from '@/components/ui';
 import { useAuth } from '@/features/auth/hooks/useAuth';
@@ -27,17 +28,9 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b border-white/8 bg-ink/85 text-cream backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-3 px-4 sm:px-6 lg:px-8">
-        <Link className="group flex min-w-0 items-center gap-3" to="/">
-          <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-gold-300 transition-all duration-300 group-hover:border-gold-500/40 group-hover:bg-gold-500/10">
-            <Scissors aria-hidden size={18} />
-          </span>
-          <div className="hidden leading-tight sm:block">
-            <span className="eyebrow block text-cream/55">Barber Flow</span>
-            <span className="font-display block text-lg font-semibold tracking-tight text-cream">
-              Reservas premium
-            </span>
-          </div>
-        </Link>
+        <div className="min-w-0">
+          <BrandSignature subtitle="Edicion editorial" />
+        </div>
 
         <nav aria-label="Navegacion principal" className="hidden min-w-0 flex-1 items-center justify-center gap-1 rounded-full border border-white/8 bg-white/4 p-1 md:flex">
           {navItems.map((item) => (
