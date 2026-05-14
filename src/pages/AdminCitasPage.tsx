@@ -44,10 +44,10 @@ export function AdminCitasPage() {
   }
 
   return (
-    <section className="space-y-6 rounded-[28px] border border-ink/8 bg-paper p-7 shadow-soft sm:p-8">
+    <section className="space-y-6 rounded-[28px] border border-ink/10 bg-white p-7 shadow-soft sm:p-8">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
-          <p className="eyebrow text-gold-700">Agenda</p>
+          <p className="eyebrow text-[#8a6420]">Agenda</p>
           <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">
             Citas de {barberia.nombre}
           </h1>
@@ -62,7 +62,7 @@ export function AdminCitasPage() {
       <div className="grid gap-3 sm:grid-cols-3">
         <FilterField label="Fecha">
           <input
-            className="h-11 w-full rounded-2xl border border-ink/10 bg-paper px-4 text-sm text-ink outline-none transition-[border-color,box-shadow] duration-300 hover:border-ink/22 focus:border-gold-500/70 focus:ring-4 focus:ring-gold-200/50"
+            className="h-11 w-full rounded-2xl border border-ink/12 bg-[#f8f4eb] px-4 text-sm font-medium text-ink outline-none transition-[border-color,box-shadow] duration-300 hover:border-ink/30 focus:border-gold-500/70 focus:ring-4 focus:ring-gold-200/50"
             onChange={(event) => setFecha(event.target.value)}
             type="date"
             value={fecha}
@@ -70,7 +70,7 @@ export function AdminCitasPage() {
         </FilterField>
         <FilterField label="Estado">
           <select
-            className="h-11 w-full rounded-2xl border border-ink/10 bg-paper px-4 text-sm text-ink outline-none transition-[border-color,box-shadow] duration-300 hover:border-ink/22 focus:border-gold-500/70 focus:ring-4 focus:ring-gold-200/50"
+            className="h-11 w-full rounded-2xl border border-ink/12 bg-[#f8f4eb] px-4 text-sm font-medium text-ink outline-none transition-[border-color,box-shadow] duration-300 hover:border-ink/30 focus:border-gold-500/70 focus:ring-4 focus:ring-gold-200/50"
             onChange={(event) => setEstado(event.target.value as AppointmentStatus | 'todas')}
             value={estado}
           >
@@ -83,7 +83,7 @@ export function AdminCitasPage() {
         </FilterField>
         <FilterField label="Barbero">
           <select
-            className="h-11 w-full rounded-2xl border border-ink/10 bg-paper px-4 text-sm text-ink outline-none transition-[border-color,box-shadow] duration-300 hover:border-ink/22 focus:border-gold-500/70 focus:ring-4 focus:ring-gold-200/50"
+            className="h-11 w-full rounded-2xl border border-ink/12 bg-[#f8f4eb] px-4 text-sm font-medium text-ink outline-none transition-[border-color,box-shadow] duration-300 hover:border-ink/30 focus:border-gold-500/70 focus:ring-4 focus:ring-gold-200/50"
             onChange={(event) => setBarberoId(event.target.value)}
             value={barberoId}
           >
@@ -115,7 +115,7 @@ export function AdminCitasPage() {
 function FilterField({ children, label }: { children: React.ReactNode; label: string }) {
   return (
     <label className="block">
-      <span className="eyebrow mb-2 block text-ink/45">{label}</span>
+      <span className="eyebrow mb-2 block text-ink/85">{label}</span>
       {children}
     </label>
   );
@@ -137,30 +137,30 @@ function CitasTable({
   if (!citas.length) return <PanelState title="Sin citas" text="No hay citas con esos filtros." />;
 
   return (
-    <div className="overflow-x-auto rounded-[22px] border border-ink/8">
+    <div className="overflow-x-auto rounded-[22px] border border-ink/10 bg-white">
       <table className="min-w-full divide-y divide-ink/8 text-sm">
-        <thead className="bg-ink/3">
+        <thead className="bg-[#f5efe3]">
           <tr className="text-left">
-            <th className="eyebrow px-5 py-4 text-ink/45">Cliente</th>
-            <th className="eyebrow px-5 py-4 text-ink/45">Servicio</th>
-            <th className="eyebrow px-5 py-4 text-ink/45">Barbero</th>
-            <th className="eyebrow px-5 py-4 text-ink/45">Fecha</th>
-            <th className="eyebrow px-5 py-4 text-ink/45">Estado</th>
-            <th className="eyebrow px-5 py-4 text-ink/45">Acciones</th>
+            <th className="eyebrow px-5 py-4 text-ink/85">Cliente</th>
+            <th className="eyebrow px-5 py-4 text-ink/85">Servicio</th>
+            <th className="eyebrow px-5 py-4 text-ink/85">Barbero</th>
+            <th className="eyebrow px-5 py-4 text-ink/85">Fecha</th>
+            <th className="eyebrow px-5 py-4 text-ink/85">Estado</th>
+            <th className="eyebrow px-5 py-4 text-ink/85">Acciones</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-ink/8">
           {citas.map((cita) => (
-            <tr className="transition-colors duration-200 hover:bg-gold-500/4" key={cita.cita_id}>
+            <tr className="transition-colors duration-200 hover:bg-[#faf4e8]" key={cita.cita_id}>
               <td className="px-5 py-4 font-display text-base font-semibold tracking-tight text-ink">
                 {cita.nombre_cliente || cita.email_cliente}
               </td>
-              <td className="px-5 py-4 text-ink/68">{cita.nombre_servicio}</td>
-              <td className="px-5 py-4 text-ink/68">{cita.nombre_barbero}</td>
+              <td className="px-5 py-4 font-medium text-ink/92">{cita.nombre_servicio}</td>
+              <td className="px-5 py-4 font-medium text-ink/92">{cita.nombre_barbero}</td>
               <td className="px-5 py-4">
                 <div className="flex flex-col">
-                  <span className="text-ink/72">{format(new Date(`${cita.fecha}T00:00:00`), 'yyyy-MM-dd')}</span>
-                  <span className="numeric text-xs text-gold-700">{cita.hora_inicio.slice(0, 5)}</span>
+                  <span className="font-medium text-ink/92">{format(new Date(`${cita.fecha}T00:00:00`), 'yyyy-MM-dd')}</span>
+                  <span className="numeric text-xs font-semibold text-[#8a6420]">{cita.hora_inicio.slice(0, 5)}</span>
                 </div>
               </td>
               <td className="px-5 py-4">
@@ -203,9 +203,9 @@ function badgeVariantForStatus(status: string) {
 
 function PanelState({ text, title }: { title: string; text: string }) {
   return (
-    <div className="rounded-2xl border border-dashed border-ink/12 bg-ink/3 p-7 text-center">
+    <div className="rounded-2xl border border-dashed border-ink/18 bg-[#f5efe3] p-7 text-center">
       <p className="font-display text-xl font-semibold tracking-tight text-ink">{title}</p>
-      <p className="mt-2 text-sm leading-7 text-ink/55">{text}</p>
+      <p className="mt-2 text-sm leading-7 text-ink/86">{text}</p>
     </div>
   );
 }
