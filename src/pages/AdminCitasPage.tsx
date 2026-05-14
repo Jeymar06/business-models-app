@@ -153,7 +153,7 @@ function CitasTable({
           {citas.map((cita) => (
             <tr className="transition-colors duration-200 hover:bg-[#faf4e8]" key={cita.cita_id}>
               <td className="px-5 py-4 font-display text-base font-semibold tracking-tight text-[#241b14]">
-                {cita.nombre_cliente || cita.email_cliente}
+                {cita.nombre_cliente?.trim() || cita.email_cliente || 'Cliente sin datos'}
               </td>
               <td className="px-5 py-4 font-medium text-[#5b4b3d]">{cita.nombre_servicio}</td>
               <td className="px-5 py-4 font-medium text-[#5b4b3d]">{cita.nombre_barbero}</td>
