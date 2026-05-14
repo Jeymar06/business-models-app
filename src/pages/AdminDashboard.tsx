@@ -4,8 +4,10 @@ import {
   CalendarCheck,
   CalendarDays,
   CalendarRange,
+  CheckCircle2,
   CircleDollarSign,
   Clock,
+  Percent,
   Scissors,
   Settings,
   Store,
@@ -175,6 +177,25 @@ export function AdminDashboard() {
       .sort((left, right) => right.count - left.count)
       .slice(0, 4);
 
+    const barberMap = activeMonthAppointments.reduce<Record<string, { name: string; count: number; revenue: number }>>(
+      (accumulator, appointment) => {
+        const current = accumulator[appointment.barbero_id] ?? {
+          name: appointment.nombre_barbero,
+          count: 0,
+          revenue: 0,
+        };
+        current.count += 1;
+        current.revenue += appointment.precio;
+        accumulator[appointment.barbero_id] = current;
+        return accumulator;
+      },
+      {},
+    );
+
+    const topBarbers = Object.values(barberMap)
+      .sort((left, right) => right.revenue - left.revenue)
+      .slice(0, 4);
+
     const timeline = getLastSevenDays().map((date) => {
       const isoDate = date.toISOString().slice(0, 10);
       const dayAppointments = appointments.filter((appointment) => appointment.fecha === isoDate);
@@ -208,8 +229,10 @@ export function AdminDashboard() {
       recurringClients,
       confirmationRate,
       topServices,
+      topBarbers,
       timeline,
       maxTimelineCount,
+      maxTimelineRevenue: Math.max(...timeline.map((item) => item.revenue), 1),
       nextAppointment,
     };
   }, [appointments]);
@@ -374,7 +397,7 @@ export function AdminDashboard() {
                           {stats.nextAppointment.hora_inicio.slice(0, 5)}
                         </span>
                       </div>
-                      <p className="mt-4 text-sm text-ink/60">
+                      <p className="mt-4 text-sm text-ink/78">
                         Fecha: <span className="text-ink">{stats.nextAppointment.fecha}</span>
                       </p>
                     </div>
@@ -392,12 +415,24 @@ export function AdminDashboard() {
                   </div>
                 </StatsCard>
               </div>
+
+              <div className="grid gap-4 xl:grid-cols-3">
+                <StatsCard title="Citas completadas" eyebrow="Rendimiento">
+                  <Metric icon={<CheckCircle2 size={18} />} label="Total completadas" value={stats.completedMonth} />
+                </StatsCard>
+                <StatsCard title="Clientes recurrentes" eyebrow="Fidelizacion">
+                  <Metric icon={<Users size={18} />} label="Vuelven este mes" value={stats.recurringClients} />
+                </StatsCard>
+                <StatsCard title="Conversion" eyebrow="Seguimiento">
+                  <Metric icon={<Percent size={18} />} label="Tasa actual" value={`${stats.confirmationRate}%`} />
+                </StatsCard>
+              </div>
             </Section>
           ) : null}
 
           {section === 'estadisticas' && barberia ? (
             <Section eyebrow="Estadisticas" title={`Metricas de ${barberia.nombre}`}>
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
                 <Metric icon={<CalendarRange size={18} />} label="Citas del mes" value={stats.monthAppointments.length} />
                 <Metric
                   icon={<CircleDollarSign size={18} />}
@@ -410,16 +445,18 @@ export function AdminDashboard() {
                   value={formatCurrency(stats.averageTicket, barberia.moneda)}
                 />
                 <Metric icon={<Users size={18} />} label="Clientes unicos" value={stats.uniqueClientsMonth} />
+                <Metric icon={<CheckCircle2 size={18} />} label="Completadas" value={stats.completedMonth} />
+                <Metric icon={<Percent size={18} />} label="Conversion" value={`${stats.confirmationRate}%`} />
               </div>
 
               <div className="grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
                 <StatsCard title="Actividad de los ultimos 7 dias" eyebrow="Movimiento">
                   <div className="grid gap-3 sm:grid-cols-7">
                     {stats.timeline.map((item) => (
-                      <div className="rounded-[22px] border border-ink/8 bg-ink/3 p-4" key={item.date}>
+                      <div className="rounded-[22px] border border-ink/10 bg-[#f8f4eb] p-4" key={item.date}>
                         <div className="flex items-center justify-between gap-2">
-                          <span className="eyebrow text-ink/45">{item.label}</span>
-                          <span className="numeric text-xs font-semibold text-ink/55">{item.count}</span>
+                          <span className="eyebrow text-ink/70">{item.label}</span>
+                          <span className="numeric text-xs font-semibold text-ink/78">{item.count}</span>
                         </div>
                         <div className="mt-4 flex h-32 items-end">
                           <div
@@ -427,7 +464,7 @@ export function AdminDashboard() {
                             style={{ height: `${Math.max((item.count / stats.maxTimelineCount) * 100, item.count ? 18 : 6)}%` }}
                           />
                         </div>
-                        <p className="mt-3 text-xs leading-5 text-ink/58">
+                        <p className="mt-3 text-xs leading-5 text-ink/78">
                           {formatCurrency(item.revenue, barberia.moneda)}
                         </p>
                       </div>
@@ -446,16 +483,39 @@ export function AdminDashboard() {
               </div>
 
               <div className="grid gap-4 xl:grid-cols-[1fr_1fr]">
+                <StatsCard title="Ingresos de los ultimos 7 dias" eyebrow="Caja">
+                  <div className="space-y-3">
+                    {stats.timeline.map((item) => (
+                      <div className="space-y-2" key={`${item.date}-revenue`}>
+                        <div className="flex items-center justify-between gap-3 text-sm">
+                          <span className="font-medium text-ink/82">{item.label}</span>
+                          <span className="numeric font-semibold text-ink">
+                            {formatCurrency(item.revenue, barberia.moneda)}
+                          </span>
+                        </div>
+                        <div className="h-3 rounded-full bg-ink/8">
+                          <div
+                            className="h-full rounded-full bg-[linear-gradient(90deg,rgba(33,29,25,0.96),rgba(212,175,55,0.88))]"
+                            style={{
+                              width: `${Math.max((item.revenue / stats.maxTimelineRevenue) * 100, item.revenue ? 14 : 0)}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </StatsCard>
+
                 <StatsCard title="Servicios con mas movimiento" eyebrow="Oferta">
                   {stats.topServices.length ? (
                     <div className="space-y-3">
                       {stats.topServices.map((service) => (
-                        <div className="rounded-[22px] border border-ink/8 bg-ink/3 p-4" key={service.name}>
+                        <div className="rounded-[22px] border border-ink/10 bg-[#f8f4eb] p-4" key={service.name}>
                           <div className="flex items-center justify-between gap-3">
                             <p className="font-display text-lg font-semibold tracking-tight text-ink">{service.name}</p>
                             <span className="numeric text-sm font-semibold text-gold-700">{service.count} citas</span>
                           </div>
-                          <p className="mt-2 text-sm text-ink/58">
+                          <p className="mt-2 text-sm text-ink/76">
                             {formatCurrency(service.revenue, barberia.moneda)} generados en el mes.
                           </p>
                         </div>
@@ -463,6 +523,30 @@ export function AdminDashboard() {
                     </div>
                   ) : (
                     <EmptyPanel text="Todavia no hay servicios con historial suficiente para mostrar tendencia." />
+                  )}
+                </StatsCard>
+              </div>
+
+              <div className="grid gap-4 xl:grid-cols-[1fr_1fr]">
+                <StatsCard title="Barberos con mejor rendimiento" eyebrow="Equipo">
+                  {stats.topBarbers.length ? (
+                    <div className="space-y-3">
+                      {stats.topBarbers.map((barber) => (
+                        <div className="rounded-[22px] border border-ink/10 bg-[#f8f4eb] p-4" key={barber.name}>
+                          <div className="flex items-center justify-between gap-3">
+                            <p className="font-display text-lg font-semibold tracking-tight text-ink">{barber.name}</p>
+                            <span className="numeric text-sm font-semibold text-gold-700">
+                              {formatCurrency(barber.revenue, barberia.moneda)}
+                            </span>
+                          </div>
+                          <p className="mt-2 text-sm text-ink/76">
+                            {barber.count} citas gestionadas este mes.
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <EmptyPanel text="Aun no hay suficiente actividad para comparar rendimiento por barbero." />
                   )}
                 </StatsCard>
 
@@ -608,7 +692,7 @@ function Section({
   title: string;
 }) {
   return (
-    <section className="space-y-6 rounded-[28px] border border-ink/8 bg-paper p-7 shadow-soft sm:p-8">
+    <section className="space-y-6 rounded-[28px] border border-ink/10 bg-white p-7 shadow-soft sm:p-8">
       <div className="space-y-2">
         <p className="eyebrow text-gold-700">{eyebrow}</p>
         <h2 className="font-display text-3xl font-semibold tracking-tight text-ink">{title}</h2>
@@ -620,12 +704,14 @@ function Section({
 
 function Metric({ icon, label, value }: { icon: ReactNode; label: string; value: ReactNode }) {
   return (
-    <div className="rounded-[22px] border border-ink/8 bg-ink/3 p-5">
-      <div className="mb-3 flex items-center gap-2 text-ink/55">
+    <div className="rounded-[22px] border border-ink/10 bg-[#f8f4eb] p-5">
+      <div className="mb-3 flex items-center gap-2 text-ink/78">
         {icon}
-        <span className="eyebrow text-ink/45">{label}</span>
+        <span className="eyebrow text-ink/72">{label}</span>
       </div>
-      <p className="font-display numeric text-4xl font-semibold tracking-tight text-ink">{value}</p>
+      <p className="font-display numeric break-words text-[clamp(1.9rem,3vw,3rem)] font-semibold leading-tight tracking-tight text-ink">
+        {value}
+      </p>
     </div>
   );
 }
@@ -640,7 +726,7 @@ function StatsCard({
   title: string;
 }) {
   return (
-    <div className="rounded-[24px] border border-ink/8 bg-paper p-5 shadow-soft">
+    <div className="rounded-[24px] border border-ink/10 bg-white p-5 shadow-soft">
       <p className="eyebrow text-gold-700">{eyebrow}</p>
       <h3 className="font-display mt-2 text-2xl font-semibold tracking-tight text-ink">{title}</h3>
       <div className="mt-5">{children}</div>
@@ -654,7 +740,7 @@ function StatusBar({ label, total, value }: { label: string; total: number; valu
   return (
     <div>
       <div className="mb-2 flex items-center justify-between gap-3 text-sm">
-        <span className="text-ink/62">{label}</span>
+        <span className="font-medium text-ink/78">{label}</span>
         <span className="numeric font-semibold text-ink">{value}</span>
       </div>
       <div className="h-3 rounded-full bg-ink/8">
@@ -669,16 +755,16 @@ function StatusBar({ label, total, value }: { label: string; total: number; valu
 
 function InsightRow({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <div className="flex items-center justify-between rounded-[18px] border border-ink/8 bg-ink/3 px-4 py-3 text-sm">
-      <span className="text-ink/58">{label}</span>
-      <span className="font-display font-semibold tracking-tight text-ink">{value}</span>
+    <div className="flex items-center justify-between gap-4 rounded-[18px] border border-ink/10 bg-[#f8f4eb] px-4 py-3 text-sm">
+      <span className="font-medium text-ink/76">{label}</span>
+      <span className="font-display numeric font-semibold tracking-tight text-ink">{value}</span>
     </div>
   );
 }
 
 function EmptyPanel({ text }: { text: string }) {
   return (
-    <div className="rounded-[22px] border border-dashed border-ink/12 bg-ink/2 p-5 text-sm leading-6 text-ink/55">
+    <div className="rounded-[22px] border border-dashed border-ink/18 bg-[#f8f4eb] p-5 text-sm leading-6 text-ink/72">
       {text}
     </div>
   );
@@ -715,10 +801,10 @@ function DangerZone({
 
 function PanelEmpty({ text, title }: { text: string; title: string }) {
   return (
-    <div className="rounded-[28px] border border-ink/8 bg-paper p-10 shadow-soft">
+    <div className="rounded-[28px] border border-ink/10 bg-white p-10 shadow-soft">
       <p className="eyebrow text-gold-700">Admin</p>
       <h1 className="font-display mt-3 text-3xl font-semibold tracking-tight text-ink">{title}</h1>
-      <p className="mt-3 max-w-xl text-base leading-7 text-ink/60">{text}</p>
+      <p className="mt-3 max-w-xl text-base leading-7 text-ink/76">{text}</p>
     </div>
   );
 }
