@@ -15,6 +15,18 @@ export function NotificationBell() {
   const location = useLocation();
   const [panelStyle, setPanelStyle] = useState<CSSProperties>();
 
+  function getPanelPosition() {
+    const button = buttonRef.current;
+    if (!button) return undefined;
+
+    const rect = button.getBoundingClientRect();
+    return {
+      position: 'fixed',
+      top: rect.bottom + 12,
+      right: Math.max(8, window.innerWidth - rect.right),
+    } satisfies CSSProperties;
+  }
+
   const targetPath = useMemo(() => {
     if (role === 'admin') return '/admin-dashboard';
     if (role === 'superadmin') return '/superadmin-dashboard';
@@ -29,15 +41,8 @@ export function NotificationBell() {
     if (!isOpen) return undefined;
 
     function updatePanelPosition() {
-      const button = buttonRef.current;
-      if (!button) return;
-
-      const rect = button.getBoundingClientRect();
-      setPanelStyle({
-        position: 'fixed',
-        top: rect.bottom + 12,
-        right: Math.max(8, window.innerWidth - rect.right),
-      });
+      const nextStyle = getPanelPosition();
+      if (nextStyle) setPanelStyle(nextStyle);
     }
 
     function handlePointerDown(event: MouseEvent | TouchEvent) {
@@ -81,7 +86,15 @@ export function NotificationBell() {
         aria-haspopup="menu"
         aria-label={unreadCount ? `${unreadCount} notificaciones sin leer` : 'Notificaciones'}
         className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/6 text-cream transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/10"
-        onClick={() => setIsOpen((current) => !current)}
+        onClick={() => {
+          setIsOpen((current) => {
+            if (!current) {
+              const nextStyle = getPanelPosition();
+              if (nextStyle) setPanelStyle(nextStyle);
+            }
+            return !current;
+          });
+        }}
         ref={buttonRef}
         type="button"
       >
@@ -93,7 +106,7 @@ export function NotificationBell() {
         ) : null}
       </button>
 
-      {isOpen ? (
+      {isOpen && panelStyle ? (
         <div
           className="surface-panel z-[70] w-[min(calc(100vw-1rem),24rem)] rounded-3xl p-2 text-ink"
           id="notifications-menu"

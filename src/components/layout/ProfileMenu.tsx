@@ -30,6 +30,18 @@ export function ProfileMenu() {
   const secondaryText = profile?.full_name?.trim() ? profileEmail : 'Mi cuenta';
   const avatarUrl = isRenderableMediaUrl(profile?.avatar_url) ? profile?.avatar_url!.trim() : null;
 
+  function getPanelPosition() {
+    const button = buttonRef.current;
+    if (!button) return undefined;
+
+    const rect = button.getBoundingClientRect();
+    return {
+      position: 'fixed',
+      top: rect.bottom + 12,
+      right: Math.max(8, window.innerWidth - rect.right),
+    } satisfies CSSProperties;
+  }
+
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
@@ -40,15 +52,8 @@ export function ProfileMenu() {
     }
 
     function updatePanelPosition() {
-      const button = buttonRef.current;
-      if (!button) return;
-
-      const rect = button.getBoundingClientRect();
-      setPanelStyle({
-        position: 'fixed',
-        top: rect.bottom + 12,
-        right: Math.max(8, window.innerWidth - rect.right),
-      });
+      const nextStyle = getPanelPosition();
+      if (nextStyle) setPanelStyle(nextStyle);
     }
 
     function handlePointerDown(event: MouseEvent | TouchEvent) {
@@ -98,7 +103,15 @@ export function ProfileMenu() {
         aria-expanded={isOpen}
         aria-haspopup="menu"
         className="flex h-10 max-w-[12.5rem] items-center gap-2 overflow-hidden rounded-full border border-white/10 bg-white/6 pl-1 pr-2 text-left text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/10 lg:max-w-[14.5rem] lg:gap-3 lg:pr-3"
-        onClick={() => setIsOpen((current) => !current)}
+        onClick={() => {
+          setIsOpen((current) => {
+            if (!current) {
+              const nextStyle = getPanelPosition();
+              if (nextStyle) setPanelStyle(nextStyle);
+            }
+            return !current;
+          });
+        }}
         ref={buttonRef}
         type="button"
       >
@@ -115,7 +128,7 @@ export function ProfileMenu() {
         </span>
       </button>
 
-      {isOpen ? (
+      {isOpen && panelStyle ? (
         <div
           className="surface-panel z-[70] w-[min(calc(100vw-1rem),18rem)] rounded-3xl p-2 text-ink sm:w-72"
           id="profile-menu"
