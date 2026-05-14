@@ -1,6 +1,6 @@
 import { LogIn, Menu, X } from 'lucide-react';
 import { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 
 import { BrandSignature } from '@/components/layout/BrandSignature';
 import { ProfileMenu } from '@/components/layout/ProfileMenu';
@@ -10,14 +10,15 @@ import { NotificationBell } from '@/features/notifications/NotificationBell';
 
 export function Navbar() {
   const { isAuthenticated, role } = useAuth();
+  const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
     { to: '/', label: 'Inicio' },
     ...(role === 'client'
       ? [
-          { to: '/client-dashboard', label: 'Agendar' },
-          { to: '/client-dashboard', label: 'Mis citas' },
+          { to: '/client-dashboard', search: '', label: 'Agendar' },
+          { to: '/client-dashboard', search: '?view=mis-citas', label: 'Mis citas' },
           { to: '/crear-barberia', label: 'Crear barberia' },
         ]
       : []),
@@ -38,13 +39,14 @@ export function Navbar() {
               className={({ isActive }) =>
                 [
                   'rounded-full px-3 py-2 text-sm font-medium transition-all duration-300 lg:px-4',
-                  isActive
+                  ((item.to === '/client-dashboard' && location.pathname === item.to && location.search === (item.search ?? ''))
+                    || (item.to !== '/client-dashboard' && isActive))
                     ? 'bg-cream text-ink shadow-soft'
                     : 'text-cream/70 hover:bg-white/8 hover:text-cream',
                 ].join(' ')
               }
               key={`${item.to}-${item.label}`}
-              to={item.to}
+              to={{ pathname: item.to, search: item.search ?? '' }}
             >
               {item.label}
             </NavLink>
@@ -86,14 +88,15 @@ export function Navbar() {
                 className={({ isActive }) =>
                   [
                     'rounded-2xl border px-4 py-3 text-sm font-medium transition',
-                    isActive
+                    ((item.to === '/client-dashboard' && location.pathname === item.to && location.search === (item.search ?? ''))
+                      || (item.to !== '/client-dashboard' && isActive))
                       ? 'border-cream bg-cream text-ink'
                       : 'border-white/10 bg-white/5 text-cream/78 hover:bg-white/8 hover:text-cream',
                   ].join(' ')
                 }
                 key={`mobile-${item.to}-${item.label}`}
                 onClick={() => setIsMobileMenuOpen(false)}
-                to={item.to}
+                to={{ pathname: item.to, search: item.search ?? '' }}
               >
                 {item.label}
               </NavLink>
