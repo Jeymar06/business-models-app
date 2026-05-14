@@ -78,6 +78,10 @@ function formatCurrency(value: number, currency = 'COP') {
   }).format(value);
 }
 
+const adminEyebrowClass = 'text-[#8a6420]';
+const adminMutedTextClass = 'text-ink/82';
+const adminSurfaceClass = 'border border-ink/12 bg-[#f5efe3]';
+
 function getLastSevenDays() {
   return Array.from({ length: 7 }, (_, index) => {
     const date = new Date();
@@ -324,13 +328,13 @@ export function AdminDashboard() {
   return (
     <>
       <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
-        <aside className="h-fit rounded-[28px] border border-ink/8 bg-paper p-4 shadow-soft">
+        <aside className="h-fit rounded-[28px] border border-ink/10 bg-white p-4 shadow-soft">
           <div className="px-3 py-3">
             <Pill tone="gold">Panel admin</Pill>
             <h1 className="font-display mt-3 text-2xl font-semibold tracking-tight text-ink">
               {barberia?.nombre ?? 'Barber Flow'}
             </h1>
-            <p className="mt-2 text-sm leading-6 text-ink/55">
+            <p className={`mt-2 text-sm leading-6 ${adminMutedTextClass}`}>
               Navega entre configuracion, operacion y estadisticas de tu barberia.
             </p>
           </div>
@@ -341,7 +345,7 @@ export function AdminDashboard() {
                   'flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-left text-sm font-medium transition-all duration-300',
                   section === item.id
                     ? 'bg-ink text-cream shadow-soft'
-                    : 'text-ink/65 hover:bg-ink/5 hover:text-ink',
+                    : 'text-ink/85 hover:bg-[#f5efe3] hover:text-ink',
                 ].join(' ')}
                 key={item.id}
                 onClick={() => changeSection(item.id)}
@@ -383,13 +387,13 @@ export function AdminDashboard() {
               <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
                 <StatsCard title="Siguiente cita" eyebrow="Agenda">
                   {stats.nextAppointment ? (
-                    <div className="rounded-[24px] border border-ink/8 bg-ink/3 p-5">
+                    <div className={`rounded-[22px] p-5 ${adminSurfaceClass}`}>
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <div>
                           <p className="font-display text-2xl font-semibold tracking-tight text-ink">
                             {stats.nextAppointment.nombre_cliente || stats.nextAppointment.email_cliente}
                           </p>
-                          <p className="mt-2 text-sm leading-6 text-ink/58">
+                          <p className={`mt-2 text-sm leading-6 ${adminMutedTextClass}`}>
                             {stats.nextAppointment.nombre_servicio} con {stats.nextAppointment.nombre_barbero}
                           </p>
                         </div>
@@ -397,7 +401,7 @@ export function AdminDashboard() {
                           {stats.nextAppointment.hora_inicio.slice(0, 5)}
                         </span>
                       </div>
-                      <p className="mt-4 text-sm text-ink/78">
+                      <p className={`mt-4 text-sm ${adminMutedTextClass}`}>
                         Fecha: <span className="text-ink">{stats.nextAppointment.fecha}</span>
                       </p>
                     </div>
@@ -451,25 +455,29 @@ export function AdminDashboard() {
 
               <div className="grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
                 <StatsCard title="Actividad de los ultimos 7 dias" eyebrow="Movimiento">
-                  <div className="grid gap-3 sm:grid-cols-7">
+                  {stats.timeline.some((item) => item.count > 0) ? (
+                    <div className="grid gap-3 sm:grid-cols-7">
                     {stats.timeline.map((item) => (
-                      <div className="rounded-[22px] border border-ink/10 bg-[#f8f4eb] p-4" key={item.date}>
+                      <div className="rounded-[18px] border border-ink/10 bg-[#f5efe3] p-4" key={item.date}>
                         <div className="flex items-center justify-between gap-2">
-                          <span className="eyebrow text-ink/70">{item.label}</span>
-                          <span className="numeric text-xs font-semibold text-ink/78">{item.count}</span>
+                          <span className="eyebrow text-ink/90">{item.label}</span>
+                          <span className="numeric text-xs font-semibold text-ink">{item.count}</span>
                         </div>
-                        <div className="mt-4 flex h-32 items-end">
+                        <div className="mt-4 flex h-24 items-end">
                           <div
                             className="w-full rounded-t-2xl bg-[linear-gradient(180deg,rgba(212,175,55,0.88),rgba(26,24,22,0.96))]"
                             style={{ height: `${Math.max((item.count / stats.maxTimelineCount) * 100, item.count ? 18 : 6)}%` }}
                           />
                         </div>
-                        <p className="mt-3 text-xs leading-5 text-ink/78">
+                        <p className="mt-3 text-xs leading-5 text-ink/88">
                           {formatCurrency(item.revenue, barberia.moneda)}
                         </p>
                       </div>
                     ))}
-                  </div>
+                    </div>
+                  ) : (
+                    <EmptyPanel text="Todavia no hay citas registradas en los ultimos 7 dias para mostrar actividad." />
+                  )}
                 </StatsCard>
 
                 <StatsCard title="Estado de citas del mes" eyebrow="Embudo">
@@ -484,11 +492,12 @@ export function AdminDashboard() {
 
               <div className="grid gap-4 xl:grid-cols-[1fr_1fr]">
                 <StatsCard title="Ingresos de los ultimos 7 dias" eyebrow="Caja">
-                  <div className="space-y-3">
+                  {stats.timeline.some((item) => item.revenue > 0) ? (
+                    <div className="space-y-3">
                     {stats.timeline.map((item) => (
                       <div className="space-y-2" key={`${item.date}-revenue`}>
                         <div className="flex items-center justify-between gap-3 text-sm">
-                          <span className="font-medium text-ink/82">{item.label}</span>
+                          <span className="font-medium text-ink">{item.label}</span>
                           <span className="numeric font-semibold text-ink">
                             {formatCurrency(item.revenue, barberia.moneda)}
                           </span>
@@ -503,19 +512,22 @@ export function AdminDashboard() {
                         </div>
                       </div>
                     ))}
-                  </div>
+                    </div>
+                  ) : (
+                    <EmptyPanel text="Aun no hay ingresos registrados en la ultima semana." />
+                  )}
                 </StatsCard>
 
                 <StatsCard title="Servicios con mas movimiento" eyebrow="Oferta">
                   {stats.topServices.length ? (
                     <div className="space-y-3">
                       {stats.topServices.map((service) => (
-                        <div className="rounded-[22px] border border-ink/10 bg-[#f8f4eb] p-4" key={service.name}>
+                        <div className="rounded-[18px] border border-ink/10 bg-[#f5efe3] p-4" key={service.name}>
                           <div className="flex items-center justify-between gap-3">
                             <p className="font-display text-lg font-semibold tracking-tight text-ink">{service.name}</p>
                             <span className="numeric text-sm font-semibold text-gold-700">{service.count} citas</span>
                           </div>
-                          <p className="mt-2 text-sm text-ink/76">
+                          <p className="mt-2 text-sm text-ink/88">
                             {formatCurrency(service.revenue, barberia.moneda)} generados en el mes.
                           </p>
                         </div>
@@ -532,14 +544,14 @@ export function AdminDashboard() {
                   {stats.topBarbers.length ? (
                     <div className="space-y-3">
                       {stats.topBarbers.map((barber) => (
-                        <div className="rounded-[22px] border border-ink/10 bg-[#f8f4eb] p-4" key={barber.name}>
+                        <div className="rounded-[18px] border border-ink/10 bg-[#f5efe3] p-4" key={barber.name}>
                           <div className="flex items-center justify-between gap-3">
                             <p className="font-display text-lg font-semibold tracking-tight text-ink">{barber.name}</p>
                             <span className="numeric text-sm font-semibold text-gold-700">
                               {formatCurrency(barber.revenue, barberia.moneda)}
                             </span>
                           </div>
-                          <p className="mt-2 text-sm text-ink/76">
+                          <p className="mt-2 text-sm text-ink/88">
                             {barber.count} citas gestionadas este mes.
                           </p>
                         </div>
@@ -694,7 +706,7 @@ function Section({
   return (
     <section className="space-y-6 rounded-[28px] border border-ink/10 bg-white p-7 shadow-soft sm:p-8">
       <div className="space-y-2">
-        <p className="eyebrow text-gold-700">{eyebrow}</p>
+        <p className={`eyebrow ${adminEyebrowClass}`}>{eyebrow}</p>
         <h2 className="font-display text-3xl font-semibold tracking-tight text-ink">{title}</h2>
       </div>
       {children}
@@ -704,10 +716,10 @@ function Section({
 
 function Metric({ icon, label, value }: { icon: ReactNode; label: string; value: ReactNode }) {
   return (
-    <div className="rounded-[22px] border border-ink/10 bg-[#f8f4eb] p-5">
-      <div className="mb-3 flex items-center gap-2 text-ink/78">
+    <div className={`rounded-[18px] p-5 ${adminSurfaceClass}`}>
+      <div className="mb-3 flex items-center gap-2 text-ink">
         {icon}
-        <span className="eyebrow text-ink/72">{label}</span>
+        <span className="eyebrow text-ink/90">{label}</span>
       </div>
       <p className="font-display numeric break-words text-[clamp(1.9rem,3vw,3rem)] font-semibold leading-tight tracking-tight text-ink">
         {value}
@@ -726,9 +738,9 @@ function StatsCard({
   title: string;
 }) {
   return (
-    <div className="rounded-[24px] border border-ink/10 bg-white p-5 shadow-soft">
-      <p className="eyebrow text-gold-700">{eyebrow}</p>
-      <h3 className="font-display mt-2 text-2xl font-semibold tracking-tight text-ink">{title}</h3>
+    <div className="rounded-[22px] border border-ink/10 bg-white p-5 shadow-soft">
+      <p className={`eyebrow ${adminEyebrowClass}`}>{eyebrow}</p>
+      <h3 className="font-display mt-2 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">{title}</h3>
       <div className="mt-5">{children}</div>
     </div>
   );
@@ -740,7 +752,7 @@ function StatusBar({ label, total, value }: { label: string; total: number; valu
   return (
     <div>
       <div className="mb-2 flex items-center justify-between gap-3 text-sm">
-        <span className="font-medium text-ink/78">{label}</span>
+        <span className="font-medium text-ink">{label}</span>
         <span className="numeric font-semibold text-ink">{value}</span>
       </div>
       <div className="h-3 rounded-full bg-ink/8">
@@ -755,8 +767,8 @@ function StatusBar({ label, total, value }: { label: string; total: number; valu
 
 function InsightRow({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-[18px] border border-ink/10 bg-[#f8f4eb] px-4 py-3 text-sm">
-      <span className="font-medium text-ink/76">{label}</span>
+    <div className={`flex items-center justify-between gap-4 rounded-[16px] px-4 py-3 text-sm ${adminSurfaceClass}`}>
+      <span className="font-medium text-ink">{label}</span>
       <span className="font-display numeric font-semibold tracking-tight text-ink">{value}</span>
     </div>
   );
@@ -764,7 +776,7 @@ function InsightRow({ label, value }: { label: string; value: ReactNode }) {
 
 function EmptyPanel({ text }: { text: string }) {
   return (
-    <div className="rounded-[22px] border border-dashed border-ink/18 bg-[#f8f4eb] p-5 text-sm leading-6 text-ink/72">
+    <div className="rounded-[18px] border border-dashed border-ink/20 bg-[#f5efe3] p-5 text-sm leading-6 text-ink/88">
       {text}
     </div>
   );
@@ -802,9 +814,9 @@ function DangerZone({
 function PanelEmpty({ text, title }: { text: string; title: string }) {
   return (
     <div className="rounded-[28px] border border-ink/10 bg-white p-10 shadow-soft">
-      <p className="eyebrow text-gold-700">Admin</p>
+      <p className={`eyebrow ${adminEyebrowClass}`}>Admin</p>
       <h1 className="font-display mt-3 text-3xl font-semibold tracking-tight text-ink">{title}</h1>
-      <p className="mt-3 max-w-xl text-base leading-7 text-ink/76">{text}</p>
+      <p className="mt-3 max-w-xl text-base leading-7 text-ink/88">{text}</p>
     </div>
   );
 }
