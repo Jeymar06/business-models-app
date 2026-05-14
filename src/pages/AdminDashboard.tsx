@@ -1,16 +1,22 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  BarChart3,
   CalendarCheck,
   CalendarDays,
+  CalendarRange,
+  CircleDollarSign,
   Clock,
   Scissors,
   Settings,
   Store,
   Trash2,
+  TrendingUp,
   UserRound,
+  Users,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { Button, ConfirmDialog, Pill, useToast } from '@/components/ui';
 import {
@@ -31,28 +37,62 @@ import { useDisponibilidad } from '@/features/admin/horarios/hooks/useDisponibil
 import { ServicioForm } from '@/features/admin/servicios/components/ServicioForm';
 import { ServicioList } from '@/features/admin/servicios/components/ServicioList';
 import { useServicios } from '@/features/admin/servicios/hooks/useServicios';
-import { useAuth } from '@/features/auth/hooks/useAuth';
 import { isSupabaseConfigured } from '@/lib/supabase';
-import type { Barbero, Disponibilidad, Servicio } from '@/types/supabase.types';
+import type { Barbero, CitaConDetalles, Disponibilidad, Servicio } from '@/types/supabase.types';
 import { AdminCitasPage } from './AdminCitasPage';
 
-type AdminSection = 'resumen' | 'citas' | 'barberos' | 'servicios' | 'horarios' | 'barberia' | 'configuracion';
+type AdminSection =
+  | 'resumen'
+  | 'estadisticas'
+  | 'citas'
+  | 'barberos'
+  | 'servicios'
+  | 'horarios'
+  | 'barberia'
+  | 'configuracion';
 
 const sections: Array<{ id: AdminSection; label: string; icon: ReactNode }> = [
   { id: 'resumen', label: 'Resumen', icon: <CalendarDays size={16} /> },
+  { id: 'estadisticas', label: 'Estadisticas', icon: <BarChart3 size={16} /> },
   { id: 'citas', label: 'Citas', icon: <CalendarCheck size={16} /> },
   { id: 'barberos', label: 'Barberos', icon: <UserRound size={16} /> },
   { id: 'servicios', label: 'Servicios', icon: <Scissors size={16} /> },
   { id: 'horarios', label: 'Horarios', icon: <Clock size={16} /> },
-  { id: 'barberia', label: 'Mi Barbería', icon: <Store size={16} /> },
-  { id: 'configuracion', label: 'Configuración', icon: <Settings size={16} /> },
+  { id: 'barberia', label: 'Mi barberia', icon: <Store size={16} /> },
+  { id: 'configuracion', label: 'Configuracion', icon: <Settings size={16} /> },
 ];
+
+const adminSectionIds = new Set<AdminSection>(sections.map((section) => section.id));
+
+function isAdminSection(value: string | null): value is AdminSection {
+  return value !== null && adminSectionIds.has(value as AdminSection);
+}
+
+function formatCurrency(value: number, currency = 'COP') {
+  return new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency,
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+function getLastSevenDays() {
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    date.setDate(date.getDate() - (6 - index));
+    return date;
+  });
+}
 
 export function AdminDashboard() {
   const queryClient = useQueryClient();
   const toast = useToast();
-  const { profile: _profile } = useAuth();
-  const [section, setSection] = useState<AdminSection>('resumen');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [section, setSection] = useState<AdminSection>(() => {
+    const requestedSection = searchParams.get('section');
+    return isAdminSection(requestedSection) ? requestedSection : 'resumen';
+  });
   const [editingBarbero, setEditingBarbero] = useState<Barbero | null>(null);
   const [editingServicio, setEditingServicio] = useState<Servicio | null>(null);
   const [editingHorario, setEditingHorario] = useState<Disponibilidad | null>(null);
@@ -71,21 +111,116 @@ export function AdminDashboard() {
     queryFn: () => adminService.getAppointments(barberia!.id),
   });
 
-  const todayAppointments = useMemo(() => {
-    const today = new Date().toISOString().slice(0, 10);
-    return (appointmentsQuery.data ?? []).filter((appointment) => appointment.fecha === today).length;
-  }, [appointmentsQuery.data]);
+  useEffect(() => {
+    const requestedSection = searchParams.get('section');
+    const nextSection = isAdminSection(requestedSection) ? requestedSection : 'resumen';
+    setSection(nextSection);
+  }, [searchParams]);
 
+  function changeSection(nextSection: AdminSection) {
+    setSection(nextSection);
+    const nextParams = new URLSearchParams(searchParams);
+    if (nextSection === 'resumen') {
+      nextParams.delete('section');
+    } else {
+      nextParams.set('section', nextSection);
+    }
+    setSearchParams(nextParams, { replace: true });
+  }
+
+  const appointments = appointmentsQuery.data ?? [];
   const activeBarbers = barberos.filter((barbero) => barbero.activo).length;
   const activeServices = servicios.filter((servicio) => servicio.activo).length;
+
+  const stats = useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    const monthKey = today.slice(0, 7);
+    const monthAppointments = appointments.filter((appointment) => appointment.fecha.startsWith(monthKey));
+    const activeMonthAppointments = monthAppointments.filter((appointment) => appointment.estado !== 'cancelada');
+    const completedMonth = monthAppointments.filter((appointment) => appointment.estado === 'completada').length;
+    const confirmedMonth = monthAppointments.filter((appointment) => appointment.estado === 'confirmada').length;
+    const cancelledMonth = monthAppointments.filter((appointment) => appointment.estado === 'cancelada').length;
+    const pendingMonth = monthAppointments.filter((appointment) => appointment.estado === 'pendiente').length;
+    const estimatedRevenueMonth = activeMonthAppointments.reduce((total, appointment) => total + appointment.precio, 0);
+    const averageTicket = activeMonthAppointments.length ? estimatedRevenueMonth / activeMonthAppointments.length : 0;
+    const uniqueClientsMonth = new Set(activeMonthAppointments.map((appointment) => appointment.cliente_id)).size;
+
+    const clientsByVisits = appointments.reduce<Record<string, number>>((accumulator, appointment) => {
+      if (appointment.estado === 'cancelada') return accumulator;
+      accumulator[appointment.cliente_id] = (accumulator[appointment.cliente_id] ?? 0) + 1;
+      return accumulator;
+    }, {});
+
+    const recurringClients = Object.values(clientsByVisits).filter((visits) => visits >= 2).length;
+    const confirmationRate = monthAppointments.length
+      ? Math.round(((confirmedMonth + completedMonth) / monthAppointments.length) * 100)
+      : 0;
+
+    const serviceMap = activeMonthAppointments.reduce<Record<string, { name: string; count: number; revenue: number }>>(
+      (accumulator, appointment) => {
+        const current = accumulator[appointment.servicio_id] ?? {
+          name: appointment.nombre_servicio,
+          count: 0,
+          revenue: 0,
+        };
+        current.count += 1;
+        current.revenue += appointment.precio;
+        accumulator[appointment.servicio_id] = current;
+        return accumulator;
+      },
+      {},
+    );
+
+    const topServices = Object.values(serviceMap)
+      .sort((left, right) => right.count - left.count)
+      .slice(0, 4);
+
+    const timeline = getLastSevenDays().map((date) => {
+      const isoDate = date.toISOString().slice(0, 10);
+      const dayAppointments = appointments.filter((appointment) => appointment.fecha === isoDate);
+      const revenue = dayAppointments
+        .filter((appointment) => appointment.estado !== 'cancelada')
+        .reduce((total, appointment) => total + appointment.precio, 0);
+
+      return {
+        date: isoDate,
+        label: new Intl.DateTimeFormat('es-CO', { weekday: 'short' }).format(date).replace('.', ''),
+        count: dayAppointments.length,
+        revenue,
+      };
+    });
+
+    const maxTimelineCount = Math.max(...timeline.map((item) => item.count), 1);
+    const nextAppointment = appointments
+      .filter((appointment) => appointment.fecha >= today && appointment.estado !== 'cancelada' && appointment.estado !== 'completada')
+      .sort((left, right) => `${left.fecha}${left.hora_inicio}`.localeCompare(`${right.fecha}${right.hora_inicio}`))[0] ?? null;
+
+    return {
+      todayAppointments: appointments.filter((appointment) => appointment.fecha === today).length,
+      monthAppointments,
+      pendingMonth,
+      completedMonth,
+      confirmedMonth,
+      cancelledMonth,
+      estimatedRevenueMonth,
+      averageTicket,
+      uniqueClientsMonth,
+      recurringClients,
+      confirmationRate,
+      topServices,
+      timeline,
+      maxTimelineCount,
+      nextAppointment,
+    };
+  }, [appointments]);
 
   async function saveBarberia(values: BarberiaInput) {
     if (barberia) {
       await updateBarberia.mutateAsync({ id: barberia.id, input: values });
-      toast.success('Cambios guardados.', 'Barbería actualizada');
+      toast.success('Cambios guardados.', 'Barberia actualizada');
     } else {
       await createBarberia.mutateAsync(values);
-      toast.success('Tu barbería está lista para operar.', 'Barbería creada');
+      toast.success('Tu barberia esta lista para operar.', 'Barberia creada');
     }
   }
 
@@ -129,10 +264,10 @@ export function AdminDashboard() {
       await adminService.deleteBarberia(barberia.id);
       await queryClient.invalidateQueries({ queryKey: ['admin'] });
       await queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] });
-      toast.success('Serás redirigido…', 'Barbería eliminada');
+      toast.success('Seras redirigido...', 'Barberia eliminada');
       setTimeout(() => window.location.assign('/'), 1200);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'No fue posible eliminar la barbería.', 'Error');
+      toast.error(error instanceof Error ? error.message : 'No fue posible eliminar la barberia.', 'Error');
     } finally {
       setIsDeleting(false);
       setConfirmDeleteBarberia(false);
@@ -158,7 +293,7 @@ export function AdminDashboard() {
   }
 
   if (isBarberiaLoading) {
-    return <PanelEmpty title="Cargando panel" text="Estamos leyendo la barbería asociada a tu usuario admin." />;
+    return <PanelEmpty title="Cargando panel" text="Estamos leyendo la barberia asociada a tu usuario admin." />;
   }
 
   const blocker = barberiaError instanceof Error ? barberiaError.message : null;
@@ -172,6 +307,9 @@ export function AdminDashboard() {
             <h1 className="font-display mt-3 text-2xl font-semibold tracking-tight text-ink">
               {barberia?.nombre ?? 'Barber Flow'}
             </h1>
+            <p className="mt-2 text-sm leading-6 text-ink/55">
+              Navega entre configuracion, operacion y estadisticas de tu barberia.
+            </p>
           </div>
           <nav className="mt-3 grid gap-1">
             {sections.map((item) => (
@@ -183,16 +321,10 @@ export function AdminDashboard() {
                     : 'text-ink/65 hover:bg-ink/5 hover:text-ink',
                 ].join(' ')}
                 key={item.id}
-                onClick={() => setSection(item.id)}
+                onClick={() => changeSection(item.id)}
                 type="button"
               >
-                <span
-                  className={
-                    section === item.id
-                      ? 'text-gold-300'
-                      : 'text-ink/45 group-hover:text-ink'
-                  }
-                >
+                <span className={section === item.id ? 'text-gold-300' : 'text-ink/45'}>
                   {item.icon}
                 </span>
                 {item.label}
@@ -209,15 +341,139 @@ export function AdminDashboard() {
           ) : null}
 
           {!barberia && section !== 'barberia' ? (
-            <PanelEmpty title="Crea tu barbería" text="Antes de crear barberos, servicios y horarios, registra los datos de Mi Barbería." />
+            <PanelEmpty title="Crea tu barberia" text="Antes de crear barberos, servicios y horarios, registra los datos de Mi Barberia." />
           ) : null}
 
           {section === 'resumen' ? (
-            <Section eyebrow="Vista general" title="Resumen de hoy">
-              <div className="grid gap-4 md:grid-cols-3">
-                <Metric icon={<CalendarDays size={18} />} label="Citas hoy" value={todayAppointments} />
+            <Section eyebrow="Vista general" title="Resumen operativo">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <Metric icon={<CalendarDays size={18} />} label="Citas hoy" value={stats.todayAppointments} />
                 <Metric icon={<UserRound size={18} />} label="Barberos activos" value={activeBarbers} />
                 <Metric icon={<Scissors size={18} />} label="Servicios activos" value={activeServices} />
+                <Metric
+                  icon={<CircleDollarSign size={18} />}
+                  label="Ingresos del mes"
+                  value={formatCurrency(stats.estimatedRevenueMonth, barberia?.moneda)}
+                />
+              </div>
+
+              <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+                <StatsCard title="Siguiente cita" eyebrow="Agenda">
+                  {stats.nextAppointment ? (
+                    <div className="rounded-[24px] border border-ink/8 bg-ink/3 p-5">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                          <p className="font-display text-2xl font-semibold tracking-tight text-ink">
+                            {stats.nextAppointment.nombre_cliente || stats.nextAppointment.email_cliente}
+                          </p>
+                          <p className="mt-2 text-sm leading-6 text-ink/58">
+                            {stats.nextAppointment.nombre_servicio} con {stats.nextAppointment.nombre_barbero}
+                          </p>
+                        </div>
+                        <span className="rounded-full border border-gold-500/25 bg-gold-500/10 px-3 py-1 text-sm font-semibold text-gold-700">
+                          {stats.nextAppointment.hora_inicio.slice(0, 5)}
+                        </span>
+                      </div>
+                      <p className="mt-4 text-sm text-ink/60">
+                        Fecha: <span className="text-ink">{stats.nextAppointment.fecha}</span>
+                      </p>
+                    </div>
+                  ) : (
+                    <EmptyPanel text="No hay citas proximas registradas en este momento." />
+                  )}
+                </StatsCard>
+
+                <StatsCard title="Lectura rapida" eyebrow="Hoy">
+                  <div className="grid gap-3">
+                    <InsightRow label="Pendientes del mes" value={stats.pendingMonth} />
+                    <InsightRow label="Completadas del mes" value={stats.completedMonth} />
+                    <InsightRow label="Clientes del mes" value={stats.uniqueClientsMonth} />
+                    <InsightRow label="Confirmacion" value={`${stats.confirmationRate}%`} />
+                  </div>
+                </StatsCard>
+              </div>
+            </Section>
+          ) : null}
+
+          {section === 'estadisticas' && barberia ? (
+            <Section eyebrow="Estadisticas" title={`Metricas de ${barberia.nombre}`}>
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <Metric icon={<CalendarRange size={18} />} label="Citas del mes" value={stats.monthAppointments.length} />
+                <Metric
+                  icon={<CircleDollarSign size={18} />}
+                  label="Ingresos del mes"
+                  value={formatCurrency(stats.estimatedRevenueMonth, barberia.moneda)}
+                />
+                <Metric
+                  icon={<TrendingUp size={18} />}
+                  label="Ticket promedio"
+                  value={formatCurrency(stats.averageTicket, barberia.moneda)}
+                />
+                <Metric icon={<Users size={18} />} label="Clientes unicos" value={stats.uniqueClientsMonth} />
+              </div>
+
+              <div className="grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
+                <StatsCard title="Actividad de los ultimos 7 dias" eyebrow="Movimiento">
+                  <div className="grid gap-3 sm:grid-cols-7">
+                    {stats.timeline.map((item) => (
+                      <div className="rounded-[22px] border border-ink/8 bg-ink/3 p-4" key={item.date}>
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="eyebrow text-ink/45">{item.label}</span>
+                          <span className="numeric text-xs font-semibold text-ink/55">{item.count}</span>
+                        </div>
+                        <div className="mt-4 flex h-32 items-end">
+                          <div
+                            className="w-full rounded-t-2xl bg-[linear-gradient(180deg,rgba(212,175,55,0.88),rgba(26,24,22,0.96))]"
+                            style={{ height: `${Math.max((item.count / stats.maxTimelineCount) * 100, item.count ? 18 : 6)}%` }}
+                          />
+                        </div>
+                        <p className="mt-3 text-xs leading-5 text-ink/58">
+                          {formatCurrency(item.revenue, barberia.moneda)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </StatsCard>
+
+                <StatsCard title="Estado de citas del mes" eyebrow="Embudo">
+                  <div className="space-y-4">
+                    <StatusBar label="Pendientes" total={stats.monthAppointments.length} value={stats.pendingMonth} />
+                    <StatusBar label="Confirmadas" total={stats.monthAppointments.length} value={stats.confirmedMonth} />
+                    <StatusBar label="Completadas" total={stats.monthAppointments.length} value={stats.completedMonth} />
+                    <StatusBar label="Canceladas" total={stats.monthAppointments.length} value={stats.cancelledMonth} />
+                  </div>
+                </StatsCard>
+              </div>
+
+              <div className="grid gap-4 xl:grid-cols-[1fr_1fr]">
+                <StatsCard title="Servicios con mas movimiento" eyebrow="Oferta">
+                  {stats.topServices.length ? (
+                    <div className="space-y-3">
+                      {stats.topServices.map((service) => (
+                        <div className="rounded-[22px] border border-ink/8 bg-ink/3 p-4" key={service.name}>
+                          <div className="flex items-center justify-between gap-3">
+                            <p className="font-display text-lg font-semibold tracking-tight text-ink">{service.name}</p>
+                            <span className="numeric text-sm font-semibold text-gold-700">{service.count} citas</span>
+                          </div>
+                          <p className="mt-2 text-sm text-ink/58">
+                            {formatCurrency(service.revenue, barberia.moneda)} generados en el mes.
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <EmptyPanel text="Todavia no hay servicios con historial suficiente para mostrar tendencia." />
+                  )}
+                </StatsCard>
+
+                <StatsCard title="Lectura rapida del negocio" eyebrow="Claves">
+                  <div className="grid gap-3">
+                    <InsightRow label="Clientes recurrentes" value={stats.recurringClients} />
+                    <InsightRow label="Barberos activos" value={activeBarbers} />
+                    <InsightRow label="Servicios activos" value={activeServices} />
+                    <InsightRow label="Conversion a cita gestionada" value={`${stats.confirmationRate}%`} />
+                  </div>
+                </StatsCard>
               </div>
             </Section>
           ) : null}
@@ -277,9 +533,7 @@ export function AdminDashboard() {
                 barberos={barberos}
                 disponibilidad={disponibilidad}
                 onDelete={(block) => {
-                  void deleteDisponibilidad
-                    .mutateAsync(block.id)
-                    .then(() => toast.success('Horario eliminado.'));
+                  void deleteDisponibilidad.mutateAsync(block.id).then(() => toast.success('Horario eliminado.'));
                 }}
                 onEdit={setEditingHorario}
               />
@@ -287,7 +541,7 @@ export function AdminDashboard() {
           ) : null}
 
           {section === 'barberia' ? (
-            <Section eyebrow="Identidad" title="Mi Barbería">
+            <Section eyebrow="Identidad" title="Mi Barberia">
               <BarberiaForm
                 barberia={barberia}
                 isSaving={createBarberia.isPending || updateBarberia.isPending}
@@ -297,19 +551,19 @@ export function AdminDashboard() {
           ) : null}
 
           {section === 'configuracion' ? (
-            <Section eyebrow="Zona crítica" title="Configuración">
+            <Section eyebrow="Zona critica" title="Configuracion">
               <div className="space-y-5">
                 {barberia ? (
                   <DangerZone
-                    description="Una vez eliminada, no podrás recuperar tu barbería ni los datos asociados."
-                    label={isDeleting ? 'Eliminando…' : 'Eliminar barbería'}
+                    description="Una vez eliminada, no podras recuperar tu barberia ni los datos asociados."
+                    label={isDeleting ? 'Eliminando...' : 'Eliminar barberia'}
                     onClick={() => setConfirmDeleteBarberia(true)}
-                    title="Eliminar barbería"
+                    title="Eliminar barberia"
                   />
                 ) : null}
                 <DangerZone
-                  description="Elimina tu cuenta y todos tus datos de la plataforma. Esta acción es irreversible."
-                  label={isDeleting ? 'Eliminando…' : 'Eliminar cuenta'}
+                  description="Elimina tu cuenta y todos tus datos de la plataforma. Esta accion es irreversible."
+                  label={isDeleting ? 'Eliminando...' : 'Eliminar cuenta'}
                   onClick={() => setConfirmDeleteAccount(true)}
                   title="Eliminar cuenta"
                 />
@@ -320,25 +574,25 @@ export function AdminDashboard() {
       </div>
 
       <ConfirmDialog
-        confirmLabel="Sí, eliminar barbería"
-        description={`Vas a eliminar definitivamente ${barberia?.nombre ?? 'tu barbería'} y todos sus datos asociados (servicios, horarios, barberos).`}
-        eyebrow="Zona crítica"
+        confirmLabel="Si, eliminar barberia"
+        description={`Vas a eliminar definitivamente ${barberia?.nombre ?? 'tu barberia'} y todos sus datos asociados (servicios, horarios, barberos).`}
+        eyebrow="Zona critica"
         onClose={() => setConfirmDeleteBarberia(false)}
         onConfirm={performDeleteBarberia}
         open={confirmDeleteBarberia}
-        title="¿Eliminar tu barbería?"
-        warning="Esta acción no se puede deshacer. Las citas existentes y la configuración se perderán."
+        title="¿Eliminar tu barberia?"
+        warning="Esta accion no se puede deshacer. Las citas existentes y la configuracion se perderan."
       />
 
       <ConfirmDialog
-        confirmLabel="Sí, eliminar mi cuenta"
+        confirmLabel="Si, eliminar mi cuenta"
         description="Vas a eliminar definitivamente tu usuario y los datos asociados a tu cuenta."
-        eyebrow="Zona crítica"
+        eyebrow="Zona critica"
         onClose={() => setConfirmDeleteAccount(false)}
         onConfirm={performDeleteAccount}
         open={confirmDeleteAccount}
         title="¿Eliminar tu cuenta?"
-        warning="Perderás acceso permanente a Barber Flow. Esta acción es irreversible."
+        warning="Perderas acceso permanente a Barber Flow. Esta accion es irreversible."
       />
     </>
   );
@@ -364,7 +618,7 @@ function Section({
   );
 }
 
-function Metric({ icon, label, value }: { icon: ReactNode; label: string; value: number }) {
+function Metric({ icon, label, value }: { icon: ReactNode; label: string; value: ReactNode }) {
   return (
     <div className="rounded-[22px] border border-ink/8 bg-ink/3 p-5">
       <div className="mb-3 flex items-center gap-2 text-ink/55">
@@ -372,6 +626,60 @@ function Metric({ icon, label, value }: { icon: ReactNode; label: string; value:
         <span className="eyebrow text-ink/45">{label}</span>
       </div>
       <p className="font-display numeric text-4xl font-semibold tracking-tight text-ink">{value}</p>
+    </div>
+  );
+}
+
+function StatsCard({
+  children,
+  eyebrow,
+  title,
+}: {
+  children: ReactNode;
+  eyebrow: string;
+  title: string;
+}) {
+  return (
+    <div className="rounded-[24px] border border-ink/8 bg-paper p-5 shadow-soft">
+      <p className="eyebrow text-gold-700">{eyebrow}</p>
+      <h3 className="font-display mt-2 text-2xl font-semibold tracking-tight text-ink">{title}</h3>
+      <div className="mt-5">{children}</div>
+    </div>
+  );
+}
+
+function StatusBar({ label, total, value }: { label: string; total: number; value: number }) {
+  const width = total ? Math.max((value / total) * 100, value ? 12 : 0) : 0;
+
+  return (
+    <div>
+      <div className="mb-2 flex items-center justify-between gap-3 text-sm">
+        <span className="text-ink/62">{label}</span>
+        <span className="numeric font-semibold text-ink">{value}</span>
+      </div>
+      <div className="h-3 rounded-full bg-ink/8">
+        <div
+          className="h-full rounded-full bg-[linear-gradient(90deg,rgba(212,175,55,0.92),rgba(33,29,25,0.96))]"
+          style={{ width: `${width}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function InsightRow({ label, value }: { label: string; value: ReactNode }) {
+  return (
+    <div className="flex items-center justify-between rounded-[18px] border border-ink/8 bg-ink/3 px-4 py-3 text-sm">
+      <span className="text-ink/58">{label}</span>
+      <span className="font-display font-semibold tracking-tight text-ink">{value}</span>
+    </div>
+  );
+}
+
+function EmptyPanel({ text }: { text: string }) {
+  return (
+    <div className="rounded-[22px] border border-dashed border-ink/12 bg-ink/2 p-5 text-sm leading-6 text-ink/55">
+      {text}
     </div>
   );
 }
