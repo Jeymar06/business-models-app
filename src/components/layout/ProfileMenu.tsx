@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { isRenderableMediaUrl } from '@/utils/media';
 
 function getInitial(value?: string | null) {
   const trimmed = value?.trim();
@@ -25,6 +26,7 @@ export function ProfileMenu() {
 
   const displayName = profile?.full_name?.trim() || profileEmail || 'Usuario';
   const secondaryText = profile?.full_name?.trim() ? profileEmail : 'Mi cuenta';
+  const avatarUrl = isRenderableMediaUrl(profile?.avatar_url) ? profile?.avatar_url!.trim() : null;
 
   useEffect(() => {
     setIsOpen(false);
@@ -76,18 +78,18 @@ export function ProfileMenu() {
         aria-controls="profile-menu"
         aria-expanded={isOpen}
         aria-haspopup="menu"
-        className="flex h-10 items-center gap-3 rounded-full border border-white/10 bg-white/6 pl-1 pr-3 text-left text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/10"
+        className="flex h-10 max-w-[12.5rem] items-center gap-2 overflow-hidden rounded-full border border-white/10 bg-white/6 pl-1 pr-2 text-left text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/10 lg:max-w-[14.5rem] lg:gap-3 lg:pr-3"
         onClick={() => setIsOpen((current) => !current)}
         type="button"
       >
         <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-[#202020] text-sm font-semibold text-white">
-          {profile?.avatar_url ? (
-            <img alt={displayName} className="h-full w-full object-cover" referrerPolicy="no-referrer" src={profile.avatar_url} />
+          {avatarUrl ? (
+            <img alt={displayName} className="h-full w-full object-cover" referrerPolicy="no-referrer" src={avatarUrl} />
           ) : (
             fallbackInitial
           )}
         </span>
-        <span className="hidden min-w-0 md:block">
+        <span className="hidden min-w-0 lg:block">
           <span className="block truncate text-sm font-semibold text-white">{displayName}</span>
           <span className="block truncate text-xs text-white/56">{secondaryText}</span>
         </span>
@@ -95,7 +97,7 @@ export function ProfileMenu() {
 
       {isOpen ? (
         <div
-          className="surface-panel absolute right-0 top-[calc(100%+0.85rem)] z-30 w-72 rounded-3xl p-2 text-ink"
+          className="surface-panel absolute right-0 top-[calc(100%+0.85rem)] z-30 w-[min(calc(100vw-1rem),18rem)] rounded-3xl p-2 text-ink sm:w-72"
           id="profile-menu"
           role="menu"
         >

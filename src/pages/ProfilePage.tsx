@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button, Input, useToast } from '@/components/ui';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { authService } from '@/features/auth/services/authService';
+import { isRenderableMediaUrl } from '@/utils/media';
 
 function getInitial(value?: string | null) {
   const trimmed = value?.trim();
@@ -29,7 +30,7 @@ export function ProfilePage() {
   const avatarInitial = getInitial(fullName) ?? getInitial(displayEmail) ?? 'U';
   const previewUrl = useMemo(() => {
     if (avatarFile) return URL.createObjectURL(avatarFile);
-    return avatarUrl.trim() || null;
+    return isRenderableMediaUrl(avatarUrl) ? avatarUrl.trim() : null;
   }, [avatarFile, avatarUrl]);
 
   useEffect(() => {

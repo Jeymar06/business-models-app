@@ -11,8 +11,6 @@ export function Step1Info({
   errors: FieldErrors<CreateBarberiaFormValues>;
   register: UseFormRegister<CreateBarberiaFormValues>;
 }) {
-  console.log('🎨 Rendering Step1Info');
-  
   return (
     <div className="grid gap-4">
       <Input label="Nombre de la barberia" {...register('nombre')} placeholder="Ej: Kong Barber" />

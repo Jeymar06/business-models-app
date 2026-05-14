@@ -15,6 +15,7 @@ import { Step1Servicio } from '@/features/booking/steps/Step1Servicio';
 import { Step2Barbero } from '@/features/booking/steps/Step2Barbero';
 import { Step3Fecha } from '@/features/booking/steps/Step3Fecha';
 import { Step4Confirmar } from '@/features/booking/steps/Step4Confirmar';
+import { isRenderableMediaUrl } from '@/utils/media';
 
 export function BookingPage() {
   const { barberia_id: barberiaId } = useParams();
@@ -96,6 +97,8 @@ export function BookingPage() {
   );
 
   const barberia = barberiaQuery.data;
+  const barberiaBannerUrl = isRenderableMediaUrl(barberia?.banner_url) ? barberia?.banner_url!.trim() : null;
+  const barberiaLogoUrl = isRenderableMediaUrl(barberia?.logo_url) ? barberia?.logo_url!.trim() : null;
 
   if (!barberiaId) {
     return <MissingBarberia />;
@@ -117,17 +120,17 @@ export function BookingPage() {
     <div className="grid gap-6 lg:grid-cols-[1fr_360px] animate-fade-up">
       <div className="space-y-6">
         <section className="relative overflow-hidden rounded-[36px] border border-white/8 bg-[linear-gradient(180deg,rgba(33,29,25,0.96),rgba(20,18,16,0.98))] text-cream shadow-[0_30px_80px_rgba(0,0,0,0.42)]">
-          {barberia.banner_url ? (
+          {barberiaBannerUrl ? (
             <div className="relative h-60 overflow-hidden">
-              <img alt={barberia.nombre} className="h-full w-full object-cover" src={barberia.banner_url} />
+              <img alt={barberia.nombre} className="h-full w-full object-cover" src={barberiaBannerUrl} />
               <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_30%,rgba(20,18,16,0.95)_100%)]" />
             </div>
           ) : null}
           <div className="space-y-5 px-7 py-8 sm:px-10">
             <div className="flex flex-wrap items-center gap-3">
-              {barberia.logo_url ? (
+              {barberiaLogoUrl ? (
                 <span className="h-14 w-14 overflow-hidden rounded-2xl border border-white/12 bg-white/8">
-                  <img alt={`Logo ${barberia.nombre}`} className="h-full w-full object-cover" src={barberia.logo_url} />
+                  <img alt={`Logo ${barberia.nombre}`} className="h-full w-full object-cover" src={barberiaLogoUrl} />
                 </span>
               ) : null}
               <Badge variant="confirmed">Reservas activas</Badge>

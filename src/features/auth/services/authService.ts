@@ -159,9 +159,9 @@ export const authService = {
   async uploadAvatar(file: File, userId: string) {
     ensureSupabase();
     return uploadPublicImage({
-      bucket: 'profiles',
+      bucket: 'barberias',
       file,
-      folder: `${userId}/avatars`,
+      folder: `profiles/${userId}/avatars`,
       maxWidth: 800,
     });
   },
