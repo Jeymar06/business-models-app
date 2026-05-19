@@ -1,0 +1,57 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="900" rx="40" fill="#0B0A0F" />
+  <rect x="40" y="40" width="1520" height="820" rx="30" fill="#121117" stroke="#F5C74A" stroke-width="6" />
+  <text x="80" y="100" fill="#F5C74A" font-family="Inter, sans-serif" font-size="42" font-weight="700">Canvas modelo de negocio</text>
+  <g stroke="#F5C74A" stroke-width="4" fill="none">
+    <rect x="80" y="140" width="370" height="220" rx="18" />
+    <rect x="470" y="140" width="370" height="220" rx="18" />
+    <rect x="860" y="140" width="370" height="220" rx="18" />
+    <rect x="80" y="370" width="370" height="220" rx="18" />
+    <rect x="470" y="370" width="370" height="220" rx="18" />
+    <rect x="860" y="370" width="370" height="220" rx="18" />
+    <rect x="80" y="600" width="1150" height="220" rx="18" />
+  </g>
+  <g fill="#F7F5E6" font-family="Inter, sans-serif" font-size="24" font-weight="600">
+    <text x="110" y="185">Socios clave</text>
+    <text x="500" y="185">Actividades clave</text>
+    <text x="900" y="185">Propuesta de valor</text>
+    <text x="110" y="415">Relaciones con el cliente</text>
+    <text x="500" y="415">Canales</text>
+    <text x="900" y="415">Segmentos de clientes</text>
+    <text x="110" y="645">Estructura de costos y fuentes de ingresos</text>
+  </g>
+  <g fill="#F5C74A" font-family="Inter, sans-serif" font-size="20">
+    <text x="110" y="230">• AWS / Google Cloud</text>
+    <text x="110" y="260">• L'Oréal / American Crew</text>
+    <text x="110" y="290">• Influencers barbería</text>
+    <text x="110" y="320">• Cámara de Comercio</text>
+    <text x="500" y="230">• Desarrollo continuo SaaS</text>
+    <text x="500" y="260">• Implementación &lt; 2 horas</text>
+    <text x="500" y="290">• Soporte técnico y ventas</text>
+    <text x="500" y="320">• Contenido redes sociales</text>
+    <text x="900" y="230">• Agenda online automática</text>
+    <text x="900" y="260">• Recordatorios por email</text>
+    <text x="900" y="290">• Panel de métricas</text>
+    <text x="900" y="320">• Cálculo de comisiones</text>
+    <text x="110" y="455">• Primer mes gratis</text>
+    <text x="110" y="485">• Onboarding 1 a 1</text>
+    <text x="110" y="515">• Programa de referidos</text>
+    <text x="110" y="545">• Descuentos fidelidad</text>
+    <text x="500" y="455">• Venta directa con demos</text>
+    <text x="500" y="485">• Registro barberflow.co</text>
+    <text x="500" y="515">• TikTok, Instagram y WhatsApp</text>
+    <text x="500" y="545">• Distribuidores aliados</text>
+    <text x="900" y="455">• Barbería independiente</text>
+    <text x="900" y="485">• 2–3 sillas urbanas</text>
+    <text x="900" y="515">• Cadenas multisede</text>
+    <text x="900" y="545">• Bucaramanga / área metropolitana</text>
+    <text x="110" y="685">• Nómina técnica y soporte</text>
+    <text x="110" y="715">• Servidores Cloud</text>
+    <text x="110" y="745">• Marketing digital</text>
+    <text x="110" y="775">• Licencias y herramientas</text>
+    <text x="900" y="685">• Plan Starter: $19.000 COP</text>
+    <text x="900" y="715">• Plan Pro: $39.000 COP</text>
+    <text x="900" y="745">• Plan Premium: $79.000 COP</text>
+    <text x="900" y="775">• Custom Enterprise</text>
+  </g>
+</svg>
