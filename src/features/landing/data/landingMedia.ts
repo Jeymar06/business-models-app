@@ -30,6 +30,7 @@ import posterF from '@/assets/landing/full/poster-f.png';
 import posterG from '@/assets/landing/full/poster-g.png';
 import posterH from '@/assets/landing/full/poster-h.png';
 import product from '@/assets/landing/full/product.png';
+import businessModelCanvas from '@/assets/landing/full/Modelo De Negocios.jpeg';
 import video00 from '@/assets/landing/full/video-00.mp4';
 import video01 from '@/assets/landing/full/video-01.mp4';
 import video02 from '@/assets/landing/full/video-02.mp4';
@@ -67,6 +68,7 @@ export const landingMediaGroups = {
     product,
     client,
     detail,
+    businessModelCanvas,
   },
   posters: [posterA, posterB, posterC, posterD, posterE, posterF, posterG, posterH],
   editorialImages: [

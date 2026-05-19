@@ -5,6 +5,7 @@ type FooterItem = {
   label: string;
   description: string;
   href?: string;
+  targetBlank?: boolean;
   previewImage?: string;
 };
 
@@ -59,8 +60,10 @@ const footerColumns: Array<{ title: string; items: FooterItem[] }> = [
       },
       {
         label: 'Modelo de negocio',
-        description: 'Aqui podras mostrar tu canvas del modelo de negocio. Solo reemplaza esta imagen por tu version final.',
-        previewImage: landingMediaGroups.productShots.detail,
+        description: 'Haz clic para abrir el canvas completo en una página independiente.',
+        href: '/modelo-de-negocio',
+        targetBlank: true,
+        previewImage: landingMediaGroups.productShots.businessModelCanvas,
       },
     ],
   },
@@ -169,7 +172,12 @@ function FooterInteractiveItem({ item }: { item: FooterItem }) {
 
   if (item.href) {
     return (
-      <a className="group block rounded-2xl px-1 py-1 outline-none" href={item.href}>
+      <a
+        className="group block rounded-2xl px-1 py-1 outline-none"
+        href={item.href}
+        target={item.targetBlank ? '_blank' : undefined}
+        rel={item.targetBlank ? 'noreferrer noopener' : undefined}
+      >
         {content}
       </a>
     );

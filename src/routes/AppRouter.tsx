@@ -21,6 +21,7 @@ const SupportPage = lazy(() => import('@/pages/SupportPage').then((m) => ({ defa
 const AdminDashboard = lazy(() => import('@/pages/AdminDashboard').then((m) => ({ default: m.AdminDashboard })));
 const AdminCitasPage = lazy(() => import('@/pages/AdminCitasPage').then((m) => ({ default: m.AdminCitasPage })));
 const SuperAdminDashboard = lazy(() => import('@/pages/SuperAdminDashboard').then((m) => ({ default: m.SuperAdminDashboard })));
+const CanvasPage = lazy(() => import('@/pages/CanvasPage').then((m) => ({ default: m.CanvasPage })));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage })));
 
 function PageFallback() {
@@ -63,12 +64,14 @@ function AppShell({ isAuthenticated }: { isAuthenticated: boolean }) {
   const location = useLocation();
   const isPublicLanding = location.pathname === '/' && !isAuthenticated;
 
+  const isCanvasPage = location.pathname === '/modelo-de-negocio';
+
   return (
     <div className="app-shell flex min-h-screen flex-col">
-      {isPublicLanding ? null : <Navbar />}
+      {isPublicLanding || isCanvasPage ? null : <Navbar />}
       <main
         className={
-          isPublicLanding
+          isPublicLanding || isCanvasPage
             ? 'w-full flex-1'
             : 'mx-auto w-full max-w-[1200px] flex-1 px-4 py-8 sm:px-6 lg:px-8 lg:py-10'
         }
@@ -79,6 +82,7 @@ function AppShell({ isAuthenticated }: { isAuthenticated: boolean }) {
             <Route element={<AuthCallbackPage />} path="/auth/callback" />
             <Route element={<LoginPage />} path="/login" />
             <Route element={<RegisterPage />} path="/register" />
+            <Route element={<CanvasPage />} path="/modelo-de-negocio" />
 
             <Route element={<ProtectedRoute requiredRole="client" />}>
               <Route element={<BookingPage />} path="/booking/:barberia_id" />
@@ -107,7 +111,7 @@ function AppShell({ isAuthenticated }: { isAuthenticated: boolean }) {
           </Routes>
         </Suspense>
       </main>
-      {isPublicLanding ? null : <Footer />}
+      {isPublicLanding || isCanvasPage ? null : <Footer />}
     </div>
   );
 }
