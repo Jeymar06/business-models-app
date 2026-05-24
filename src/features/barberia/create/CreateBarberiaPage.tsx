@@ -31,6 +31,9 @@ export function CreateBarberiaPage() {
   const watchedName = form.watch('nombre');
   const watchedLogoUrl = form.watch('logoUrl');
   const watchedBannerUrl = form.watch('bannerUrl');
+  const watchedDireccion = form.watch('direccion');
+  const watchedCiudad = form.watch('ciudad');
+  const watchedPais = form.watch('pais');
   const previewSlug = useMemo(() => barberiaService.generateSlug(watchedName || 'nombre-barberia'), [watchedName]);
   const progress = ((currentStep + 1) / steps.length) * 100;
 
@@ -108,7 +111,15 @@ export function CreateBarberiaPage() {
 
         <div>
           {currentStep === 0 ? <Step1Info errors={form.formState.errors} register={form.register} /> : null}
-          {currentStep === 1 ? <Step2Ubicacion errors={form.formState.errors} register={form.register} /> : null}
+          {currentStep === 1 ? (
+            <Step2Ubicacion
+              ciudad={watchedCiudad}
+              direccion={watchedDireccion}
+              errors={form.formState.errors}
+              pais={watchedPais}
+              register={form.register}
+            />
+          ) : null}
           {currentStep === 2 ? (
             <Step3Branding
               bannerFile={bannerFile}

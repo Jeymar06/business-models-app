@@ -5,7 +5,6 @@ import { Input } from '@/components/ui';
 import type { CreateBarberiaFormValues } from './schema';
 
 const timezones = ['America/Bogota', 'America/Mexico_City', 'America/New_York', 'America/Lima', 'America/Santiago'];
-const currencies = ['USD', 'COP', 'MXN', 'PEN', 'CLP'];
 
 export function Step4Config({
   errors,
@@ -17,13 +16,11 @@ export function Step4Config({
   return (
     <div className="grid gap-4">
       <div className="grid gap-4 md:grid-cols-2">
-        <label className="grid gap-1.5 text-sm font-medium text-slate-700">
-          Moneda
-          <select className="h-10 rounded-md border border-slate-200 bg-white px-3 text-sm" {...register('moneda')}>
-            {currencies.map((currency) => <option key={currency} value={currency}>{currency}</option>)}
-          </select>
-        </label>
-
+        <div className="rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+          <p className="font-medium text-ink">Moneda fija</p>
+          <p className="mt-1">Todas las barberias se publican en pesos colombianos (`COP`).</p>
+          <input type="hidden" value="COP" {...register('moneda')} />
+        </div>
         <label className="grid gap-1.5 text-sm font-medium text-slate-700">
           Zona horaria
           <select className="h-10 rounded-md border border-slate-200 bg-white px-3 text-sm" {...register('zonaHoraria')}>

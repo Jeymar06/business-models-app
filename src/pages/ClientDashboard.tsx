@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { CalendarClock, CalendarPlus, History, Store } from 'lucide-react';
+import { CalendarClock, CalendarPlus, ExternalLink, History, MapPin, Store } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -9,6 +9,7 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 import { bookingService } from '@/features/booking/bookingService';
 import { useCitas } from '@/features/booking/hooks/useCitas';
 import type { CitaConDetalles } from '@/types/supabase.types';
+import { buildGoogleMapsSearchUrl } from '@/utils/maps';
 import { isRenderableMediaUrl } from '@/utils/media';
 
 type ClientView = 'agendar' | 'mis-citas';
@@ -144,45 +145,69 @@ export function ClientDashboard() {
                   {(() => {
                     const bannerUrl = isRenderableMediaUrl(barberia.banner_url) ? barberia.banner_url!.trim() : null;
                     const logoUrl = isRenderableMediaUrl(barberia.logo_url) ? barberia.logo_url!.trim() : null;
+                    const mapsUrl = buildGoogleMapsSearchUrl({
+                      direccion: barberia.direccion,
+                      ciudad: barberia.ciudad,
+                      pais: barberia.pais,
+                    });
 
                     return (
-                      <div className="relative overflow-hidden px-6 py-6 text-cream">
-                        {bannerUrl ? (
-                          <img alt={barberia.nombre} className="absolute inset-0 h-full w-full object-cover" src={bannerUrl} />
-                        ) : null}
-                        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(33,29,25,0.86),rgba(20,18,16,0.98))]" />
-                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.22),transparent_28%)]" />
-                        <div className="relative flex items-start justify-between gap-3">
-                          <div className="flex items-start gap-3">
-                            <span className="grid h-12 w-12 flex-none place-items-center overflow-hidden rounded-2xl border border-white/12 bg-white/8 text-sm font-semibold text-gold-200">
-                              {logoUrl ? (
-                                <img alt={`Logo ${barberia.nombre}`} className="h-full w-full object-cover" src={logoUrl} />
-                              ) : (
-                                barberia.nombre.charAt(0).toUpperCase()
-                              )}
-                            </span>
-                            <div>
-                              <p className="eyebrow text-cream/55">Barberia</p>
-                              <h3 className="font-display mt-3 text-2xl font-semibold tracking-tight">
-                                {barberia.nombre}
-                              </h3>
+                      <>
+                        <div className="relative overflow-hidden px-6 py-6 text-cream">
+                          {bannerUrl ? (
+                            <img alt={barberia.nombre} className="absolute inset-0 h-full w-full object-cover" src={bannerUrl} />
+                          ) : null}
+                          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(33,29,25,0.86),rgba(20,18,16,0.98))]" />
+                          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.22),transparent_28%)]" />
+                          <div className="relative flex items-start justify-between gap-3">
+                            <div className="flex items-start gap-3">
+                              <span className="grid h-12 w-12 flex-none place-items-center overflow-hidden rounded-2xl border border-white/12 bg-white/8 text-sm font-semibold text-gold-200">
+                                {logoUrl ? (
+                                  <img alt={`Logo ${barberia.nombre}`} className="h-full w-full object-cover" src={logoUrl} />
+                                ) : (
+                                  barberia.nombre.charAt(0).toUpperCase()
+                                )}
+                              </span>
+                              <div>
+                                <p className="eyebrow text-cream/55">Barberia</p>
+                                <h3 className="font-display mt-3 text-2xl font-semibold tracking-tight">
+                                  {barberia.nombre}
+                                </h3>
+                              </div>
                             </div>
+                            <Badge variant="confirmed">Activa</Badge>
                           </div>
-                          <Badge variant="confirmed">Activa</Badge>
                         </div>
-                      </div>
+                        <div className="space-y-4 p-6">
+                          {mapsUrl ? (
+                            <a
+                              className="flex items-start justify-between gap-3 rounded-2xl bg-[#f8f4eb] px-4 py-3 text-sm leading-7 text-gold-700 transition hover:bg-[#f3ede0]"
+                              href={mapsUrl}
+                              rel="noreferrer"
+                              target="_blank"
+                            >
+                              <span className="flex items-start gap-2">
+                                <MapPin className="mt-1 flex-none" size={16} />
+                                <span>
+                                  {barberia.direccion}, <span className="font-display italic text-gold-700">{barberia.ciudad}</span>
+                                </span>
+                              </span>
+                              <ExternalLink className="mt-1 flex-none" size={15} />
+                            </a>
+                          ) : (
+                            <p className="text-sm leading-7 text-gold-700">
+                              {barberia.direccion}, <span className="font-display italic text-gold-700">{barberia.ciudad}</span>
+                            </p>
+                          )}
+                          <Link to={`/booking/${barberia.id}`}>
+                            <Button className="w-full" size="md" variant="primary">
+                              Agendar
+                            </Button>
+                          </Link>
+                        </div>
+                      </>
                     );
                   })()}
-                  <div className="space-y-4 p-6">
-                    <p className="text-sm leading-7 text-gold-700">
-                      {barberia.direccion}, <span className="font-display italic text-gold-700">{barberia.ciudad}</span>
-                    </p>
-                    <Link to={`/booking/${barberia.id}`}>
-                      <Button className="w-full" size="md" variant="primary">
-                        Agendar
-                      </Button>
-                    </Link>
-                  </div>
                 </article>
               ))}
               {!barberiasQuery.isLoading && !(barberiasQuery.data ?? []).length ? (

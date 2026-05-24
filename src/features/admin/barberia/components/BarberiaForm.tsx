@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Button, Input } from '@/components/ui';
+import { LocationPreview } from '@/components/location/LocationPreview';
 import type { BarberiaInput } from '@/features/admin/adminService';
 import type { Barberia } from '@/types/supabase.types';
 import { isRenderableMediaUrl } from '@/utils/media';
@@ -48,6 +49,9 @@ export function BarberiaForm({
 
   const logoUrl = form.watch('logoUrl');
   const bannerUrl = form.watch('bannerUrl');
+  const direccion = form.watch('direccion');
+  const ciudad = form.watch('ciudad');
+  const pais = form.watch('pais');
   const safeLogoUrl = isRenderableMediaUrl(logoUrl) ? logoUrl.trim() : '';
   const safeBannerUrl = isRenderableMediaUrl(bannerUrl) ? bannerUrl.trim() : '';
 
@@ -73,6 +77,16 @@ export function BarberiaForm({
       <Input label="Direccion" {...form.register('direccion')} />
       <Input label="Ciudad" {...form.register('ciudad')} />
       <Input label="Pais" {...form.register('pais')} />
+      <div className="md:col-span-2">
+        <LocationPreview
+          ciudad={ciudad}
+          description="Esta es la ubicacion que podran abrir tus clientes desde el marketplace y el flujo de reserva."
+          direccion={direccion}
+          mapHeightClass="h-56"
+          pais={pais}
+          title="Previsualizacion de ubicacion"
+        />
+      </div>
       <Input label="URL del logo" placeholder="https://..." {...form.register('logoUrl')} />
       <Input label="URL del banner" placeholder="https://..." {...form.register('bannerUrl')} />
       <Button className="self-end md:col-span-2" disabled={isSaving} type="submit">

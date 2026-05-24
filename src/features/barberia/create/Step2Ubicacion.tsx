@@ -1,14 +1,21 @@
 import type { FieldErrors, UseFormRegister } from 'react-hook-form';
 
 import { Input } from '@/components/ui';
+import { LocationPreview } from '@/components/location/LocationPreview';
 
 import type { CreateBarberiaFormValues } from './schema';
 
 export function Step2Ubicacion({
+  ciudad,
+  direccion,
   errors,
+  pais,
   register,
 }: {
+  ciudad: string;
+  direccion: string;
   errors: FieldErrors<CreateBarberiaFormValues>;
+  pais: string;
   register: UseFormRegister<CreateBarberiaFormValues>;
 }) {
   return (
@@ -31,6 +38,15 @@ export function Step2Ubicacion({
         <Input label="Estado / provincia" {...register('estadoProvincia')} />
         <Input label="Codigo postal" {...register('codigoPostal')} />
       </div>
+
+      <LocationPreview
+        ciudad={ciudad}
+        description="Asi podran ver y abrir tu ubicacion los clientes dentro de Barber Flow."
+        direccion={direccion}
+        mapHeightClass="h-56"
+        pais={pais}
+        title="Previsualizacion del mapa"
+      />
     </div>
   );
 }

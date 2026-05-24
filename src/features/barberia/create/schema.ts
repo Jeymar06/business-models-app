@@ -34,7 +34,7 @@ export const defaultCreateBarberiaValues: CreateBarberiaFormValues = {
   codigoPostal: '',
   logoUrl: '',
   bannerUrl: '',
-  moneda: 'USD',
+  moneda: 'COP',
   zonaHoraria: 'America/Bogota',
   politicaCancelacion: 'Puedes cancelar tu cita con al menos 24 horas de anticipacion.',
   tiempoCancelacionMin: 1440,
@@ -46,5 +46,5 @@ export const stepFields: Array<Array<keyof CreateBarberiaFormValues>> = [
   ['nombre', 'descripcion', 'telefono', 'emailContacto'],
   ['direccion', 'ciudad', 'estadoProvincia', 'pais', 'codigoPostal'],
   ['logoUrl', 'bannerUrl'],
-  ['moneda', 'zonaHoraria', 'politicaCancelacion', 'tiempoCancelacionMin', 'horarioApertura', 'horarioCierre'],
+  ['zonaHoraria', 'politicaCancelacion', 'tiempoCancelacionMin', 'horarioApertura', 'horarioCierre'],
 ];

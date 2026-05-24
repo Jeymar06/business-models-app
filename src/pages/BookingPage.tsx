@@ -1,10 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { MapPin, Phone } from 'lucide-react';
+import { ExternalLink, MapPin, Phone } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { Badge, Button, Pill, useToast } from '@/components/ui';
+import { LocationPreview } from '@/components/location/LocationPreview';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { BookingStepper } from '@/features/booking/components/BookingStepper';
 import { BookingSuccess } from '@/features/booking/components/BookingSuccess';
@@ -15,6 +16,7 @@ import { Step1Servicio } from '@/features/booking/steps/Step1Servicio';
 import { Step2Barbero } from '@/features/booking/steps/Step2Barbero';
 import { Step3Fecha } from '@/features/booking/steps/Step3Fecha';
 import { Step4Confirmar } from '@/features/booking/steps/Step4Confirmar';
+import { buildGoogleMapsSearchUrl } from '@/utils/maps';
 import { isRenderableMediaUrl } from '@/utils/media';
 
 export function BookingPage() {
@@ -99,6 +101,11 @@ export function BookingPage() {
   const barberia = barberiaQuery.data;
   const barberiaBannerUrl = isRenderableMediaUrl(barberia?.banner_url) ? barberia?.banner_url!.trim() : null;
   const barberiaLogoUrl = isRenderableMediaUrl(barberia?.logo_url) ? barberia?.logo_url!.trim() : null;
+  const barberiaMapsUrl = buildGoogleMapsSearchUrl({
+    direccion: barberia?.direccion,
+    ciudad: barberia?.ciudad,
+    pais: barberia?.pais,
+  });
 
   if (!barberiaId) {
     return <MissingBarberia />;
@@ -143,10 +150,23 @@ export function BookingPage() {
               <p className="mt-4 max-w-2xl text-base leading-7 text-cream/68">{barberia.descripcion}</p>
             </div>
             <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-cream/65">
-              <span className="flex items-center gap-2">
-                <MapPin className="text-gold-300" size={16} />
-                {barberia.direccion}, {barberia.ciudad}
-              </span>
+              {barberiaMapsUrl ? (
+                <a
+                  className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-cream/72 transition hover:border-gold-300/35 hover:text-cream"
+                  href={barberiaMapsUrl}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  <MapPin className="text-gold-300" size={16} />
+                  <span>{barberia.direccion}, {barberia.ciudad}</span>
+                  <ExternalLink size={14} />
+                </a>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <MapPin className="text-gold-300" size={16} />
+                  {barberia.direccion}, {barberia.ciudad}
+                </span>
+              )}
               <span className="flex items-center gap-2">
                 <Phone className="text-gold-300" size={16} />
                 <span className="numeric">{barberia.telefono}</span>
@@ -154,6 +174,14 @@ export function BookingPage() {
             </div>
           </div>
         </section>
+
+        <LocationPreview
+          ciudad={barberia.ciudad}
+          description="Revisa la ubicacion exacta antes de confirmar tu cita o abre la ruta directamente en Google Maps."
+          direccion={barberia.direccion}
+          pais={barberia.pais}
+          title="Como llegar a la barberia"
+        />
 
         <div className="rounded-[28px] border border-ink/8 bg-paper p-6 shadow-soft sm:p-8">
           <BookingStepper
