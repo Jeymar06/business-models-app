@@ -146,7 +146,7 @@ export function ClientDashboard() {
                   <CalendarPlus className="text-gold-700" size={22} />
                   Barberías disponibles
                 </h2>
-                <p className="text-sm leading-6 text-ink/72">
+                <p className="text-sm leading-6 text-gold-700">
                   Elige una barbería, revisa su disponibilidad y entra directo a reservar.
                 </p>
               </div>
@@ -190,8 +190,8 @@ export function ClientDashboard() {
                     );
                   })()}
                   <div className="space-y-4 p-6">
-                    <p className="text-sm leading-7 text-ink/78">
-                      {barberia.direccion}, <span className="font-display italic text-ink/62">{barberia.ciudad}</span>
+                    <p className="text-sm leading-7 text-gold-700">
+                      {barberia.direccion}, <span className="font-display italic text-gold-700">{barberia.ciudad}</span>
                     </p>
                     <Link to={`/booking/${barberia.id}`}>
                       <Button className="w-full" size="md" variant="primary">
