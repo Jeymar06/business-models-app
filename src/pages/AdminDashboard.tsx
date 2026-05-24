@@ -652,26 +652,24 @@ export function AdminDashboard() {
                 isSaving={createBarberia.isPending || updateBarberia.isPending}
                 onSubmit={saveBarberia}
               />
+              {barberia ? (
+                <DangerZone
+                  description="Una vez eliminada, no podras recuperar tu barberia ni los datos asociados, incluyendo servicios, horarios, barberos y citas relacionadas."
+                  label={isDeleting ? 'Eliminando...' : 'Eliminar barberia'}
+                  onClick={() => setConfirmDeleteBarberia(true)}
+                  title="Eliminar barberia"
+                />
+              ) : null}
             </Section>
           ) : null}
 
           {section === 'configuracion' ? (
-            <Section eyebrow="Zona critica" title="Configuracion">
-              <div className="space-y-5">
-                {barberia ? (
-                  <DangerZone
-                    description="Una vez eliminada, no podras recuperar tu barberia ni los datos asociados."
-                    label={isDeleting ? 'Eliminando...' : 'Eliminar barberia'}
-                    onClick={() => setConfirmDeleteBarberia(true)}
-                    title="Eliminar barberia"
-                  />
-                ) : null}
-                <DangerZone
-                  description="Elimina tu cuenta y todos tus datos de la plataforma. Esta accion es irreversible."
-                  label={isDeleting ? 'Eliminando...' : 'Eliminar cuenta'}
-                  onClick={() => setConfirmDeleteAccount(true)}
-                  title="Eliminar cuenta"
-                />
+            <Section eyebrow="Configuracion" title="Ajustes del panel">
+              <div className={`rounded-[18px] px-5 py-4 ${adminEmptyClass}`}>
+                <p className={`text-sm font-semibold ${adminTextStrongClass}`}>Acciones sensibles reubicadas</p>
+                <p className="mt-2 text-sm leading-6 text-[#6d5a47]">
+                  La eliminacion de cuenta ahora esta en Mi perfil. La eliminacion de barberia se gestiona dentro de Mi barberia.
+                </p>
               </div>
             </Section>
           ) : null}

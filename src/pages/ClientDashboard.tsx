@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import { CalendarClock, CalendarPlus, History, Store, Trash2 } from 'lucide-react';
+import { CalendarClock, CalendarPlus, History, Store } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { Badge, Button, ConfirmDialog, Pill, useToast } from '@/components/ui';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { bookingService } from '@/features/booking/bookingService';
 import { useCitas } from '@/features/booking/hooks/useCitas';
-import { useAuth } from '@/features/auth/hooks/useAuth';
 import type { CitaConDetalles } from '@/types/supabase.types';
 import { isRenderableMediaUrl } from '@/utils/media';
 
@@ -27,7 +27,6 @@ export function ClientDashboard() {
     queryKey: ['marketplace', 'barberias'],
     queryFn: bookingService.getBarberias,
   });
-  const [confirmDeleteAccount, setConfirmDeleteAccount] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState<CitaConDetalles | null>(null);
 
   const appointmentSummary = useMemo(() => ({
@@ -45,21 +44,6 @@ export function ClientDashboard() {
       nextParams.set('view', nextView);
     }
     setSearchParams(nextParams, { replace: true });
-  }
-
-  async function performDeleteAccount() {
-    try {
-      const { authService } = await import('@/features/auth/services/authService');
-      await authService.deleteUserAccount();
-      window.location.assign('/');
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : 'No fue posible eliminar la cuenta.',
-        'Error',
-      );
-    } finally {
-      setConfirmDeleteAccount(false);
-    }
   }
 
   async function performCancel() {
@@ -100,7 +84,7 @@ export function ClientDashboard() {
                 <Link to="/crear-barberia">
                   <Button size="md" variant="outline">
                     <Store size={18} />
-                    Crear mi barbería
+                    Crear mi barberia
                   </Button>
                 </Link>
               ) : null}
@@ -144,10 +128,10 @@ export function ClientDashboard() {
                 <p className="eyebrow text-gold-700">Marketplace</p>
                 <h2 className="font-display flex items-center gap-2 text-3xl font-semibold tracking-tight text-ink">
                   <CalendarPlus className="text-gold-700" size={22} />
-                  Barberías disponibles
+                  Barberias disponibles
                 </h2>
                 <p className="text-sm leading-6 text-gold-700">
-                  Elige una barbería, revisa su disponibilidad y entra directo a reservar.
+                  Elige una barberia, revisa su disponibilidad y entra directo a reservar.
                 </p>
               </div>
             </div>
@@ -178,7 +162,7 @@ export function ClientDashboard() {
                               )}
                             </span>
                             <div>
-                              <p className="eyebrow text-cream/55">Barbería</p>
+                              <p className="eyebrow text-cream/55">Barberia</p>
                               <h3 className="font-display mt-3 text-2xl font-semibold tracking-tight">
                                 {barberia.nombre}
                               </h3>
@@ -202,14 +186,14 @@ export function ClientDashboard() {
                 </article>
               ))}
               {!barberiasQuery.isLoading && !(barberiasQuery.data ?? []).length ? (
-                <p className="text-sm text-ink/60">No hay barberías disponibles aún.</p>
+                <p className="text-sm text-ink/60">No hay barberias disponibles aun.</p>
               ) : null}
             </div>
           </section>
         ) : (
           <>
             <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <ClientMetricCard icon={<CalendarClock size={18} />} label="Próximas citas" value={appointmentSummary.upcoming} />
+              <ClientMetricCard icon={<CalendarClock size={18} />} label="Proximas citas" value={appointmentSummary.upcoming} />
               <ClientMetricCard icon={<History size={18} />} label="Historial" value={appointmentSummary.history} />
               <ClientMetricCard icon={<CalendarPlus size={18} />} label="Pendientes" value={appointmentSummary.pending} />
               <ClientMetricCard icon={<Badge variant="completed">OK</Badge>} label="Completadas" value={appointmentSummary.completed} />
@@ -220,7 +204,7 @@ export function ClientDashboard() {
               isCancelling={isCancelling}
               isLoading={isLoading}
               onCancel={setConfirmCancel}
-              title="Próximas citas"
+              title="Proximas citas"
             />
             <CitasSection
               citas={historialCitas}
@@ -229,52 +213,24 @@ export function ClientDashboard() {
               onCancel={setConfirmCancel}
               title="Historial"
             />
-
-            <section className="rounded-[28px] border border-danger/22 bg-danger/6 p-7">
-              <h2 className="font-display text-2xl font-semibold tracking-tight text-danger">
-                Eliminar cuenta
-              </h2>
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-danger/85">
-                Esto elimina tu usuario de Supabase Auth y tus datos asociados. Luego puedes registrarte otra vez.
-              </p>
-              <Button
-                className="mt-5 !bg-danger !text-paper !ring-danger/20 hover:!bg-[#c8383d]"
-                onClick={() => setConfirmDeleteAccount(true)}
-                size="md"
-              >
-                <Trash2 size={16} />
-                Eliminar mi cuenta
-              </Button>
-            </section>
           </>
         )}
       </div>
 
       <ConfirmDialog
-        confirmLabel="Sí, eliminar mi cuenta"
-        description="Vas a eliminar definitivamente tu usuario y los datos asociados a tu cuenta."
-        eyebrow="Zona crítica"
-        onClose={() => setConfirmDeleteAccount(false)}
-        onConfirm={performDeleteAccount}
-        open={confirmDeleteAccount}
-        title="¿Eliminar tu cuenta?"
-        warning="Perderás acceso permanente a Barber Flow. Esta acción es irreversible."
-      />
-
-      <ConfirmDialog
         cancelLabel="Mantener cita"
-        confirmLabel="Sí, cancelar cita"
+        confirmLabel="Si, cancelar cita"
         description={
           confirmCancel
             ? `Vas a cancelar tu cita de ${confirmCancel.nombre_servicio} en ${confirmCancel.nombre_barberia}.`
             : ''
         }
-        eyebrow="Confirmar cancelación"
+        eyebrow="Confirmar cancelacion"
         onClose={() => setConfirmCancel(null)}
         onConfirm={performCancel}
         open={confirmCancel !== null}
-        title="¿Cancelar tu cita?"
-        warning="La barbería será notificada y el horario quedará libre para otros clientes."
+        title="Cancelar tu cita"
+        warning="La barberia sera notificada y el horario quedara libre para otros clientes."
       />
     </>
   );
@@ -284,7 +240,7 @@ function ClientMetricCard({ icon, label, value }: { icon: ReactNode; label: stri
   return (
     <section className="rounded-[24px] border border-ink/10 bg-white p-5 shadow-soft">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <span className="eyebrow text-ink/58">{label}</span>
+        <span className="eyebrow text-gold-700">{label}</span>
         <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-ink/10 bg-ink/4 text-gold-700">
           {icon}
         </div>
@@ -330,7 +286,7 @@ function CitasSection({
                 </p>
               </div>
               <span className="numeric text-sm text-ink/78">
-                {cita.fecha} · <span className="text-gold-700">{cita.hora_inicio.slice(0, 5)} – {cita.hora_fin.slice(0, 5)}</span>
+                {cita.fecha} · <span className="text-gold-700">{cita.hora_inicio.slice(0, 5)} - {cita.hora_fin.slice(0, 5)}</span>
               </span>
               <Badge variant={badgeVariantForStatus(cita.estado)}>{cita.estado}</Badge>
               {cita.estado === 'pendiente' ? (
