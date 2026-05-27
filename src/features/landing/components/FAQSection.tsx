@@ -9,11 +9,10 @@ export function FAQSection() {
         <div className="space-y-5">
           <p className="eyebrow text-gold-300">Preguntas frecuentes</p>
           <h2 className="font-display max-w-md text-4xl font-semibold leading-[1.04] tracking-tight text-cream sm:text-5xl">
-            Lo esencial,{' '}
-            <span className="font-display-italic text-gold-200">respondido sin vueltas.</span>
+            Lo esencial, <span className="font-display-italic text-gold-200">respondido sin vueltas.</span>
           </h2>
           <p className="max-w-lg text-base leading-8 text-cream/68">
-            La landing debe dejar claro cómo entra Barber Flow al negocio incluso antes de probar la plataforma.
+            La landing ahora explica no solo el producto, sino tambien el modelo comercial y la forma en que entra al negocio.
           </p>
         </div>
 

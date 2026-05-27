@@ -25,7 +25,7 @@ export function HeroSection() {
         <div className="landing-hero-content max-w-4xl">
           <div className="landing-hero-reveal">
             <Pill icon={<Crown size={12} />} tone="gold">
-              Sistema premium para barberias modernas
+              Sistema premium para barberias modernas de Colombia
             </Pill>
           </div>
 
@@ -51,7 +51,11 @@ export function HeroSection() {
           </div>
 
           <p className="landing-hero-reveal mt-8 max-w-2xl text-base leading-8 text-cream/76 sm:text-lg lg:text-xl">
-            Reservas online, equipo, disponibilidad, clientes y metricas en una experiencia visual que se siente tan cuidada como tu barberia.
+            Digitalizamos tu barberia hoy, sin complicaciones y al mejor precio. Reservas online, metricas y comisiones desde una sola experiencia.
+          </p>
+
+          <p className="landing-hero-reveal mt-4 max-w-2xl text-sm leading-7 text-cream/58 sm:text-base">
+            Pensado para barberos independientes, barberias de 2 a 5 sillas y cadenas multisede, con foco inicial en Bucaramanga y area metropolitana.
           </p>
 
           <div className="landing-hero-reveal mt-8 flex flex-col gap-3 sm:flex-row">
@@ -61,18 +65,18 @@ export function HeroSection() {
                 <ArrowRight size={18} />
               </Button>
             </Link>
-            <a href="#showcase">
+            <a href="/modelo-de-negocio" target="_blank" rel="noreferrer noopener">
               <Button className="landing-cta-outline w-full px-7 sm:w-auto" size="xl" variant="outline">
-                Ver experiencia
+                Ver modelo
                 <Sparkles size={18} />
               </Button>
             </a>
           </div>
 
           <div className="landing-hero-reveal mt-9 grid max-w-2xl grid-cols-3 gap-3 sm:gap-4">
-            <HeroMetric icon={<CalendarDays size={17} />} label="Citas" value="12K+" />
+            <HeroMetric icon={<CalendarDays size={17} />} label="Primer mes" value="Gratis" />
             <HeroMetric icon={<Scissors size={17} />} label="Setup" value="<10m" />
-            <HeroMetric icon={<TrendingUp size={17} />} label="Roles" value="3" />
+            <HeroMetric icon={<TrendingUp size={17} />} label="Planes" value="3" />
           </div>
         </div>
 
@@ -112,10 +116,6 @@ export function HeroSection() {
             </div>
           </div>
 
-          <div className="landing-hero-orbit absolute bottom-[12%] right-[2%] rounded-full border border-white/10 bg-cream px-5 py-3 text-ink shadow-[0_24px_60px_rgba(0,0,0,0.34)]">
-            <p className="eyebrow text-[0.65rem] text-ink/60">Reserva confirmada</p>
-            <p className="numeric mt-1 text-lg font-semibold">10:30 AM</p>
-          </div>
         </div>
       </div>
 

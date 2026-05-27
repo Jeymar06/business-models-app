@@ -8,7 +8,7 @@ import { landingLogo } from '@/features/landing/data/landingMedia';
 const navItems = [
   { href: '#inicio', label: 'Inicio' },
   { href: '#funciones', label: 'Funciones' },
-  { href: '#como-funciona', label: 'Cómo funciona' },
+  { href: '#como-funciona', label: 'Como funciona' },
   { href: '#planes', label: 'Planes' },
   { href: '#contacto', label: 'Contacto' },
 ];
@@ -43,7 +43,7 @@ export function LandingNavbar() {
               Barber Flow
             </span>
             <span className="font-display block text-lg font-semibold tracking-tight text-cream transition duration-300 group-hover:translate-x-0.5">
-              Edición editorial
+              Edicion editorial
             </span>
           </div>
         </a>
@@ -73,7 +73,7 @@ export function LandingNavbar() {
 
         <button
           aria-expanded={isOpen}
-          aria-label={isOpen ? 'Cerrar menú' : 'Abrir menú'}
+          aria-label={isOpen ? 'Cerrar menu' : 'Abrir menu'}
           className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-cream transition hover:bg-white/10 md:hidden"
           onClick={() => setIsOpen((value) => !value)}
           type="button"

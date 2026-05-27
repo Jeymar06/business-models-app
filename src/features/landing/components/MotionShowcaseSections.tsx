@@ -62,7 +62,7 @@ const motionBenefits = [
   { icon: CalendarCheck2, label: 'Reserva', value: 'sin llamadas largas' },
   { icon: Clock3, label: 'Disponibilidad', value: 'visible por barbero' },
   { icon: Users, label: 'Clientes', value: 'historial en orden' },
-  { icon: PanelsTopLeft, label: 'Paneles', value: 'admin, cliente y superadmin' },
+  { icon: PanelsTopLeft, label: 'Paneles', value: 'admin y cliente' },
   { icon: ShieldCheck, label: 'Control', value: 'roles y permisos claros' },
 ];
 

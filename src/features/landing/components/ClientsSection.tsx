@@ -1,10 +1,10 @@
 import { CalendarCheck2, CreditCard, Scissors, UserCheck } from 'lucide-react';
 
 const clientBenefits = [
-  { title: 'Reservar en minutos', description: 'La reserva deja de depender de conversaciones largas o respuestas tardías.', icon: CalendarCheck2 },
-  { title: 'Elegir barbero', description: 'El cliente consulta disponibilidad y escoge mejor según su preferencia.', icon: UserCheck },
-  { title: 'Ver servicios y precios', description: 'Todo se presenta con más claridad antes de confirmar la cita.', icon: Scissors },
-  { title: 'Consultar o cancelar citas', description: 'La experiencia sigue viva después de reservar y mantiene el control del lado del cliente.', icon: CreditCard },
+  { title: 'Reservar en minutos', description: 'La reserva deja de depender de conversaciones largas o respuestas tardias.', icon: CalendarCheck2 },
+  { title: 'Elegir barbero', description: 'El cliente consulta disponibilidad y escoge mejor segun su preferencia.', icon: UserCheck },
+  { title: 'Ver servicios y precios', description: 'Todo se presenta con mas claridad antes de confirmar la cita.', icon: Scissors },
+  { title: 'Consultar o cancelar citas', description: 'La experiencia sigue viva despues de reservar y mantiene control del lado del cliente.', icon: CreditCard },
 ];
 
 export function ClientsSection() {
@@ -14,11 +14,10 @@ export function ClientsSection() {
         <div className="space-y-5">
           <p className="eyebrow text-gold-300">Para clientes</p>
           <h2 className="font-display max-w-md text-4xl font-semibold leading-[1.04] tracking-tight text-cream sm:text-5xl">
-            Una mejor experiencia{' '}
-            <span className="font-display-italic text-gold-200">para tus clientes.</span>
+            Una mejor experiencia <span className="font-display-italic text-gold-200">para tus clientes.</span>
           </h2>
           <p className="max-w-lg text-base leading-8 text-cream/68">
-            Cuando reservar se siente claro y rápido, la barbería transmite más orden, más confianza y una imagen más fuerte.
+            Cuando reservar se siente claro y rapido, la barberia transmite mas orden, mas confianza y una imagen mas fuerte.
           </p>
         </div>
 

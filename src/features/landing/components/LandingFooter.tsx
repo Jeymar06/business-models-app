@@ -24,14 +24,14 @@ const footerColumns: Array<{ title: string; items: FooterItem[] }> = [
         href: '/register',
       },
       {
-        label: 'Planes',
-        description: 'Compara las etapas de crecimiento y elige la capacidad que mejor se ajuste a tu barberia.',
-        href: '#planes',
+        label: 'Metricas y comisiones',
+        description: 'Sigue ingresos, rendimiento y calculo operativo para tomar decisiones con datos mas claros.',
+        href: '#funciones',
       },
       {
-        label: 'Metricas',
-        description: 'Sigue ingresos, citas y rendimiento para tomar decisiones con datos reales del negocio.',
-        href: '/register',
+        label: 'Planes',
+        description: 'Starter, Pro y Premium alineados al canvas comercial y a distintas etapas del negocio.',
+        href: '#planes',
       },
     ],
   },
@@ -40,51 +40,45 @@ const footerColumns: Array<{ title: string; items: FooterItem[] }> = [
     items: [
       {
         label: 'Barber Flow',
-        description: 'Una plataforma pensada para ordenar reservas, operacion y experiencia de marca en barberias modernas.',
+        description: 'Una plataforma pensada para ordenar reservas, operacion y crecimiento comercial en barberias modernas.',
         href: '#inicio',
       },
       {
-        label: 'Como funciona',
-        description: 'Desde el registro hasta la agenda diaria, todo el flujo esta disenado para ser rapido y claro.',
-        href: '#como-funciona',
-      },
-      {
-        label: 'Clientes',
-        description: 'Tus clientes encuentran disponibilidad, reservan facil y reciben una experiencia mas profesional.',
-        href: '#funciones',
-      },
-      {
-        label: 'Barberias',
-        description: 'Ideal para negocios que quieren crecer con mejor orden interno, mejor atencion y mejor lectura del dia a dia.',
-        href: '#funciones',
-      },
-      {
         label: 'Modelo de negocio',
-        description: 'Haz clic para abrir el canvas completo en una página independiente.',
+        description: 'Haz clic para abrir el canvas completo en una pagina independiente.',
         href: '/modelo-de-negocio',
         targetBlank: true,
         previewImage: landingMediaGroups.productShots.businessModelCanvas,
       },
+      {
+        label: 'Segmentos',
+        description: 'Desde barberos independientes hasta cadenas multisede, con foco inicial en Bucaramanga y area metropolitana.',
+        href: '#funciones',
+      },
+      {
+        label: 'Canales',
+        description: 'Venta directa, barberflow.co, TikTok e Instagram como parte del crecimiento comercial.',
+        href: '#como-funciona',
+      },
     ],
   },
   {
-    title: 'Legal',
+    title: 'Relacion',
     items: [
       {
-        label: 'Terminos',
-        description: 'Define las condiciones de uso de la plataforma, responsabilidades y alcance del servicio.',
+        label: 'Primer mes gratis',
+        description: 'La entrada comercial esta pensada para facilitar adopcion y bajar friccion inicial.',
+        href: '#planes',
       },
       {
-        label: 'Privacidad',
-        description: 'Explica como se almacenan, procesan y protegen los datos de clientes, admins y barberias.',
+        label: 'Acompanamiento de inicio',
+        description: 'Cada barberia recibe una puesta en marcha mas guiada y cercana.',
+        href: '#como-funciona',
       },
       {
-        label: 'Seguridad',
-        description: 'Describe las medidas de autenticacion, control de acceso y resguardo de informacion.',
-      },
-      {
-        label: 'Uso de plataforma',
-        description: 'Aclara buenas practicas, limites de uso y criterios de convivencia dentro del sistema.',
+        label: 'Referidos y fidelidad',
+        description: 'El modelo contempla recompensas por recomendacion y permanencia.',
+        href: '#planes',
       },
     ],
   },
@@ -93,16 +87,17 @@ const footerColumns: Array<{ title: string; items: FooterItem[] }> = [
     items: [
       {
         label: 'hola@barberflow.co',
-        description: 'Canal principal para dudas comerciales, alianzas o consultas de implementacion.',
+        description: 'Canal principal para soporte basico, dudas comerciales, demos y alianzas.',
         href: 'mailto:hola@barberflow.co',
       },
       {
-        label: 'Soporte para barberias',
-        description: 'Acompaniamiento para configuracion, operacion y resolucion de incidentes en el dia a dia.',
+        label: 'Soporte basico',
+        description: 'Si necesitas ayuda o mas informacion, escribenos a hola@barberflow.co.',
+        href: 'mailto:hola@barberflow.co',
       },
       {
-        label: 'Colombia',
-        description: 'Barber Flow nace con foco local y una lectura cercana de las necesidades del negocio en Colombia.',
+        label: 'Bucaramanga, Colombia',
+        description: 'Barber Flow nace con foco local y una lectura cercana del negocio en Bucaramanga y su area metropolitana.',
       },
     ],
   },
@@ -116,9 +111,9 @@ export function LandingFooter() {
           <div className="space-y-4 lg:pr-8">
             <BrandSignature subtitle="Edicion editorial" />
             <p className="text-sm leading-7 text-cream/60">
-              Plataforma SaaS editorial para barberias modernas. Reservas, equipo, servicios y metricas en un solo flujo.
+              Plataforma SaaS editorial para barberias modernas. Reservas, equipo, metricas, comisiones y soporte comercial en un solo flujo.
             </p>
-            <p className="eyebrow text-cream/40">Edicion 2026 - Hecho en Colombia</p>
+            <p className="eyebrow text-cream/40">Edicion 2026 - Hecho en Bucaramanga, Colombia</p>
           </div>
 
           {footerColumns.map((column) => (
@@ -129,7 +124,7 @@ export function LandingFooter() {
           <div className="flex flex-col gap-3 py-6 text-sm text-cream/45 sm:flex-row sm:items-center sm:justify-between">
             <p>© Barber Flow. Plataforma SaaS para barberias.</p>
             <p className="font-display italic text-cream/55">
-              Reservas, operacion y crecimiento en una sola experiencia.
+              Reservas, operacion, fidelizacion y crecimiento en una sola experiencia.
             </p>
           </div>
         </div>

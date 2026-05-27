@@ -1,16 +1,15 @@
 import {
   BarChart3,
   BellRing,
+  Calculator,
   CalendarCheck2,
   ClipboardList,
-  Clock3,
-  Crown,
-  ShieldCheck,
+  Mail,
   Store,
   Users,
   UserSquare2,
   WalletCards,
-  Workflow,
+  Waypoints,
 } from 'lucide-react';
 
 import { landingFeatures } from '@/features/landing/data/features';
@@ -19,15 +18,12 @@ const iconMap = {
   'Reservas online': CalendarCheck2,
   'Agenda por barbero': Users,
   'Gestion de servicios': ClipboardList,
-  'Horarios y disponibilidad': Clock3,
-  'Panel cliente': UserSquare2,
-  'Panel admin': Store,
-  'Panel superadmin': Crown,
+  'Recordatorios operativos': Mail,
+  'Notificaciones internas': BellRing,
+  'Calculo de comisiones': Calculator,
   'Metricas e ingresos': BarChart3,
-  'Estados de citas': Workflow,
-  Notificaciones: BellRing,
+  'Panel admin': Store,
   'Perfil publico de barberia': WalletCards,
-  'Roles y permisos': ShieldCheck,
 } as const;
 
 export function FeaturesSection() {
@@ -37,12 +33,11 @@ export function FeaturesSection() {
         <div className="space-y-5">
           <p className="eyebrow text-gold-300">Funciones principales</p>
           <h2 className="font-display max-w-xl text-4xl font-semibold leading-[1.04] tracking-tight text-cream sm:text-5xl">
-            Todo lo que tu barbería necesita.{' '}
-            <span className="font-display-italic text-gold-200">Sin ruido.</span>
+            Todo lo que tu barberia necesita. <span className="font-display-italic text-gold-200">Sin ruido.</span>
           </h2>
         </div>
         <p className="max-w-xl text-base leading-8 text-cream/68 lg:text-lg">
-          La plataforma concentra experiencia de cliente, operación de barbería y supervisión de negocio en un mismo entorno editorial.
+          La plataforma concentra experiencia de cliente, operacion de barberia, soporte comercial y lectura de negocio en un mismo flujo.
         </p>
       </div>
 

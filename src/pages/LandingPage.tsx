@@ -10,7 +10,6 @@ import { LandingFooter } from '@/features/landing/components/LandingFooter';
 import { LandingMarqueeSection, AnimatedMessageSection, PinnedShowcaseSection, VideoRevealSection } from '@/features/landing/components/MotionShowcaseSections';
 import { LandingNavbar } from '@/features/landing/components/LandingNavbar';
 import { LandingPreloader } from '@/features/landing/components/LandingPreloader';
-import { OwnersSection } from '@/features/landing/components/OwnersSection';
 import { PricingSection } from '@/features/landing/components/PricingSection';
 import { ProblemSolutionSection } from '@/features/landing/components/ProblemSolutionSection';
 import { useLandingMotion } from '@/features/landing/hooks/useLandingMotion';
@@ -40,7 +39,6 @@ export function LandingPage() {
         <FeaturesSection />
         <VideoRevealSection />
         <ProblemSolutionSection />
-        <OwnersSection />
         <ClientsSection />
         <HowItWorksSection />
         <PricingSection />

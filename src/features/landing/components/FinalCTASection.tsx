@@ -13,13 +13,12 @@ export function FinalCTASection() {
         />
         <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
-            <p className="eyebrow text-gold-300">Última parada antes de empezar</p>
+            <p className="eyebrow text-gold-300">Ultima parada antes de empezar</p>
             <h2 className="font-display mt-4 max-w-2xl text-4xl font-semibold leading-[1.04] tracking-tight sm:text-5xl">
-              Haz que tu barbería{' '}
-              <span className="font-display-italic text-gold-200">fluya mejor</span> desde hoy.
+              Haz que tu barberia <span className="font-display-italic text-gold-200">fluya mejor</span> desde hoy.
             </h2>
             <p className="mt-5 max-w-2xl text-base leading-8 text-cream/72">
-              Da el paso a una experiencia más clara para clientes, equipo y negocio desde una sola plataforma.
+              Empieza con primer mes gratis, acompanamiento de inicio y una estructura lista para reservas, metricas, fidelizacion y crecimiento.
             </p>
           </div>
 
@@ -30,9 +29,9 @@ export function FinalCTASection() {
                 <ArrowRight size={18} />
               </Button>
             </Link>
-            <a href="#planes">
+            <a href="/modelo-de-negocio" target="_blank" rel="noreferrer noopener">
               <Button className="w-full sm:w-auto" size="xl" variant="outline">
-                Ver planes
+                Ver modelo
               </Button>
             </a>
           </div>

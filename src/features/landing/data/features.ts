@@ -6,50 +6,38 @@ export interface LandingFeatureItem {
 export const landingFeatures: LandingFeatureItem[] = [
   {
     title: 'Reservas online',
-    description: 'Permite que los clientes agenden sin depender de mensajes manuales.',
+    description: 'Permite que tus clientes agenden sin depender de llamadas, mensajes cruzados o demoras manuales.',
   },
   {
     title: 'Agenda por barbero',
-    description: 'Organiza la disponibilidad individual de cada profesional.',
+    description: 'Cada profesional trabaja con disponibilidad clara para reducir vacios, cruces y errores de coordinacion.',
   },
   {
     title: 'Gestion de servicios',
-    description: 'Define servicios, duracion, precio y presentacion desde un solo panel.',
+    description: 'Define servicios, precio y duracion desde una sola estructura lista para mostrarse al cliente.',
   },
   {
-    title: 'Horarios y disponibilidad',
-    description: 'Controla turnos y bloqueos para evitar cruces o tiempos muertos.',
+    title: 'Recordatorios operativos',
+    description: 'Mantiene citas y equipo mas sincronizados con avisos utiles para el ritmo diario de la barberia.',
   },
   {
-    title: 'Panel cliente',
-    description: 'El cliente consulta sus citas, servicios y proximos movimientos.',
+    title: 'Notificaciones internas',
+    description: 'El negocio ve movimientos clave sin perderse entre conversaciones sueltas o seguimiento manual.',
   },
   {
-    title: 'Panel admin',
-    description: 'La barberia coordina el dia a dia con una vista operativa central.',
-  },
-  {
-    title: 'Panel superadmin',
-    description: 'Supervisa multiples barberias con control ampliado y lectura global.',
+    title: 'Calculo de comisiones',
+    description: 'Ayuda a leer mejor el rendimiento individual y ordenar la conversacion comercial con el equipo.',
   },
   {
     title: 'Metricas e ingresos',
-    description: 'Observa actividad, crecimiento y datos clave para decidir mejor.',
+    description: 'Visualiza citas, ingresos y actividad para entender que esta funcionando y donde ajustar primero.',
   },
   {
-    title: 'Estados de citas',
-    description: 'Sigue cada reserva desde pendiente hasta completada o cancelada.',
-  },
-  {
-    title: 'Notificaciones',
-    description: 'Mantiene al equipo y a los clientes sincronizados con menos friccion.',
+    title: 'Panel admin',
+    description: 'La barberia coordina operacion, servicios, barberos y estados desde una vista central.',
   },
   {
     title: 'Perfil publico de barberia',
-    description: 'Muestra servicios, precios y presencia profesional en una misma vitrina.',
-  },
-  {
-    title: 'Roles y permisos',
-    description: 'Protege el acceso segun la responsabilidad de cada usuario.',
+    description: 'Tu negocio se presenta con servicios, precios y horarios en una vitrina mas profesional.',
   },
 ];

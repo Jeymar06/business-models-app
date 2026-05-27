@@ -1,9 +1,9 @@
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 
 const problems = [
-  'Citas por WhatsApp difíciles de controlar.',
+  'Citas y mensajes manuales dificiles de controlar.',
   'Horarios confundidos entre barberos y clientes.',
-  'Clientes sin recordatorios claros.',
+  'Poco seguimiento comercial despues de la primera reserva.',
   'Barberos sin una agenda realmente visible.',
   'Poca visibilidad del negocio para tomar decisiones.',
 ];
@@ -11,9 +11,9 @@ const problems = [
 const solutions = [
   'Agenda online centralizada.',
   'Disponibilidad por barbero.',
-  'Servicios organizados con precio y duración.',
-  'Clientes y citas en un solo flujo.',
-  'Métricas para decidir mejor.',
+  'Servicios organizados con precio y duracion.',
+  'Notificaciones internas y soporte rapido.',
+  'Metricas, ingresos y comisiones en una sola lectura.',
 ];
 
 export function ProblemSolutionSection() {
@@ -21,13 +21,12 @@ export function ProblemSolutionSection() {
     <section className="mx-auto max-w-[1200px] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
       <div className="grid gap-12 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
         <div className="space-y-5">
-          <p className="eyebrow text-gold-300">Problema · Solución</p>
+          <p className="eyebrow text-gold-300">Problema · Solucion</p>
           <h2 className="font-display max-w-md text-4xl font-semibold leading-[1.04] tracking-tight text-cream sm:text-5xl">
-            Tu barbería no necesita más desorden.{' '}
-            <span className="font-display-italic text-gold-200">Necesita flujo.</span>
+            Tu barberia no necesita mas desorden. <span className="font-display-italic text-gold-200">Necesita flujo.</span>
           </h2>
           <p className="max-w-lg text-base leading-8 text-cream/68">
-            Barber Flow ordena la operación diaria para que la reserva, la atención al cliente y el control del negocio vivan en el mismo sistema.
+            Barber Flow ordena la operacion diaria para que la reserva, la atencion al cliente y el control del negocio vivan en el mismo sistema.
           </p>
         </div>
 
@@ -51,7 +50,7 @@ export function ProblemSolutionSection() {
               aria-hidden
               className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(232,199,102,0.12),transparent_45%)]"
             />
-            <p className="eyebrow relative text-gold-300">Cómo responde Barber Flow</p>
+            <p className="eyebrow relative text-gold-300">Como responde Barber Flow</p>
             <div className="relative mt-6 space-y-4">
               {solutions.map((solution) => (
                 <div className="flex items-start gap-3" key={solution}>

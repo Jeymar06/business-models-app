@@ -1,18 +1,18 @@
 const steps = [
   {
     number: '01',
-    title: 'Configura tu barbería',
-    description: 'Crea servicios, define horarios, organiza barberos y prepara tu operación desde una misma base.',
+    title: 'Configura tu barberia',
+    description: 'Crea servicios, define horarios, organiza barberos y prepara tu operacion desde una misma base.',
   },
   {
     number: '02',
-    title: 'Recibe reservas',
-    description: 'Los clientes consultan opciones claras, eligen servicio y reservan sin fricción innecesaria.',
+    title: 'Activa reservas y soporte',
+    description: 'Los clientes consultan opciones claras, reservan online y tu equipo recibe un acompanamiento de inicio mas ordenado.',
   },
   {
     number: '03',
-    title: 'Gestiona y crece',
-    description: 'Supervisa citas, equipo, disponibilidad y métricas para mejorar la marcha diaria del negocio.',
+    title: 'Mide, fideliza y crece',
+    description: 'Supervisa citas, ingresos, comisiones, referidos y crecimiento hasta escalar a una operacion multisede.',
   },
 ];
 
@@ -22,14 +22,13 @@ export function HowItWorksSection() {
       <div className="mx-auto max-w-[1200px] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-4">
-            <p className="eyebrow text-gold-300">Cómo funciona</p>
+            <p className="eyebrow text-gold-300">Como funciona</p>
             <h2 className="font-display max-w-2xl text-4xl font-semibold leading-[1.04] tracking-tight text-cream sm:text-5xl">
-              De agenda dispersa a{' '}
-              <span className="font-display-italic text-gold-200">plataforma profesional.</span>
+              De agenda dispersa a <span className="font-display-italic text-gold-200">plataforma profesional.</span>
             </h2>
           </div>
           <p className="max-w-xl text-base leading-8 text-cream/68">
-            Tres pasos simples. Cero curva de aprendizaje. Una barbería que opera con la elegancia que merece.
+            Tres pasos simples. Cero curva de aprendizaje. Una barberia que opera, vende y se presenta con mas orden.
           </p>
         </div>
 
